@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../FrostUI/dist/frost-ui.css">
+    <script src="../FrostUI/dist/frost-ui-bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/elusivecodes/frostdatetime/dist/frost-datetime.js"></script>
+    <script src="dist/frost-ui-datetimepicker.js"></script>
+    <style>
+        .datepicker .action:not(.btn),
+        .timepicker .action:not(.btn) {
+            cursor: pointer;
+            border-radius: .25em;
+        }
+
+        .datepicker .action:not(.btn):hover,
+        .timepicker .action:not(.btn):hover {
+            background: #eee;
+        }
+
+        .datepicker .action.active {
+            background: royalblue;
+            color: white;
+        }
+
+        .datepicker .action.active:hover {
+            background: #3454b4;
+        }
+
+        .datepicker .today {
+            position: relative;
+        }
+
+        .datepicker .today:before {
+            display: inline-block;
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            border: solid transparent;
+            border-width: 0 0 7px 7px;
+            border-bottom-color: royalblue;
+            border-top-color: rgba(0, 0, 0, 0.2);
+            content: '';
+        }
+
+        .datepicker .today.active:before {
+            border-bottom-color: white;
+        }
+
+        .datepicker .disabled,
+        .timepicker .disabled {
+            background-color: indianred;
+            color: white;
+            pointer-events: none;
+        }
+
+        .timepicker .time {
+            font-size: 1.25rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container pt-5">
+        <div class="mb-4">
+            <input type="text" class="input-filled" id="input" />
+        </div>
+    </div>
+    <script>
+        const input = dom.findOne('#input');
+        const datetimepicker = new UI.DateTimePicker(input, {
+            locale: 'en-us'
+        });
+        console.log(datetimepicker);
+    </script>
+</body>
+
+</html>
