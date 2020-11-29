@@ -1,9 +1,9 @@
 // DateTimePicker default options
 DateTimePicker.defaults = {
-    date: null,
     format: null,
     locale: DateFormatter.defaultLocale,
     timeZone: DateTime.defaultTimeZone,
+    defaultDate: null,
     minDate: null,
     maxDate: null,
     enabledDates: null,
@@ -12,15 +12,25 @@ DateTimePicker.defaults = {
     disabledDays: null,
     enabledHours: null,
     disabledHours: null,
-    // disabledTimeIntervals: null,
+    disabledTimeIntervals: null,
     // multiDate: false,
     // multiDateSeparator: ',',
-    icons: {},
+    icons: {
+        up: 'icon-arrow-up',
+        right: 'icon-arrow-right',
+        down: 'icon-arrow-down',
+        left: 'icon-arrow-left'
+    },
     buttons: {},
+    keyBinds: {},
+    useCurrent: false,
     keepOpen: false,
     focusOnShow: false,
+    minView: null,
 
     inline: false,
+    sideBySide: false,
+
     display: 'dynamic',
     duration: 100,
     placement: 'bottom',
@@ -29,6 +39,10 @@ DateTimePicker.defaults = {
     spacing: 3,
     minContact: false
 };
+
+DateTimePicker._formatTokenRegExp = /([a-z])\1*|'[^']*'/ig;
+DateTimePicker._dateTokenRegExp = /[GyYqQMLwWdDFEec]/;
+DateTimePicker._timeTokenRegExp = /[ahHKkmsS]/;
 
 // DateTimePicker QuerySet method
 if (QuerySet) {

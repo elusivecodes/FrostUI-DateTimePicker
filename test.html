@@ -10,31 +10,63 @@
     <script src="https://cdn.jsdelivr.net/gh/elusivecodes/frostdatetime/dist/frost-datetime.js"></script>
     <script src="dist/frost-ui-datetimepicker.js"></script>
     <style>
-        .datepicker .action:not(.btn),
-        .timepicker .action:not(.btn) {
+        .datetimepicker {
+            z-index: 1000;
+            display: none;
+            width: 300px;
+            padding: 0;
+            margin: .125rem 0 0;
+            font-size: 1rem;
+            color: darkslategray;
+            text-align: left;
+            list-style: none;
+            background-color: white;
+            border: 1px solid rgba(0, 0, 0, .15);
+            border-radius: .2rem;
+        }
+
+        .datetimepicker.inline {
+            display: block;
+            border: 0;
+        }
+
+        .datetimepicker.show {
+            display: block;
+            overflow: hidden;
+        }
+
+        .datetimepicker .action:not(.btn) {
             cursor: pointer;
             border-radius: .25em;
         }
 
-        .datepicker .action:not(.btn):hover,
-        .timepicker .action:not(.btn):hover {
+        .datetimepicker .action:not(.btn):hover {
             background: #eee;
         }
 
-        .datepicker .action.active {
+        .datetimepicker .action.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .datetimepicker .action.disabled:hover {
+            background: transparent;
+        }
+
+        .datetimepicker .action.active {
             background: royalblue;
             color: white;
         }
 
-        .datepicker .action.active:hover {
+        .datetimepicker .action.active:hover {
             background: #3454b4;
         }
 
-        .datepicker .today {
+        .datetimepicker .today {
             position: relative;
         }
 
-        .datepicker .today:before {
+        .datetimepicker .today:before {
             display: inline-block;
             position: absolute;
             bottom: 4px;
@@ -46,19 +78,22 @@
             content: '';
         }
 
-        .datepicker .today.active:before {
+        .datetimepicker .today.active:before {
             border-bottom-color: white;
         }
 
-        .datepicker .disabled,
-        .timepicker .disabled {
-            background-color: indianred;
-            color: white;
-            pointer-events: none;
+        .datetimepicker .time {
+            font-size: 1.25rem;
         }
 
-        .timepicker .time {
-            font-size: 1.25rem;
+        @media (min-width: 768px) {
+            .datetimepicker.full {
+                width: 600px;
+            }
+        }
+
+        .icon-clock::before {
+            content: '\1f552';
         }
     </style>
 </head>
@@ -72,7 +107,8 @@
     <script>
         const input = dom.findOne('#input');
         const datetimepicker = new UI.DateTimePicker(input, {
-            locale: 'en-us'
+            locale: 'en-au',
+            minDate: DateTime.fromArray([2020, 11, 29, 12, 44, 0])
         });
         console.log(datetimepicker);
     </script>
