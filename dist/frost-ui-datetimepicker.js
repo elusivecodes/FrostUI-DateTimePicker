@@ -48,31 +48,67 @@
             this._useDayPeriod = this.constructor.checkDayPeriod(this._settings.locale);
 
             if (!this._settings.format) {
-                this._settings.format = this.constructor.getDefaultFormat(this._settings.locale, this._useDayPeriod);
+                this._settings.format = this._settings.multiDate ?
+                    this.constructor.getDefaultDateFormat(this._settings.locale, this._useDayPeriod) :
+                    this.constructor.getDefaultFormat(this._settings.locale, this._useDayPeriod);
             }
 
             this._checkFormat();
+
+            if (this._settings.multiDate && this._hasTime) {
+                throw new Error('Time components cannot be used with multiDate option.');
+            }
+
+            if (this._settings.multiDate && !this._hasDate) {
+                throw new Error('Date components must be used with multiDate option.');
+            }
 
             this._dateOptions = {
                 locale: this._settings.locale,
                 timeZone: this._settings.timeZone
             };
 
-            this._today = DateTime.now(this._dateOptions);
+            this._currentDate = null;
+            this._dates = [];
+            this._minDate = null;
+            this._maxDate = null;
+            this._enabledDates = null;
+            this._disabledDates = null;
+            this._disabledDays = null;
+            this._disabledHours = null;
+            this._disabledTimeIntervals = null;
+            this._timeViewMode = null;
+
+            switch (this._settings.minView) {
+                case 'decade':
+                    this._viewMode = 'decade';
+                    break;
+                case 'year':
+                    this._viewMode = 'year';
+                    break;
+                default:
+                    this._viewMode = 'month';
+                    break;
+            }
+
+            this._now = DateTime.now(this._dateOptions);
 
             const value = dom.getValue(this._node);
             if (value) {
                 this._currentDate = DateTime.fromFormat(this._settings.format, value, this._dateOptions);
-            } else if (this._settings.defaultDate) {
-                this._currentDate = this._parseDate(this._settings.defaultDate);
-            } else if (this._settings.useCurrent) {
-                this._currentDate = this._today.clone();
             }
 
-            if (this._settings.viewDate) {
-                this._viewDate = this._parseDate(this._settings.viewDate);
-            } else {
-                this._viewDate = this._today.clone();
+            if (!this._currentDate && this._settings.defaultDate) {
+                this._currentDate = this._parseDate(this._settings.defaultDate);
+            }
+
+            if (!this._currentDate && this._settings.useCurrent) {
+                this._currentDate = this._now.clone();
+            }
+
+            if (this._settings.multiDate && this._currentDate) {
+                this._dates.push(this._currentDate);
+                this._currentDate = null;
             }
 
             if (this._settings.minDate) {
@@ -103,19 +139,17 @@
                 ).filter(intervals => intervals.length === 2);
             }
 
-            switch (this._settings.minView) {
-                case 'decade':
-                    this._viewMode = 'decade';
-                    break;
-                case 'year':
-                    this._viewMode = 'year';
-                    break;
-                default:
-                    this._viewMode = 'month';
-                    break;
+            if (this._settings.viewDate) {
+                this._viewDate = this._parseDate(this._settings.viewDate);
             }
 
-            this._timeViewMode = null;
+            if (!this._settings.viewDate && this._currentDate) {
+                this._viewDate = this._currentDate.clone();
+            }
+
+            if (!this._settings.viewDate) {
+                this._viewDate = this._now.clone();
+            }
 
             this.update();
             this._render();
@@ -131,8 +165,9 @@
 
         hide() {
             if (
+                this._settings.inline ||
                 this._animating ||
-                !dom.hasClass(this._menuNode, 'show') ||
+                !dom.isConnected(this._menuNode) ||
                 !dom.triggerOne(this._node, 'hide.frost.datetimepicker')
             ) {
                 return;
@@ -143,7 +178,7 @@
             dom.fadeOut(this._menuNode, {
                 duration: this._settings.duration
             }).then(_ => {
-                dom.removeClass(this._menuNode, 'show');
+                dom.detach(this._menuNode);
                 dom.setAttribute(this._node, 'aria-expanded', false);
                 dom.triggerEvent(this._node, 'hidden.frost.datetimepicker');
             }).catch(_ => { }).finally(_ => {
@@ -153,15 +188,17 @@
 
         show() {
             if (
+                this._settings.inline ||
                 this._animating ||
-                dom.hasClass(this._menuNode, 'show') ||
+                dom.isConnected(this._menuNode) ||
                 !dom.triggerOne(this._node, 'show.frost.datetimepicker')
             ) {
                 return;
             }
 
             this._animating = true;
-            dom.addClass(this._menuNode, 'show');
+            dom.append(document.body, this._menuNode);
+            this._popper.update();
 
             dom.fadeIn(this._menuNode, {
                 duration: this._settings.duration
@@ -184,7 +221,7 @@
         }
 
         static autoHide(target) {
-            const menus = dom.find('.datetimepicker.show');
+            const menus = dom.find('.datetimepicker:not(.datetimepicker-inline)');
 
             for (const menu of menus) {
                 const selector = dom.getDataset(menu, 'trigger');
@@ -215,7 +252,14 @@
                 this.show();
             });
 
-            dom.addEvent(this._container, 'click', e => {
+            if (this._settings.keyDown && !this._settings.inline && !this._settings.multiDate) {
+                dom.addEvent(this._node, 'keydown', e => {
+                    this._settings.keyDown.bind(this)(e);
+                });
+            }
+
+            dom.addEvent(this._container, 'click mousedown', e => {
+                e.preventDefault();
                 e.stopPropagation();
             });
 
@@ -227,7 +271,7 @@
                 switch (action) {
                     case 'setDate':
                         if (!hasCurrent) {
-                            this._currentDate = this._today.clone();
+                            this._currentDate = this._now.clone();
                         }
 
                         this._currentDate.setYear(
@@ -250,19 +294,44 @@
                         }
 
                         break;
+                    case 'setDateMulti':
+                        let date = this._now.clone().setYear(
+                            dom.getDataset(element, 'year'),
+                            dom.getDataset(element, 'month'),
+                            dom.getDataset(element, 'date')
+                        );
+
+                        this._viewDate = date.clone();
+
+                        if (this._isCurrent(date)) {
+                            this._dates = this._dates.filter(currentDate => !currentDate.isSame(date, 'day'));
+                        } else {
+                            this._dates.push(date);
+                        }
+
+                        this._refreshDate();
+
+                        this.update();
+
+                        console.log(this);
+
+                        break;
                     case 'nextTime':
                     case 'prevTime':
                         if (!this._currentDate) {
-                            this._currentDate = this._today.clone();
+                            this._currentDate = this._now.clone();
                         }
 
                         const timeMethod = action === 'prevTime' ?
                             'sub' :
                             'add';
+                        const unit = dom.getDataset(element, 'unit');
                         const oldDay = this._currentDate.getDay();
                         this._currentDate[timeMethod](
-                            1,
-                            dom.getDataset(element, 'unit')
+                            unit === 'hours' ?
+                                this._settings.stepping :
+                                1,
+                            unit
                         );
 
                         if (!hasCurrent || oldDay !== this._currentDate.getDay()) {
@@ -273,9 +342,9 @@
                         this.update();
 
                         break;
-                    case 'dayPeriod':
+                    case 'togglePeriod':
                         if (!this._currentDate) {
-                            this._currentDate = this._today.clone();
+                            this._currentDate = this._now.clone();
                         }
 
                         const currentHours = this._currentDate.getHours();
@@ -293,7 +362,7 @@
                         break;
                     case 'setHours':
                         if (!this._currentDate) {
-                            this._currentDate = this._today.clone();
+                            this._currentDate = this._now.clone();
                         }
 
                         this._currentDate.setHours(
@@ -312,7 +381,7 @@
                         break;
                     case 'setMinutes':
                         if (!this._currentDate) {
-                            this._currentDate = this._today.clone();
+                            this._currentDate = this._now.clone();
                         }
 
                         this._currentDate.setMinutes(
@@ -430,7 +499,19 @@
             }
         },
 
-        _isDateBetween(date, scope = 'second') {
+        _dateString(date) {
+            return date.clone().setLocale('en').format('yyyy-MM-dd');
+        },
+
+        _isCurrent(date, scope = 'day') {
+            if (this._settings.multiDate) {
+                return this._dates.find(currentDate => currentDate.isSame(date, scope));
+            }
+
+            return this._currentDate && this._currentDate.isSame(date, scope);
+        },
+
+        _isDateBetweenMinMax(date, scope = 'second') {
             if (this._minDate && date.isBefore(this._minDate, scope)) {
                 return false;
             }
@@ -442,48 +523,15 @@
             return true;
         },
 
-        _isDateValid(date) {
-            if (!this._isDateBetween(date, 'day')) {
+        _isDateOutsideDisabledInterval(date) {
+            if (this._disabledTimeIntervals && this._disabledTimeIntervals.find(([start, end]) => date.isAfter(start) && date.isBefore(end))) {
                 return false;
-            }
-
-            if (this._disabledDays && this._disabledDays.includes(date.getDay())) {
-                return false;
-            }
-
-            if (this._disabledDates && this._disabledDates.find(disabledDate => disabledDate.isSame(date, 'day'))) {
-                return false;
-            }
-
-            if (this._enabledDates && !this._enabledDates.find(enabledDate => enabledDate.isSame(date, 'day'))) {
-                return false;
-            }
-
-            if (this._disabledTimeIntervals) {
-                const startOfDay = date.clone().startOf('day');
-                const endOfDay = date.clone().endOf('day');
-
-                if (this._disabledTimeIntervals.find(([start, end]) => endOfDay.isSameOrAfter(start) && startOfDay.isSameOrBefore(end))) {
-                    return false;
-                }
             }
 
             return true;
         },
 
-        _isTimeValid(date) {
-            if (!this._isDateBetween(date, 'second')) {
-                return false;
-            }
-
-            if (this._disabledHours && this._disabledHours.includes(date.getHour())) {
-                return false;
-            }
-
-            if (this._disabledDays && this._disabledDays.includes(date.getDay())) {
-                return false;
-            }
-
+        _isDateValid(date) {
             if (this._disabledDates && this._disabledDates.find(disabledDate => disabledDate.isSame(date, 'day'))) {
                 return false;
             }
@@ -492,7 +540,47 @@
                 return false;
             }
 
-            if (this._disabledTimeIntervals && this._disabledTimeIntervals.find(([start, end]) => date.isSameOrAfter(start) && date.isSameOrBefore(end))) {
+            return true;
+        },
+
+        _isDayValid(date) {
+            if (this._disabledDays && this._disabledDays.includes(date.getDay())) {
+                return false;
+            }
+
+            return true;
+        },
+
+        _isHourValid(date) {
+            if (this._disabledHours && this._disabledHours.includes(date.getHour())) {
+                return false;
+            }
+
+            return true;
+        },
+
+        _isValid(date, scope = 'day') {
+            if (!this._isDateBetweenMinMax(date, scope)) {
+                return false;
+            }
+
+            if (!this._isDayValid(date)) {
+                return false;
+            }
+
+            if (!this._isDateValid(date)) {
+                return false;
+            }
+
+            if (scope === 'day') {
+                return true;
+            }
+
+            if (!this._isHourValid(date)) {
+                return false;
+            }
+
+            if (!this._isDateOutsideDisabledInterval(date)) {
                 return false;
             }
 
@@ -581,12 +669,14 @@
 
                 const prevTd = dom.create('td', {
                     html: `<span class="${this._settings.icons.left}"></span>`,
-                    class: 'action text-primary fw-bold',
-                    dataset: options.header.prev
+                    class: 'action text-primary fw-bold'
                 });
 
                 if (!options.header.prev) {
                     dom.addClass(prevTd, 'disabled');
+                } else {
+                    dom.setDataset(prevTd, options.header.prev.data);
+                    dom.setAttribute(prevTd, options.header.prev.attr);
                 }
 
                 dom.append(tr, prevTd);
@@ -595,7 +685,8 @@
                     class: 'fw-bold',
                     text: options.header.title,
                     attributes: {
-                        colspan: 5
+                        colspan: 5,
+                        ...options.header.attr
                     },
                     dataset: options.header.data
                 });
@@ -611,12 +702,14 @@
 
                 const nextTd = dom.create('td', {
                     html: `<span class="${this._settings.icons.right}"></span>`,
-                    class: 'action text-primary fw-bold',
-                    dataset: options.header.next
+                    class: 'action text-primary fw-bold'
                 });
 
                 if (!options.header.next) {
                     dom.addClass(nextTd, 'disabled');
+                } else {
+                    dom.setDataset(nextTd, options.header.next.data);
+                    dom.setAttribute(nextTd, options.header.next.attr);
                 }
 
                 dom.append(tr, nextTd);
@@ -629,41 +722,7 @@
             const tbody = dom.create('tbody');
             dom.append(table, tbody);
 
-            if (options.timeActions) {
-                const row = dom.create('tr');
-                dom.append(tbody, row);
-
-                const td = dom.create('td', {
-                    html: '<span class="icon-calendar"></span>',
-                    class: 'action',
-                    attributes: {
-                        colspan: 4
-                    },
-                    dataset: {
-                        action: 'showDate'
-                    }
-                });
-                dom.append(row, td);
-            }
-
             options.body(tbody);
-
-            if (options.dateActions) {
-                const tr = dom.create('tr');
-                dom.append(tbody, tr);
-
-                const td = dom.create('td', {
-                    html: '<span. class="icon-clock"></>',
-                    class: 'action',
-                    attributes: {
-                        colspan: 7
-                    },
-                    dataset: {
-                        action: 'showTime'
-                    }
-                });
-                dom.append(tr, td);
-            }
 
             return table;
         },
@@ -682,10 +741,58 @@
                     this._renderMonth();
                     break;
             }
+
+            if (!this._settings.sideBySide && this._hasDate) {
+                const table = this._createTable({
+                    body: tbody => {
+                        const tr = dom.create('tr');
+                        dom.append(tbody, tr);
+
+                        const td = dom.create('td', {
+                            html: '<span. class="icon-clock"></>',
+                            class: 'action py-2',
+                            attributes: {
+                                colspan: 7,
+                                title: this._settings.tooltips.selectTime
+                            },
+                            dataset: {
+                                action: 'showTime'
+                            }
+                        });
+                        dom.append(tr, td);
+                    }
+                });
+
+                dom.append(this._dateContainer, table);
+            }
         },
 
         _refreshTime() {
             dom.empty(this._timeContainer);
+
+            if (!this._settings.sideBySide && this._hasTime) {
+                const table = this._createTable({
+                    body: tbody => {
+                        const row = dom.create('tr');
+                        dom.append(tbody, row);
+
+                        const td = dom.create('td', {
+                            html: '<span class="icon-calendar"></span>',
+                            class: 'action py-2',
+                            attributes: {
+                                colspan: 4,
+                                title: this._settings.tooltips.selectDate
+                            },
+                            dataset: {
+                                action: 'showDate'
+                            }
+                        });
+                        dom.append(row, td);
+                    }
+                });
+
+                dom.append(this._timeContainer, table);
+            }
 
             switch (this._timeViewMode) {
                 case 'day':
@@ -714,7 +821,7 @@
 
             if (this._hasDate) {
                 this._dateContainer = dom.create('div', {
-                    class: 'col d-flex align-items-center'
+                    class: 'col d-flex flex-column align-items-center'
                 });
                 dom.append(this._container, this._dateContainer);
 
@@ -723,7 +830,7 @@
 
             if (this._hasTime) {
                 this._timeContainer = dom.create('div', {
-                    class: 'col d-flex align-items-center'
+                    class: 'col d-flex flex-column align-items-center'
                 });
                 dom.append(this._container, this._timeContainer);
 
@@ -732,7 +839,7 @@
 
             if (this._hasDate && this._hasTime) {
                 if (this._settings.sideBySide) {
-                    dom.addClass(this._menuNode, 'full')
+                    dom.addClass(this._menuNode, 'datetimepicker-full')
                     dom.addClass(this._container, 'row-cols-md-2')
                 } else {
                     dom.setStyle(this._timeContainer, 'display', 'none', true);
@@ -740,14 +847,12 @@
             }
 
             if (this._settings.inline) {
-                dom.addClass(this._menuNode, 'inline');
+                dom.addClass(this._menuNode, 'datetimepicker-inline');
 
                 dom.after(this._node, this._menuNode);
                 dom.hide(this._node);
             } else {
                 dom.addClass(this._menuNode, 'shadow-sm');
-
-                dom.append(document.body, this._menuNode);
 
                 this._popper = new UI.Popper(
                     this._menuNode,
@@ -766,7 +871,7 @@
         _renderDay() {
             const initialDate = this._currentDate ?
                 this._currentDate :
-                this._today;
+                this._now;
 
             const currentDate = initialDate.clone().startOf('day');
             const lastDate = initialDate.clone().endOf('day');
@@ -793,16 +898,22 @@
                     while (currentDate.isSameOrBefore(lastDate, 'hour')) {
                         const col = dom.create('div', {
                             text: currentDate.format('HH'),
-                            class: 'action col-3 p-1',
-                            dataset: {
-                                action: 'setHours',
-                                hour: currentDate.getHours()
-                            }
+                            class: 'col-3 p-1'
                         });
                         dom.append(row, col);
 
-                        if (!this._isTimeValid(currentDate)) {
+                        if (!this._isValid(currentDate, 'second')) {
                             dom.addClass(col, 'disabled');
+                        } else {
+                            dom.addClass(col, 'action');
+                            dom.setDataset(col, {
+                                action: 'setHours',
+                                hour: currentDate.getHours()
+                            });
+                        }
+
+                        if (this._settings.renderHour) {
+                            this._settings.renderHour(currentDate.clone(), col);
                         }
 
                         currentDate.add(1, 'hour');
@@ -832,22 +943,31 @@
                 header: {
                     title: `${startOfDecade.format('yyyy')} - ${endOfDecade.format('yyyy')}`,
                     wide: true,
-                    prev: this._isDateBetween(startOfDecade) ?
+                    prev: this._isDateBetweenMinMax(startOfDecade) ?
                         {
-                            action: 'prev',
-                            unit: 'years',
-                            amount: 10
+                            data: {
+                                action: 'prev',
+                                unit: 'years',
+                                amount: 10
+                            },
+                            attr: {
+                                title: this._settings.tooltips.prevDecade
+                            }
                         } :
                         false,
-                    next: this._isDateBetween(endOfDecade) ?
+                    next: this._isDateBetweenMinMax(endOfDecade) ?
                         {
-                            action: 'next',
-                            unit: 'years',
-                            amount: 10
+                            data: {
+                                action: 'next',
+                                unit: 'years',
+                                amount: 10
+                            },
+                            attr: {
+                                title: this._settings.tooltips.nextDecade
+                            }
                         } :
                         false
                 },
-                dateActions: !this._settings.sideBySide && this._hasTime,
                 body: tbody => {
                     const tr = dom.create('tr');
                     dom.append(tbody, tr);
@@ -870,28 +990,39 @@
 
                         const col = dom.create('div', {
                             text: currentDate.format('yyyy'),
-                            class: 'action col-4 p-1',
-                            dataset: this._settings.minView === 'decade' ?
-                                {
-                                    action: 'setDate',
-                                    year: thisYear
-                                } :
-                                {
-                                    action: 'changeView',
-                                    view: 'year',
-                                    year: thisYear
-                                }
+                            class: 'col-4 px-1 py-3'
                         });
                         dom.append(row, col);
 
-                        if (this._currentDate && this._currentDate.isSame(currentDate, 'year')) {
+                        if (this._isCurrent(currentDate, 'year')) {
                             dom.addClass(col, 'active');
                         } else if (thisYear < startYear || thisYear > endYear) {
                             dom.addClass(col, 'text-secondary');
                         }
 
-                        if (!this._isDateBetween(currentDate, 'year')) {
+                        if (!this._isDateBetweenMinMax(currentDate, 'year')) {
                             dom.addClass(col, 'disabled');
+                        } else {
+                            dom.addClass(col, 'action');
+
+                            if (this._settings.minView === 'decade') {
+                                dom.setDataset(col, {
+                                    action: this._settings.multiDate ?
+                                        'setDateMulti' :
+                                        'setDate',
+                                    year: thisYear
+                                });
+                            } else {
+                                dom.setDataset(col, {
+                                    action: 'changeView',
+                                    view: 'year',
+                                    year: thisYear
+                                });
+                            }
+                        }
+
+                        if (this._settings.renderYear) {
+                            this._settings.renderYear(currentDate.clone(), col);
                         }
 
                         currentDate.add(1, 'year');
@@ -905,7 +1036,7 @@
         _renderHour() {
             const initialDate = this._currentDate ?
                 this._currentDate :
-                this._today;
+                this._now;
 
             const currentDate = initialDate.clone().startOf('hour');
             const lastDate = initialDate.clone().endOf('hour');
@@ -932,16 +1063,22 @@
                     while (currentDate.isSameOrBefore(lastDate, 'minute')) {
                         const col = dom.create('span', {
                             text: currentDate.format('mm'),
-                            class: 'action col-3 p-1',
-                            dataset: {
-                                action: 'setMinutes',
-                                minute: currentDate.getMinutes()
-                            }
+                            class: 'col-3 p-1'
                         });
                         dom.append(row, col);
 
-                        if (!this._isTimeValid(currentDate)) {
+                        if (!this._isValid(currentDate, 'second')) {
                             dom.addClass(col, 'disabled');
+                        } else {
+                            dom.addClass(col, 'action');
+                            dom.setDataset(col, {
+                                action: 'setMinutes',
+                                minute: currentDate.getMinutes()
+                            });
+                        }
+
+                        if (this._settings.renderMinute) {
+                            this._settings.renderMinute(currentDate.clone(), col);
                         }
 
                         currentDate.add(5, 'minute');
@@ -969,20 +1106,32 @@
                         action: 'changeView',
                         view: 'year'
                     },
-                    prev: this._isDateBetween(startOfMonth) ?
+                    attr: {
+                        title: this._settings.tooltips.selectMonth
+                    },
+                    prev: this._isDateBetweenMinMax(startOfMonth) ?
                         {
-                            action: 'prev',
-                            unit: 'month'
+                            data: {
+                                action: 'prev',
+                                unit: 'month'
+                            },
+                            attr: {
+                                title: this._settings.tooltips.prevMonth
+                            }
                         } :
                         false,
-                    next: this._isDateBetween(endOfMonth) ?
+                    next: this._isDateBetweenMinMax(endOfMonth) ?
                         {
-                            action: 'next',
-                            unit: 'month'
+                            data: {
+                                action: 'next',
+                                unit: 'month'
+                            },
+                            attr: {
+                                title: this._settings.tooltips.nextMonth
+                            }
                         } :
                         false
                 },
-                dateActions: !this._settings.sideBySide && this._hasTime,
                 head: thead => {
                     const tr = dom.create('tr');
                     dom.append(thead, tr);
@@ -1006,29 +1155,36 @@
                         }
 
                         const td = dom.create('td', {
-                            text: currentDate.format('dd'),
-                            class: 'action',
-                            dataset: {
-                                action: 'setDate',
-                                year: currentDate.getYear(),
-                                month: currentDate.getMonth(),
-                                date: currentDate.getDate()
-                            }
+                            text: currentDate.format('dd')
                         });
                         dom.append(tr, td);
 
-                        if (this._currentDate && this._currentDate.isSame(currentDate, 'day')) {
+                        if (this._isCurrent(currentDate, 'day')) {
                             dom.addClass(td, 'active');
                         } else if (!this._viewDate.isSame(currentDate, 'month')) {
                             dom.addClass(td, 'text-secondary');
                         }
 
-                        if (!this._isDateValid(currentDate)) {
+                        if (!this._isValid(currentDate, 'day')) {
                             dom.addClass(td, 'disabled');
+                        } else {
+                            dom.addClass(td, 'action');
+                            dom.setDataset(td, {
+                                action: this._settings.multiDate ?
+                                    'setDateMulti' :
+                                    'setDate',
+                                year: currentDate.getYear(),
+                                month: currentDate.getMonth(),
+                                date: currentDate.getDate()
+                            });
                         }
 
-                        if (this._today.isSame(currentDate, 'day')) {
+                        if (this._now.isSame(currentDate, 'day')) {
                             dom.addClass(td, 'today');
+                        }
+
+                        if (this._settings.renderDay) {
+                            this._settings.renderDay(currentDate.clone(), td);
                         }
 
                         currentDate.add(1, 'day');
@@ -1042,11 +1198,10 @@
         _renderTime() {
             const initialDate = this._currentDate ?
                 this._currentDate :
-                this._today;
+                this._now;
 
             const table = this._createTable({
                 borderless: true,
-                timeActions: !this._settings.sideBySide && this._hasDate,
                 body: tbody => {
                     const upTr = dom.create('tr');
                     dom.append(tbody, upTr);
@@ -1057,22 +1212,21 @@
                     const downTr = dom.create('tr');
                     dom.append(tbody, downTr);
 
-                    const nextHour = initialDate.clone().add(1, 'hour');
-                    const nextHourData = this._isTimeValid(nextHour) ?
-                        {
-                            action: 'nextTime',
-                            unit: 'hour'
-                        } :
-                        false;
-
                     const hourUpTd = dom.create('td', {
                         html: `<span class="${this._settings.icons.up}"></span>`,
-                        class: 'action text-primary bw-bold py-4 px-0',
-                        dataset: nextHourData
+                        class: 'text-primary bw-bold py-4 px-0'
                     });
 
-                    if (!nextHourData) {
+                    const nextHour = initialDate.clone().add(1, 'hour');
+                    if (!this._isValid(nextHour, 'second')) {
                         dom.addClass(hourUpTd, 'disabled');
+                    } else {
+                        dom.addClass(hourUpTd, 'action');
+                        dom.setDataset(hourUpTd, {
+                            action: 'nextTime',
+                            unit: 'hour'
+                        });
+                        dom.setAttribute(hourUpTd, 'title', this._settings.tooltips.incrementHour);
                     }
 
                     dom.append(upTr, hourUpTd);
@@ -1086,26 +1240,28 @@
                         dataset: {
                             action: 'changeTimeView',
                             timeView: 'day'
+                        },
+                        attributes: {
+                            title: this._settings.tooltips.selectHour
                         }
                     });
                     dom.append(timeTr, hourTd);
 
-                    const prevHour = initialDate.clone().sub(1, 'hour');
-                    const prevHourData = this._isTimeValid(prevHour) ?
-                        {
-                            action: 'prevTime',
-                            unit: 'hour'
-                        } :
-                        false;
-
                     const hourDownTd = dom.create('td', {
                         html: `<span class="${this._settings.icons.down}"></span>`,
-                        class: 'action text-primary bw-bold py-4 px-0',
-                        dataset: prevHourData
+                        class: 'text-primary bw-bold py-4 px-0'
                     });
 
-                    if (!prevHourData) {
+                    const prevHour = initialDate.clone().sub(1, 'hour');
+                    if (!this._isValid(prevHour, 'second')) {
                         dom.addClass(hourDownTd, 'disabled');
+                    } else {
+                        dom.addClass(hourDownTd, 'action');
+                        dom.setDataset(hourDownTd, {
+                            action: 'prevTime',
+                            unit: 'hour'
+                        });
+                        dom.setAttribute(hourDownTd, 'title', this._settings.tooltips.decrementHour);
                     }
 
                     dom.append(downTr, hourDownTd);
@@ -1126,25 +1282,24 @@
                     const separatorDownTd = dom.create('td');
                     dom.append(downTr, separatorDownTd);
 
-                    const nextMinute = initialDate.clone().add(1, 'minute');
-                    const nextMinuteData = this._isTimeValid(nextMinute) ?
-                        {
-                            action: 'nextTime',
-                            unit: 'minute'
-                        } :
-                        false
-
                     const minuteUpTd = dom.create('td', {
                         html: `<span class="${this._settings.icons.up}"></span>`,
-                        class: 'action text-primary bw-bold py-4 px-0',
+                        class: 'text-primary bw-bold py-4 px-0',
                         style: {
                             width: '35%'
-                        },
-                        dataset: nextMinuteData
+                        }
                     });
 
-                    if (!nextMinuteData) {
+                    const nextMinute = initialDate.clone().add(1, 'minute');
+                    if (!this._isValid(nextMinute, 'second')) {
                         dom.addClass(minuteUpTd, 'disabled');
+                    } else {
+                        dom.addClass(minuteUpTd, 'action');
+                        dom.setDataset(minuteUpTd, {
+                            action: 'nextTime',
+                            unit: 'minute'
+                        });
+                        dom.setAttribute(minuteUpTd, 'title', this._settings.tooltips.incrementMinute);
                     }
 
                     dom.append(upTr, minuteUpTd);
@@ -1155,26 +1310,28 @@
                         dataset: {
                             action: 'changeTimeView',
                             timeView: 'hour'
+                        },
+                        attributes: {
+                            title: this._settings.tooltips.selectMinute
                         }
                     });
                     dom.append(timeTr, minuteTd);
 
-                    const prevMinute = initialDate.clone().sub(1, 'minute');
-                    const prevMinuteData = this._isTimeValid(prevMinute) ?
-                        {
-                            action: 'prevTime',
-                            unit: 'minute'
-                        } :
-                        false
-
                     const minuteDownTd = dom.create('td', {
                         html: `<span class="${this._settings.icons.down}"></span>`,
-                        class: 'action text-primary bw-bold py-4 px-0',
-                        dataset: prevMinuteData
+                        class: 'action text-primary bw-bold py-4 px-0'
                     });
 
-                    if (!prevMinuteData) {
+                    const prevMinute = initialDate.clone().sub(1, 'minute');
+                    if (!this._isValid(prevMinute, 'second')) {
                         dom.addClass(minuteDownTd, 'disabled');
+                    } else {
+                        dom.addClass(minuteDownTd, 'action');
+                        dom.setDataset(minuteDownTd, {
+                            action: 'prevTime',
+                            unit: 'minute'
+                        });
+                        dom.setAttribute(minuteDownTd, 'title', this._settings.tooltips.decrementMinute);
                     }
 
                     dom.append(downTr, minuteDownTd);
@@ -1190,24 +1347,22 @@
                         const periodTd = dom.create('td');
                         dom.append(timeTr, periodTd);
 
+                        const periodButton = dom.create('span', {
+                            text: initialDate.format('aa').toUpperCase(),
+                            class: 'btn btn-primary d-block'
+                        });
+
                         const currentHours = initialDate.getHours();
                         const otherPeriod = initialDate.clone().setHours(
                             currentHours + (currentHours < 12 ? 12 : -12)
                         );
-                        const otherPeriodData = this._isTimeValid(otherPeriod) ?
-                            {
-                                action: 'dayPeriod'
-                            } :
-                            false;
-
-                        const periodButton = dom.create('span', {
-                            text: initialDate.format('aa').toUpperCase(),
-                            class: 'btn btn-primary d-block',
-                            dataset: otherPeriodData
-                        });
-
-                        if (!otherPeriodData) {
+                        if (!this._isValid(otherPeriod, 'second')) {
                             dom.addClass(periodButton, 'disabled');
+                        } else {
+                            dom.setDataset(periodButton, {
+                                action: 'togglePeriod'
+                            });
+                            dom.setAttribute(periodButton, 'title', this._settings.tooltips.togglePeriod);
                         }
 
                         dom.append(periodTd, periodButton);
@@ -1239,20 +1394,32 @@
                         action: 'changeView',
                         view: 'decade'
                     },
-                    prev: this._isDateBetween(startOfYear) ?
+                    attr: {
+                        title: this._settings.tooltips.selectYear
+                    },
+                    prev: this._isDateBetweenMinMax(startOfYear) ?
                         {
-                            action: 'prev',
-                            unit: 'year'
+                            data: {
+                                action: 'prev',
+                                unit: 'year'
+                            },
+                            attr: {
+                                title: this._settings.tooltips.prevYear
+                            }
                         } :
                         false,
-                    next: this._isDateBetween(endOfYear) ?
+                    next: this._isDateBetweenMinMax(endOfYear) ?
                         {
-                            action: 'next',
-                            unit: 'year'
+                            data: {
+                                action: 'next',
+                                unit: 'year'
+                            },
+                            attr: {
+                                title: this._settings.tooltips.nextYear
+                            }
                         } :
                         false
                 },
-                dateActions: !this._settings.sideBySide && this._hasTime,
                 body: tbody => {
                     const tr = dom.create('tr');
                     dom.append(tbody, tr);
@@ -1273,28 +1440,38 @@
                     while (currentDate.isSameOrBefore(lastDate, 'month')) {
                         const col = dom.create('div', {
                             text: currentDate.format('MMM'),
-                            class: 'action col-4 p-1',
-                            dataset: this._settings.minView === 'year' ?
-                                {
-                                    action: 'setDate',
-                                    year: currentDate.getYear(),
-                                    month: currentDate.getMonth()
-                                } :
-                                {
+                            class: 'col-4 px-1 py-3'
+                        });
+                        dom.append(row, col);
+
+                        if (this._isCurrent(currentDate, 'month')) {
+                            dom.addClass(col, 'active');
+                        }
+
+                        if (!this._isDateBetweenMinMax(currentDate, 'month')) {
+                            dom.addClass(col, 'disabled');
+                        } else {
+                            dom.addClass(col, 'action');
+
+                            if (this._settings.minView === 'year') {
+                                dom.setDataset(col, {
                                     action: 'changeView',
                                     view: 'month',
                                     year: currentDate.getYear(),
                                     month: currentDate.getMonth()
-                                }
-                        });
-                        dom.append(row, col);
-
-                        if (this._currentDate && this._currentDate.isSame(currentDate, 'month')) {
-                            dom.addClass(col, 'active');
+                                });
+                            } else {
+                                dom.setDataset(col, {
+                                    action: 'changeView',
+                                    view: 'month',
+                                    year: currentDate.getYear(),
+                                    month: currentDate.getMonth()
+                                });
+                            }
                         }
 
-                        if (!this._isDateBetween(currentDate, 'month')) {
-                            dom.addClass(col, 'disabled');
+                        if (this._settings.renderMonth) {
+                            this._settings.renderMonth(currentDate.clone(), col);
                         }
 
                         currentDate.add(1, 'month');
@@ -1310,9 +1487,6 @@
 
     Object.assign(DateTimePicker, {
 
-        _dayPeriods: {},
-        _defaultFormats: {},
-
         checkDayPeriod(locale) {
             if (!(locale in this._dayPeriods)) {
                 const formatter = new Intl.DateTimeFormat(locale, {
@@ -1326,6 +1500,39 @@
             return this._dayPeriods[locale];
         },
 
+        getDefaultDateFormat(locale) {
+            if (!(locale in this._defaultDateFormats)) {
+                const formatter = new Intl.DateTimeFormat(locale, {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit'
+                });
+
+                this._defaultDateFormats[locale] = formatter.formatToParts(new Date)
+                    .map(
+                        part => {
+                            switch (part.type) {
+                                case 'year':
+                                    return 'yyyy';
+                                case 'month':
+                                    return 'MM';
+                                case 'day':
+                                    return 'dd';
+                            }
+
+                            if (!/[a-z]/i.test(part.value)) {
+                                return part.value;
+                            }
+
+                            return `'${part.value}'`;
+                        }
+                    ).join('');
+            }
+
+
+            return this._defaultDateFormats[locale];
+        },
+
         getDefaultFormat(locale, hasDayPeriod) {
             if (!(locale in this._defaultFormats)) {
                 const formatter = new Intl.DateTimeFormat(locale, {
@@ -1333,13 +1540,12 @@
                     month: '2-digit',
                     day: '2-digit',
                     hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit'
+                    minute: '2-digit'
                 });
 
                 this._defaultFormats[locale] = formatter.formatToParts(new Date)
                     .map(
-                        (part, i, parts) => {
+                        part => {
                             switch (part.type) {
                                 case 'year':
                                     return 'yyyy';
@@ -1351,14 +1557,8 @@
                                     return hasDayPeriod ? 'hh' : 'HH';
                                 case 'minute':
                                     return 'mm';
-                                case 'second':
-                                    return '';
                                 case 'dayPeriod':
                                     return 'a';
-                            }
-
-                            if (i < parts.length - 1 && parts[i + 1].type === 'second') {
-                                return '';
                             }
 
                             if (part.value === ', ') {
@@ -1383,6 +1583,10 @@
     Object.assign(DateTimePicker.prototype, {
 
         getDate() {
+            if (this._settings.multiDate) {
+                return this._dates;
+            }
+
             if (!this._currentDate) {
                 return null;
             }
@@ -1411,7 +1615,29 @@
         },
 
         setDate(date) {
-            this._currentDate = this._parseDate(date);
+            if (this._settings.multiDate) {
+                this._dates = this._parseDates(date);
+
+                if (!this._settings.keepInvalid) {
+                    this._dates = this._dates.filter(newDate => this._isValid(newDate, 'second'));
+                }
+
+                if (this._dates.length) {
+                    this._viewDate = this._dates[0].clone();
+                }
+            } else {
+                const newDate = this._parseDate(date);
+
+                if (newDate && !this._settings.keepInvalid && !this._isValid(newDate, 'second')) {
+                    throw new Error('Invalid date supplied');
+                }
+
+                this._currentDate = newDate;
+
+                if (newDate) {
+                    this._viewDate = newDate.clone();
+                }
+            }
 
             this.update();
             this.refresh();
@@ -1493,14 +1719,17 @@
         },
 
         update() {
-            if (!this._currentDate) {
-                return this;
+            let value = '';
+            if (this._settings.multiDate) {
+                value = this._dates
+                    .sort((a, b) => a.isBefore(b) ? -1 : 1)
+                    .map(currentDate => currentDate.format(this._settings.format))
+                    .join(this._settings.multiSeparator);
+            } else if (this._currentDate) {
+                value = this._currentDate.format(this._settings.format);
             }
 
-            dom.setValue(
-                this._node,
-                this._currentDate.format(this._settings.format)
-            );
+            dom.setValue(this._node, value);
 
             return this;
         }
@@ -1523,25 +1752,100 @@
         enabledHours: null,
         disabledHours: null,
         disabledTimeIntervals: null,
-        // multiDate: false,
-        // multiDateSeparator: ',',
+        multiDate: false,
+        multiDateSeparator: ',',
         icons: {
             up: 'icon-arrow-up',
             right: 'icon-arrow-right',
             down: 'icon-arrow-down',
             left: 'icon-arrow-left'
         },
-        buttons: {},
-        keyBinds: {},
+        tooltips: {
+            decrementHour: 'Decrement Hour',
+            decrementMinute: 'Decrement Minute',
+            incrementHour: 'Increment Hour',
+            incrementMinute: 'Increment Minute',
+            nextDecade: 'Next Decade',
+            nextMonth: 'Next Month',
+            nextYear: 'Next Year',
+            prevDecade: 'Previous Decade',
+            prevMonth: 'Previous Month',
+            prevYear: 'Previous Year',
+            selectDate: 'Select Date',
+            selectHour: 'Select Hour',
+            selectMinute: 'Select Minute',
+            selectMonth: 'Select Month',
+            selectTime: 'Select Time',
+            selectYear: 'Select Year',
+            togglePeriod: 'Toggle Period'
+        },
+        keyDown: function(e) {
+            let date = this._currentDate ?
+                this._currentDate :
+                this._now.clone();
+
+            switch (e.key) {
+                case 'ArrowUp':
+                    if (e.ctrlKey) {
+                        date.sub(1, 'year');
+                    } else {
+                        date.sub(7, 'days');
+                    }
+                    break;
+                case 'ArrowDown':
+                    if (e.ctrlKey) {
+                        date.add(1, 'year');
+                    } else {
+                        date.add(7, 'days');
+                    }
+                    break;
+                case 'ArrowRight':
+                    if (e.ctrlKey) {
+                        date.add(1, 'month');
+                    } else {
+                        date.add(1, 'day');
+                    }
+                    break;
+                case 'ArrowLeft':
+                    if (e.ctrlKey) {
+                        date.sub(1, 'month');
+                    } else {
+                        date.sub(1, 'day');
+                    }
+                    break;
+                case 'PageUp':
+                    date.add(1, 'hour');
+                    break;
+                case 'PageDown':
+                    date.sub(1, 'hour');
+                    break;
+                case 'Home':
+                    date = this._now.clone()
+                    break;
+                case 'Delete':
+                    date = null;
+                    break;
+                default:
+                    return;
+            }
+
+            e.preventDefault();
+            this.setDate(date);
+        },
+        renderDay: null,
+        renderHour: null,
+        renderMinute: null,
+        renderMonth: null,
+        renderYear: null,
         useCurrent: false,
         keepOpen: false,
         focusOnShow: false,
         minView: null,
-
         inline: false,
         sideBySide: false,
+        keepInvalid: false,
+        stepping: 1,
 
-        display: 'dynamic',
         duration: 100,
         placement: 'bottom',
         position: 'start',
@@ -1553,6 +1857,9 @@
     DateTimePicker._formatTokenRegExp = /([a-z])\1*|'[^']*'/ig;
     DateTimePicker._dateTokenRegExp = /[GyYqQMLwWdDFEec]/;
     DateTimePicker._timeTokenRegExp = /[ahHKkmsS]/;
+    DateTimePicker._dayPeriods = {};
+    DateTimePicker._defaultDateFormats = {};
+    DateTimePicker._defaultFormats = {};
 
     // DateTimePicker QuerySet method
     if (QuerySet) {

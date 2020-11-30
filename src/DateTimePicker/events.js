@@ -5,7 +5,14 @@ Object.assign(DateTimePicker.prototype, {
             this.show();
         });
 
-        dom.addEvent(this._container, 'click', e => {
+        if (this._settings.keyDown && !this._settings.inline && !this._settings.multiDate) {
+            dom.addEvent(this._node, 'keydown', e => {
+                this._settings.keyDown.bind(this)(e);
+            });
+        }
+
+        dom.addEvent(this._container, 'click mousedown', e => {
+            e.preventDefault();
             e.stopPropagation();
         });
 
@@ -17,7 +24,7 @@ Object.assign(DateTimePicker.prototype, {
             switch (action) {
                 case 'setDate':
                     if (!hasCurrent) {
-                        this._currentDate = this._today.clone();
+                        this._currentDate = this._now.clone();
                     }
 
                     this._currentDate.setYear(
@@ -40,19 +47,44 @@ Object.assign(DateTimePicker.prototype, {
                     }
 
                     break;
+                case 'setDateMulti':
+                    let date = this._now.clone().setYear(
+                        dom.getDataset(element, 'year'),
+                        dom.getDataset(element, 'month'),
+                        dom.getDataset(element, 'date')
+                    );
+
+                    this._viewDate = date.clone();
+
+                    if (this._isCurrent(date)) {
+                        this._dates = this._dates.filter(currentDate => !currentDate.isSame(date, 'day'));
+                    } else {
+                        this._dates.push(date);
+                    }
+
+                    this._refreshDate();
+
+                    this.update();
+
+                    console.log(this);
+
+                    break;
                 case 'nextTime':
                 case 'prevTime':
                     if (!this._currentDate) {
-                        this._currentDate = this._today.clone();
+                        this._currentDate = this._now.clone();
                     }
 
                     const timeMethod = action === 'prevTime' ?
                         'sub' :
                         'add';
+                    const unit = dom.getDataset(element, 'unit');
                     const oldDay = this._currentDate.getDay();
                     this._currentDate[timeMethod](
-                        1,
-                        dom.getDataset(element, 'unit')
+                        unit === 'hours' ?
+                            this._settings.stepping :
+                            1,
+                        unit
                     );
 
                     if (!hasCurrent || oldDay !== this._currentDate.getDay()) {
@@ -63,9 +95,9 @@ Object.assign(DateTimePicker.prototype, {
                     this.update();
 
                     break;
-                case 'dayPeriod':
+                case 'togglePeriod':
                     if (!this._currentDate) {
-                        this._currentDate = this._today.clone();
+                        this._currentDate = this._now.clone();
                     }
 
                     const currentHours = this._currentDate.getHours();
@@ -83,7 +115,7 @@ Object.assign(DateTimePicker.prototype, {
                     break;
                 case 'setHours':
                     if (!this._currentDate) {
-                        this._currentDate = this._today.clone();
+                        this._currentDate = this._now.clone();
                     }
 
                     this._currentDate.setHours(
@@ -102,7 +134,7 @@ Object.assign(DateTimePicker.prototype, {
                     break;
                 case 'setMinutes':
                     if (!this._currentDate) {
-                        this._currentDate = this._today.clone();
+                        this._currentDate = this._now.clone();
                     }
 
                     this._currentDate.setMinutes(

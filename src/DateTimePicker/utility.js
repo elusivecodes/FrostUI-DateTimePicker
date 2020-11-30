@@ -1,6 +1,10 @@
 Object.assign(DateTimePicker.prototype, {
 
     getDate() {
+        if (this._settings.multiDate) {
+            return this._dates;
+        }
+
         if (!this._currentDate) {
             return null;
         }
@@ -29,7 +33,29 @@ Object.assign(DateTimePicker.prototype, {
     },
 
     setDate(date) {
-        this._currentDate = this._parseDate(date);
+        if (this._settings.multiDate) {
+            this._dates = this._parseDates(date);
+
+            if (!this._settings.keepInvalid) {
+                this._dates = this._dates.filter(newDate => this._isValid(newDate, 'second'));
+            }
+
+            if (this._dates.length) {
+                this._viewDate = this._dates[0].clone();
+            }
+        } else {
+            const newDate = this._parseDate(date);
+
+            if (newDate && !this._settings.keepInvalid && !this._isValid(newDate, 'second')) {
+                throw new Error('Invalid date supplied');
+            }
+
+            this._currentDate = newDate;
+
+            if (newDate) {
+                this._viewDate = newDate.clone();
+            }
+        }
 
         this.update();
         this.refresh();
@@ -111,14 +137,17 @@ Object.assign(DateTimePicker.prototype, {
     },
 
     update() {
-        if (!this._currentDate) {
-            return this;
+        let value = '';
+        if (this._settings.multiDate) {
+            value = this._dates
+                .sort((a, b) => a.isBefore(b) ? -1 : 1)
+                .map(currentDate => currentDate.format(this._settings.format))
+                .join(this._settings.multiSeparator);
+        } else if (this._currentDate) {
+            value = this._currentDate.format(this._settings.format);
         }
 
-        dom.setValue(
-            this._node,
-            this._currentDate.format(this._settings.format)
-        );
+        dom.setValue(this._node, value);
 
         return this;
     }

@@ -24,7 +24,19 @@ Object.assign(DateTimePicker.prototype, {
         }
     },
 
-    _isDateBetween(date, scope = 'second') {
+    _dateString(date) {
+        return date.clone().setLocale('en').format('yyyy-MM-dd');
+    },
+
+    _isCurrent(date, scope = 'day') {
+        if (this._settings.multiDate) {
+            return this._dates.find(currentDate => currentDate.isSame(date, scope));
+        }
+
+        return this._currentDate && this._currentDate.isSame(date, scope);
+    },
+
+    _isDateBetweenMinMax(date, scope = 'second') {
         if (this._minDate && date.isBefore(this._minDate, scope)) {
             return false;
         }
@@ -36,48 +48,15 @@ Object.assign(DateTimePicker.prototype, {
         return true;
     },
 
-    _isDateValid(date) {
-        if (!this._isDateBetween(date, 'day')) {
+    _isDateOutsideDisabledInterval(date) {
+        if (this._disabledTimeIntervals && this._disabledTimeIntervals.find(([start, end]) => date.isAfter(start) && date.isBefore(end))) {
             return false;
-        }
-
-        if (this._disabledDays && this._disabledDays.includes(date.getDay())) {
-            return false;
-        }
-
-        if (this._disabledDates && this._disabledDates.find(disabledDate => disabledDate.isSame(date, 'day'))) {
-            return false;
-        }
-
-        if (this._enabledDates && !this._enabledDates.find(enabledDate => enabledDate.isSame(date, 'day'))) {
-            return false;
-        }
-
-        if (this._disabledTimeIntervals) {
-            const startOfDay = date.clone().startOf('day');
-            const endOfDay = date.clone().endOf('day');
-
-            if (this._disabledTimeIntervals.find(([start, end]) => endOfDay.isSameOrAfter(start) && startOfDay.isSameOrBefore(end))) {
-                return false;
-            }
         }
 
         return true;
     },
 
-    _isTimeValid(date) {
-        if (!this._isDateBetween(date, 'second')) {
-            return false;
-        }
-
-        if (this._disabledHours && this._disabledHours.includes(date.getHour())) {
-            return false;
-        }
-
-        if (this._disabledDays && this._disabledDays.includes(date.getDay())) {
-            return false;
-        }
-
+    _isDateValid(date) {
         if (this._disabledDates && this._disabledDates.find(disabledDate => disabledDate.isSame(date, 'day'))) {
             return false;
         }
@@ -86,7 +65,47 @@ Object.assign(DateTimePicker.prototype, {
             return false;
         }
 
-        if (this._disabledTimeIntervals && this._disabledTimeIntervals.find(([start, end]) => date.isSameOrAfter(start) && date.isSameOrBefore(end))) {
+        return true;
+    },
+
+    _isDayValid(date) {
+        if (this._disabledDays && this._disabledDays.includes(date.getDay())) {
+            return false;
+        }
+
+        return true;
+    },
+
+    _isHourValid(date) {
+        if (this._disabledHours && this._disabledHours.includes(date.getHour())) {
+            return false;
+        }
+
+        return true;
+    },
+
+    _isValid(date, scope = 'day') {
+        if (!this._isDateBetweenMinMax(date, scope)) {
+            return false;
+        }
+
+        if (!this._isDayValid(date)) {
+            return false;
+        }
+
+        if (!this._isDateValid(date)) {
+            return false;
+        }
+
+        if (scope === 'day') {
+            return true;
+        }
+
+        if (!this._isHourValid(date)) {
+            return false;
+        }
+
+        if (!this._isDateOutsideDisabledInterval(date)) {
             return false;
         }
 

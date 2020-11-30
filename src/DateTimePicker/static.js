@@ -1,8 +1,5 @@
 Object.assign(DateTimePicker, {
 
-    _dayPeriods: {},
-    _defaultFormats: {},
-
     checkDayPeriod(locale) {
         if (!(locale in this._dayPeriods)) {
             const formatter = new Intl.DateTimeFormat(locale, {
@@ -16,6 +13,39 @@ Object.assign(DateTimePicker, {
         return this._dayPeriods[locale];
     },
 
+    getDefaultDateFormat(locale) {
+        if (!(locale in this._defaultDateFormats)) {
+            const formatter = new Intl.DateTimeFormat(locale, {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            });
+
+            this._defaultDateFormats[locale] = formatter.formatToParts(new Date)
+                .map(
+                    part => {
+                        switch (part.type) {
+                            case 'year':
+                                return 'yyyy';
+                            case 'month':
+                                return 'MM';
+                            case 'day':
+                                return 'dd';
+                        }
+
+                        if (!/[a-z]/i.test(part.value)) {
+                            return part.value;
+                        }
+
+                        return `'${part.value}'`;
+                    }
+                ).join('');
+        }
+
+
+        return this._defaultDateFormats[locale];
+    },
+
     getDefaultFormat(locale, hasDayPeriod) {
         if (!(locale in this._defaultFormats)) {
             const formatter = new Intl.DateTimeFormat(locale, {
@@ -23,13 +53,12 @@ Object.assign(DateTimePicker, {
                 month: '2-digit',
                 day: '2-digit',
                 hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
+                minute: '2-digit'
             });
 
             this._defaultFormats[locale] = formatter.formatToParts(new Date)
                 .map(
-                    (part, i, parts) => {
+                    part => {
                         switch (part.type) {
                             case 'year':
                                 return 'yyyy';
@@ -41,14 +70,8 @@ Object.assign(DateTimePicker, {
                                 return hasDayPeriod ? 'hh' : 'HH';
                             case 'minute':
                                 return 'mm';
-                            case 'second':
-                                return '';
                             case 'dayPeriod':
                                 return 'a';
-                        }
-
-                        if (i < parts.length - 1 && parts[i + 1].type === 'second') {
-                            return '';
                         }
 
                         if (part.value === ', ') {
