@@ -2,6 +2,8 @@ const path = require('path');
 const fs = require('fs');
 const filepath = require('filepath');
 const terser = require('terser');
+const less = require('less');
+const cssmin = require('cssmin');
 
 const srcFolder = 'src';
 const distFolder = 'dist';
@@ -66,3 +68,24 @@ if (minified.error) {
         minified.code
     );
 }
+
+// css
+less.render(
+    fs.readFileSync(
+        path.join(srcFolder, 'less/wrapper.less')
+    ).toString(),
+    {
+        optimization: 1,
+        paths: [path.join(srcFolder, 'less/')]
+    }
+).then(result => {
+    fs.writeFileSync(
+        path.join(distFolder, name + '.css'),
+        result.css
+    );
+
+    fs.writeFileSync(
+        path.join(distFolder, name + '.min.css'),
+        cssmin(result.css)
+    );
+}).catch(console.error);

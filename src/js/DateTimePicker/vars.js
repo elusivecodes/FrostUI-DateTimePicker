@@ -24,8 +24,10 @@ DateTimePicker.defaults = {
     tooltips: {
         decrementHour: 'Decrement Hour',
         decrementMinute: 'Decrement Minute',
+        decrementSecond: 'Decrement Second',
         incrementHour: 'Increment Hour',
         incrementMinute: 'Increment Minute',
+        incrementSecond: 'Increment Second',
         nextDecade: 'Next Decade',
         nextMonth: 'Next Month',
         nextYear: 'Next Year',
@@ -36,14 +38,15 @@ DateTimePicker.defaults = {
         selectHour: 'Select Hour',
         selectMinute: 'Select Minute',
         selectMonth: 'Select Month',
+        selectSecond: 'Select Second',
         selectTime: 'Select Time',
         selectYear: 'Select Year',
         togglePeriod: 'Toggle Period'
     },
-    keyDown: function(e) {
-        let date = this._currentDate ?
-            this._currentDate :
-            this._now.clone();
+    keyDown: (e, dtp) => {
+        let date = dtp._date ?
+            dtp._date :
+            dtp._now();
 
         switch (e.key) {
             case 'ArrowUp':
@@ -81,7 +84,7 @@ DateTimePicker.defaults = {
                 date.sub(1, 'hour');
                 break;
             case 'Home':
-                date = this._now.clone()
+                date = dtp._now()
                 break;
             case 'Delete':
                 date = null;
@@ -91,12 +94,13 @@ DateTimePicker.defaults = {
         }
 
         e.preventDefault();
-        this.setDate(date);
+        dtp._setDate(date);
     },
     renderDay: null,
     renderHour: null,
     renderMinute: null,
     renderMonth: null,
+    renderSecond: null,
     renderYear: null,
     useCurrent: false,
     keepOpen: false,
@@ -117,7 +121,9 @@ DateTimePicker.defaults = {
 
 DateTimePicker._formatTokenRegExp = /([a-z])\1*|'[^']*'/ig;
 DateTimePicker._dateTokenRegExp = /[GyYqQMLwWdDFEec]/;
-DateTimePicker._timeTokenRegExp = /[ahHKkmsS]/;
+DateTimePicker._hourTokenRegExp = /[hHKk]/;
+DateTimePicker._minuteTokenRegExp = /[m]/;
+DateTimePicker._secondTokenRegExp = /[s]/;
 DateTimePicker._dayPeriods = {};
 DateTimePicker._defaultDateFormats = {};
 DateTimePicker._defaultFormats = {};

@@ -1,0 +1,81 @@
+.datetimepicker {
+    z-index: 1000;
+    display: block;
+    width: 300px;
+    padding: 0;
+    margin: .125rem 0 0;
+    font-size: 1rem;
+    color: darkslategray;
+    text-align: left;
+    list-style: none;
+    background-color: white;
+    border: 1px solid rgba(0, 0, 0, .15);
+    border-radius: .2rem;
+    user-select: none;
+
+    .table>tbody>tr:last-child>td {
+        border-bottom: 0;
+    }
+
+    .action {
+        cursor: pointer;
+        border-radius: .25em;
+
+        &:not(.disabled):hover {
+            background: #eee;
+        }
+
+        &.active {
+            background: royalblue;
+            color: white;
+
+            &:hover {
+                background: #3454b4;
+            }  
+        }
+
+        &.today {
+            position: relative;
+
+            &:before {
+                display: inline-block;
+                position: absolute;
+                bottom: 4px;
+                right: 4px;
+                border: solid transparent;
+                border-width: 0 0 7px 7px;
+                border-bottom-color: royalblue;
+                border-top-color: rgba(0, 0, 0, 0.2);
+                content: '';
+
+                &.active {
+                    border-bottom-color: white;
+                }
+            }
+        }
+    }
+
+    .disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .time {
+        font-size: 1.25rem;
+    }
+}
+
+.datetimepicker-inline {
+    display: block;
+    border: 0;
+}
+
+@media (min-width: 768px) {
+    .datetimepicker-full {
+        width: 600px;
+    }
+}
+
+.icon-clock::before {
+    content: '\1f552';
+}

@@ -1,46 +1,63 @@
+/**
+ * DateTimePicker Events
+ */
+
 Object.assign(DateTimePicker.prototype, {
 
+    /**
+     * Attach events for the DateTimePicker.
+     */
     _events() {
-        dom.addEvent(this._node, 'focus', _ => {
+        dom.addEvent(this._node, 'input.frost.datetimepicker', _ => {
+            const value = dom.getValue(this._node);
+            try {
+                if (this._settings.multiDate) {
+                    const dates = value.split(this._settings.multiSeparator).map(date =>
+                        DateTime.fromFormat(this._settings.format, date, this._dateOptions)
+                    );
+                    if (!dates.find(date => !date.isValid)) {
+                        this._setDates(dates);
+                    }
+                } else {
+                    const date = DateTime.fromFormat(this._settings.format, value, this._dateOptions);
+                    if (date.isValid) {
+                        this._setDate(date);
+                    }
+                }
+            } catch (e) { }
+        });
+
+        dom.addEvent(this._node, 'focus.frost.datetimepicker', _ => {
             this.show();
         });
 
         if (this._settings.keyDown && !this._settings.inline && !this._settings.multiDate) {
-            dom.addEvent(this._node, 'keydown', e => {
-                this._settings.keyDown.bind(this)(e);
+            dom.addEvent(this._node, 'keydown.frost.datetimepicker', e => {
+                this._settings.keyDown(e, this);
             });
         }
 
-        dom.addEvent(this._container, 'click mousedown', e => {
+        dom.addEvent(this._container, 'click.frost.datetimepicker mousedown.frost.datetimepicker', e => {
             e.preventDefault();
             e.stopPropagation();
         });
 
-        dom.addEventDelegate(this._container, 'click', '[data-action]', e => {
+        dom.addEventDelegate(this._container, 'click.frost.datetimepicker', '[data-action]', e => {
             const element = e.currentTarget;
             const action = dom.getDataset(element, 'action');
-            const hasCurrent = !!this._currentDate;
+            const tempDate = this._date ?
+                this._date.clone() :
+                this._now();
 
             switch (action) {
                 case 'setDate':
-                    if (!hasCurrent) {
-                        this._currentDate = this._now.clone();
-                    }
-
-                    this._currentDate.setYear(
+                    tempDate.setYear(
                         dom.getDataset(element, 'year'),
                         dom.getDataset(element, 'month'),
                         dom.getDataset(element, 'date')
                     );
 
-                    this._viewDate = this._currentDate.clone();
-
-                    this._refreshDate();
-                    if (!hasCurrent) {
-                        this._refreshTime();
-                    }
-
-                    this.update();
+                    this._setDate(tempDate);
 
                     if (!this._hasTime && !this._settings.keepOpen) {
                         this.hide();
@@ -48,107 +65,76 @@ Object.assign(DateTimePicker.prototype, {
 
                     break;
                 case 'setDateMulti':
-                    let date = this._now.clone().setYear(
+                    tempDate.setYear(
                         dom.getDataset(element, 'year'),
                         dom.getDataset(element, 'month'),
                         dom.getDataset(element, 'date')
                     );
 
-                    this._viewDate = date.clone();
-
-                    if (this._isCurrent(date)) {
-                        this._dates = this._dates.filter(currentDate => !currentDate.isSame(date, 'day'));
+                    if (this._isCurrent(tempDate)) {
+                        this._dates = this._dates.filter(date => !date.isSame(tempDate, 'day'));
                     } else {
-                        this._dates.push(date);
+                        this._dates.push(tempDate);
                     }
 
-                    this._refreshDate();
+                    this._setDates(this._dates);
 
-                    this.update();
-
-                    console.log(this);
+                    this._viewDate = tempDate.clone();
 
                     break;
                 case 'nextTime':
                 case 'prevTime':
-                    if (!this._currentDate) {
-                        this._currentDate = this._now.clone();
-                    }
-
                     const timeMethod = action === 'prevTime' ?
                         'sub' :
                         'add';
                     const unit = dom.getDataset(element, 'unit');
-                    const oldDay = this._currentDate.getDay();
-                    this._currentDate[timeMethod](
+                    tempDate[timeMethod](
                         unit === 'hours' ?
                             this._settings.stepping :
                             1,
                         unit
                     );
 
-                    if (!hasCurrent || oldDay !== this._currentDate.getDay()) {
-                        this._refreshDate();
-                    }
-                    this._refreshTime();
-
-                    this.update();
+                    this._setDate(tempDate);
 
                     break;
                 case 'togglePeriod':
-                    if (!this._currentDate) {
-                        this._currentDate = this._now.clone();
-                    }
-
-                    const currentHours = this._currentDate.getHours();
-                    this._currentDate.setHours(
+                    const currentHours = tempDate.getHours();
+                    tempDate.setHours(
                         currentHours + (currentHours < 12 ? 12 : -12)
                     );
 
-                    if (!hasCurrent) {
-                        this._refreshDate();
-                    }
-                    this._refreshTime();
-
-                    this.update();
+                    this._setDate(tempDate);
 
                     break;
                 case 'setHours':
-                    if (!this._currentDate) {
-                        this._currentDate = this._now.clone();
-                    }
-
-                    this._currentDate.setHours(
+                    tempDate.setHours(
                         dom.getDataset(element, 'hour')
                     );
 
                     this._timeViewMode = null;
 
-                    if (!hasCurrent) {
-                        this._refreshDate();
-                    }
-                    this._refreshTime();
-
-                    this.update();
+                    this._setDate(tempDate);
 
                     break;
                 case 'setMinutes':
-                    if (!this._currentDate) {
-                        this._currentDate = this._now.clone();
-                    }
-
-                    this._currentDate.setMinutes(
+                    tempDate.setMinutes(
                         dom.getDataset(element, 'minute')
                     );
 
                     this._timeViewMode = null;
 
-                    if (!hasCurrent) {
-                        this._refreshDate();
-                    }
-                    this._refreshTime();
+                    this._setDate(tempDate);
 
-                    this.update();
+                    break;
+                case 'setSeconds':
+                    tempDate.setSeconds(
+                        dom.getDataset(element, 'second')
+                    );
+
+                    this._timeViewMode = null;
+
+                    this._setDate(tempDate);
 
                     break;
                 case 'changeView':
@@ -219,7 +205,7 @@ dom.addEvent(document, 'click.frost.datetimepicker', e => {
 dom.addEvent(document, 'keyup.frost.datetimepicker', e => {
     switch (e.key) {
         case 'Tab':
-            DateTimePicker.autoHide(e.target, true);
+            DateTimePicker.autoHide(e.target);
         case 'Escape':
             DateTimePicker.autoHide();
     }

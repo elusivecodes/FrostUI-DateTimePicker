@@ -1,0 +1,403 @@
+/**
+ * DateTimePicker Helpers
+ */
+
+Object.assign(DateTimePicker.prototype, {
+
+    /**
+     * Check the format for date and time components.
+     */
+    _checkFormat() {
+        const tokens = this._settings.format.matchAll(this.constructor._formatTokenRegExp);
+        for (const token of tokens) {
+            if (!token[1]) {
+                continue;
+            }
+
+            if (!this._hasDate && this.constructor._dateTokenRegExp.test(token[1])) {
+                this._hasDate = true;
+            }
+
+            if (!this._hasHours && this.constructor._hourTokenRegExp.test(token[1])) {
+                this._hasHours = true;
+            }
+
+            if (!this._hasMinutes && this.constructor._minuteTokenRegExp.test(token[1])) {
+                this._hasMinutes = true;
+            }
+
+            if (!this._hasSeconds && this.constructor._secondTokenRegExp.test(token[1])) {
+                this._hasSeconds = true;
+            }
+        }
+
+        this._hasTime = this._hasHours || this._hasMinutes || this._hasSeconds;
+
+        if (this._settings.multiDate && this._hasTime) {
+            throw new Error('Time components cannot be used with multiDate option.');
+        }
+
+        if (this._settings.multiDate && !this._hasDate) {
+            throw new Error('Date components must be used with multiDate option.');
+        }
+    },
+
+    /**
+     * Clamp a date to the nearest stepping interval.
+     * @param {DateTime} date The input date.
+     */
+    _clampStepping(date) {
+        const minutes = date.getMinutes();
+        const stepMinutes = Math.min(
+            Core.toStep(minutes, this._settings.stepping),
+            60
+        );
+
+        if (minutes !== stepMinutes) {
+            date.setMinutes(stepMinutes);
+        }
+
+        if (this._settings.stepping > 1) {
+            date.setSeconds(0);
+        }
+    },
+
+    /**
+     * Determine whether a date is a "current" date.
+     * @param {DateTime} date The date to test.
+     * @param {string} [granularity=day] The level of granularity to use for comparison.
+     * @return {Boolean} TRUE if the date is a "current" date, otherwise FALSE.
+     */
+    _isCurrent(date, granularity = 'day') {
+        if (this._settings.multiDate) {
+            return this._dates.find(date => date.isSame(date, granularity));
+        }
+
+        return this._date && this._date.isSame(date, granularity);
+    },
+
+    /**
+     * Determine whether a date is between min/max dates.
+     * @param {DateTime} date The date to test.
+     * @param {string} [granularity=day] The level of granularity to use for comparison.
+     * @return {Boolean} TRUE if the date is between min/max, otherwise FALSE.
+     */
+    _isDateBetweenMinMax(date, granularity = 'second') {
+        if (this._minDate && date.isBefore(this._minDate, granularity)) {
+            return false;
+        }
+
+        if (this._maxDate && date.isAfter(this._maxDate, granularity)) {
+            return false;
+        }
+
+        return true;
+    },
+
+    /**
+     * Determine whether a date is outside disabled intervals.
+     * @param {DateTime} date The date to test.
+     * @return {Boolean} TRUE if the date is outside disabled intervals, otherwise FALSE.
+     */
+    _isDateOutsideDisabledInterval(date) {
+        if (this._disabledTimeIntervals && this._disabledTimeIntervals.find(([start, end]) => date.isAfter(start) && date.isBefore(end))) {
+            return false;
+        }
+
+        return true;
+    },
+
+    /**
+     * Determine whether a date is enabled (or not disabled).
+     * @param {DateTime} date The date to test.
+     * @return {Boolean} TRUE if the date is enabled (or not disabled), otherwise FALSE.
+     */
+    _isDateValid(date) {
+        if (this._disabledDates && this._disabledDates.find(disabledDate => disabledDate.isSame(date, 'day'))) {
+            return false;
+        }
+
+        if (this._enabledDates && !this._enabledDates.find(enabledDate => enabledDate.isSame(date, 'day'))) {
+            return false;
+        }
+
+        return true;
+    },
+
+    /**
+     * Determine whether a date is not a disabled day.
+     * @param {DateTime} date The date to test.
+     * @return {Boolean} TRUE if the date is not a disabled day, otherwise FALSE.
+     */
+    _isDayValid(date) {
+        if (this._disabledDays && this._disabledDays.includes(date.getDay())) {
+            return false;
+        }
+
+        return true;
+    },
+
+    /**
+     * Determine whether a date is not a disabled hour.
+     * @param {DateTime} date The date to test.
+     * @return {Boolean} TRUE if the date is not a disabled hour, otherwise FALSE.
+     */
+    _isHourValid(date) {
+        if (this._disabledHours && this._disabledHours.includes(date.getHour())) {
+            return false;
+        }
+
+        return true;
+    },
+
+    /**
+     * Determine whether a date is valid.
+     * @param {DateTime} date The date to test.
+     * @param {string} [granularity=day] The level of granularity to use for comparison.
+     * @return {Boolean} TRUE if the date is valid, otherwise FALSE.
+     */
+    _isValid(date, granularity = 'day') {
+        if (!this._isDateBetweenMinMax(date, granularity)) {
+            return false;
+        }
+
+        if (!this._isDayValid(date)) {
+            return false;
+        }
+
+        if (!this._isDateValid(date)) {
+            return false;
+        }
+
+        if (['year', 'month', 'day'].includes(granularity)) {
+            return true;
+        }
+
+        if (!this._isHourValid(date)) {
+            return false;
+        }
+
+        if (!this._isDateOutsideDisabledInterval(date)) {
+            return false;
+        }
+
+        return true;
+    },
+
+    /**
+     * Create a new DateTime object set to the current date/time.
+     * @returns {DateTime} The new DateTime.
+     */
+    _now() {
+        return DateTime.now(this._dateOptions);
+    },
+
+    /**
+     * Parse a DateTime from any value.
+     * @param {string|number|array|Date|DateTime} date The date to parse.
+     * @return {DateTime} The parsed DateTime.
+     */
+    _parseDate(date) {
+        if (!date) {
+            return null;
+        }
+
+        if (date instanceof DateTime) {
+            return DateTime.fromTimestamp(
+                date.getTimestamp(),
+                this._dateOptions
+            );
+        }
+
+        if (Core.isString(date)) {
+            try {
+                return DateTime.fromFormat(
+                    this._settings.format,
+                    date,
+                    this._dateOptions
+                );
+            } catch (e) {
+                return new DateTime(date, this._dateOptions);
+            }
+        }
+
+        if (date instanceof Date) {
+            return DateTime.fromDate(date, this._dateOptions);
+        }
+
+        if (Core.isNumber(date)) {
+            return DateTime.fromTimestamp(date, this._dateOptions);
+        }
+
+        if (Core.isArray(date)) {
+            return DateTime.fromArray(date, this._dateOptions);
+        }
+
+        return null;
+    },
+
+    /**
+     * Parse DateTime objects from an array of values.
+     * @param {array} dates The dates to parse.
+     * @return {array} An array of parsed DateTime objects.
+     */
+    _parseDates(dates) {
+        if (!dates) {
+            return null;
+        }
+
+        return dates
+            .map(date => this._parseDate(date))
+            .filter(date => !!date);
+    },
+
+    /**
+     * Parse settings.
+     */
+    _parseSettings() {
+        switch (this._settings.minView) {
+            case 'years':
+                this._viewMode = 'years';
+                break;
+            case 'months':
+                this._viewMode = 'months';
+                break;
+            default:
+                this._viewMode = 'days';
+                break;
+        }
+
+        const value = dom.getValue(this._node);
+        if (value) {
+            this._date = DateTime.fromFormat(this._settings.format, value, this._dateOptions);
+        }
+
+        if (!this._date && this._settings.defaultDate) {
+            this._date = this._parseDate(this._settings.defaultDate);
+        }
+
+        if (!this._date && this._settings.useCurrent) {
+            this._date = this._now();
+        }
+
+        if (this._settings.multiDate && this._date) {
+            this._dates.push(this._date);
+            this._date = null;
+        }
+
+        if (this._settings.minDate) {
+            this._minDate = this._parseDate(this._settings.minDate);
+        }
+
+        if (this._settings.maxDate) {
+            this._maxDate = this._parseDate(this._settings.maxDate);
+        }
+
+        if (this._settings.enabledDates) {
+            this._enabledDates = this._parseDates(this._settings.enabledDates);
+        } else if (this._settings.disabledDates) {
+            this._disabledDates = this._parseDates(this._settings.disabledDates);
+        }
+
+        if (this._settings.disabledDays) {
+            this._disabledDays = this._settings.disabledDays;
+        }
+
+        if (this._settings.disabledHours) {
+            this._disabledHours = this._settings.disabledHours;
+        }
+
+        if (this._settings.disabledTimeIntervals) {
+            this._disabledTimeIntervals = this._settings.disabledTimeIntervals.map(
+                intervals => this._parseDates(intervals)
+            ).filter(intervals => intervals && intervals.length === 2);
+        }
+
+        if (this._settings.viewDate) {
+            this._viewDate = this._parseDate(this._settings.viewDate);
+        }
+
+        if (!this._settings.viewDate && this._date) {
+            this._viewDate = this._date.clone();
+        }
+
+        if (!this._settings.viewDate) {
+            this._viewDate = this._now();
+        }
+    },
+
+    /**
+     * Set the current date.
+     * @param {DateTime} date The input date.
+     */
+    _setDate(date) {
+        if (date) {
+            this._clampStepping(date);
+
+            this._viewDate = date.clone();
+        }
+
+        if (date && !this._isValid(date, 'second')) {
+            // emit error?
+        }
+
+        dom.triggerEvent(this._node, 'update.frost.datetimepicker', {
+            old: this._date ?
+                this._date.clone() :
+                null,
+            new: date ?
+                date.clone() :
+                null
+        });
+
+        this._date = date;
+
+        this._update();
+        this.refresh();
+    },
+
+    /**
+     * Set the current dates.
+     * @param {array} date The input dates.
+     */
+    _setDates(dates) {
+        for (const date of dates) {
+            this._clampStepping(date);
+        }
+
+        dates = dates.sort((a, b) => a.isBefore(b) ? -1 : 1);
+
+        if (dates.find(date => !this._isValid(date, 'second'))) {
+            // emit error?
+        }
+
+        dom.triggerEvent(this._node, 'update.frost.datetimepicker', {
+            old: this._dates.map(date => date.clone()),
+            new: dates.map(date => date.clone())
+        });
+
+        this._dates = dates;
+
+        this._update();
+        this.refresh();
+    },
+
+    /**
+     * Update the input value to the current date.
+     */
+    _update() {
+        let value = '';
+        if (this._settings.multiDate) {
+            value = this._dates
+                .map(date => date.format(this._settings.format))
+                .join(this._settings.multiSeparator);
+        } else if (this._date) {
+            value = this._date.format(this._settings.format);
+        }
+
+        dom.setValue(this._node, value);
+
+        return this;
+    }
+
+});
