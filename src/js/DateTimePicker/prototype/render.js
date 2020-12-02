@@ -5,100 +5,6 @@
 Object.assign(DateTimePicker.prototype, {
 
     /**
-     * Refresh the views.
-     */
-    refresh() {
-        if (this._hasDate) {
-            this._refreshDate();
-        }
-
-        if (this._hasTime) {
-            this._refreshTime();
-        }
-    },
-
-    /**
-     * Create a table.
-     * @param {object} options Options for rendering the table.
-     * @return {HTMLElement} The new table.
-     */
-    _createTable(options) {
-        const table = dom.create('table', {
-            class: 'table table-sm text-center m-0'
-        });
-
-        if (options.borderless) {
-            dom.addClass(table, 'table-borderless');
-        }
-
-        if (options.header) {
-            const thead = dom.create('thead');
-            dom.append(table, thead);
-
-            const tr = dom.create('tr');
-            dom.append(thead, tr);
-
-            const prevTd = dom.create('td', {
-                html: `<span class="${this._settings.icons.left}"></span>`,
-                class: 'action text-primary fw-bold'
-            });
-
-            if (!options.header.prev) {
-                dom.addClass(prevTd, 'disabled');
-            } else {
-                dom.setDataset(prevTd, options.header.prev.data);
-                dom.setAttribute(prevTd, options.header.prev.attr);
-            }
-
-            dom.append(tr, prevTd);
-
-            const titleTd = dom.create('td', {
-                class: 'fw-bold',
-                text: options.header.title,
-                attributes: {
-                    colspan: 5,
-                    ...options.header.attr
-                },
-                dataset: options.header.data
-            });
-            dom.append(tr, titleTd);
-
-            if (options.header.data) {
-                dom.addClass(titleTd, 'action');
-            }
-
-            if (options.header.wide) {
-                dom.addClass(titleTd, 'w-100');
-            }
-
-            const nextTd = dom.create('td', {
-                html: `<span class="${this._settings.icons.right}"></span>`,
-                class: 'action text-primary fw-bold'
-            });
-
-            if (!options.header.next) {
-                dom.addClass(nextTd, 'disabled');
-            } else {
-                dom.setDataset(nextTd, options.header.next.data);
-                dom.setAttribute(nextTd, options.header.next.attr);
-            }
-
-            dom.append(tr, nextTd);
-
-            if (options.head) {
-                options.head(thead);
-            }
-        }
-
-        const tbody = dom.create('tbody');
-        dom.append(table, tbody);
-
-        options.body(tbody);
-
-        return table;
-    },
-
-    /**
      * Refresh the date container.
      */
     _refreshDate() {
@@ -116,15 +22,15 @@ Object.assign(DateTimePicker.prototype, {
                 break;
         }
 
-        if (!this._settings.sideBySide && this._hasDate) {
-            const table = this._createTable({
+        if (!this._settings.sideBySide && this._hasTime) {
+            const table = this.constructor._createTable({
                 body: tbody => {
                     const tr = dom.create('tr');
                     dom.append(tbody, tr);
 
                     const td = dom.create('td', {
                         html: '<span. class="icon-clock"></>',
-                        class: 'action py-2',
+                        class: 'py-2',
                         attributes: {
                             colspan: 7,
                             title: this._settings.tooltips.selectTime
@@ -147,15 +53,15 @@ Object.assign(DateTimePicker.prototype, {
     _refreshTime() {
         dom.empty(this._timeContainer);
 
-        if (!this._settings.sideBySide && this._hasTime) {
-            const table = this._createTable({
+        if (!this._settings.sideBySide && this._hasDate) {
+            const table = this.constructor._createTable({
                 body: tbody => {
                     const row = dom.create('tr');
                     dom.append(tbody, row);
 
                     const td = dom.create('td', {
                         html: '<span class="icon-calendar"></span>',
-                        class: 'action py-2',
+                        class: 'py-2',
                         attributes: {
                             colspan: 4,
                             title: this._settings.tooltips.selectDate
@@ -265,7 +171,34 @@ Object.assign(DateTimePicker.prototype, {
         start.sub(1, 'second');
         end.add(1, 'second');
 
-        const table = this._createTable({
+        let prev, next;
+
+        if (this._isAfterMin(start)) {
+            prev = {
+                data: {
+                    action: 'prev',
+                    unit: 'month'
+                },
+                attr: {
+                    title: this._settings.tooltips.prevMonth
+                }
+            };
+        }
+
+        if (this._isBeforeMax(end)) {
+            next = {
+                data: {
+                    action: 'next',
+                    unit: 'month'
+                },
+                attr: {
+                    title: this._settings.tooltips.nextMonth
+                }
+            };
+        }
+
+        const table = this.constructor._createTable({
+            icons: this._settings.icons,
             header: {
                 title: this._viewDate.format('MMMM yyyy'),
                 data: {
@@ -275,28 +208,8 @@ Object.assign(DateTimePicker.prototype, {
                 attr: {
                     title: this._settings.tooltips.selectMonth
                 },
-                prev: this._isDateBetweenMinMax(start) ?
-                    {
-                        data: {
-                            action: 'prev',
-                            unit: 'month'
-                        },
-                        attr: {
-                            title: this._settings.tooltips.prevMonth
-                        }
-                    } :
-                    false,
-                next: this._isDateBetweenMinMax(end) ?
-                    {
-                        data: {
-                            action: 'next',
-                            unit: 'month'
-                        },
-                        attr: {
-                            title: this._settings.tooltips.nextMonth
-                        }
-                    } :
-                    false
+                prev,
+                next
             },
             head: thead => {
                 const tr = dom.create('tr');
@@ -335,7 +248,6 @@ Object.assign(DateTimePicker.prototype, {
                     if (!this._isValid(current, 'day')) {
                         dom.addClass(td, 'disabled');
                     } else {
-                        dom.addClass(td, 'action');
                         dom.setDataset(td, {
                             action: this._settings.multiDate ?
                                 'setDateMulti' :
@@ -373,7 +285,7 @@ Object.assign(DateTimePicker.prototype, {
         const current = initialDate.clone().startOf('day');
         const last = initialDate.clone().endOf('day');
 
-        const table = this._createTable({
+        const table = this.constructor._createTable({
             borderless: true,
             body: tbody => {
                 const tr = dom.create('tr');
@@ -399,18 +311,13 @@ Object.assign(DateTimePicker.prototype, {
                     });
                     dom.append(row, col);
 
-                    if (!this._isValid(current, 'second')) {
+                    if (!this._isValid(current, 'hour')) {
                         dom.addClass(col, 'disabled');
                     } else {
-                        dom.addClass(col, 'action');
                         dom.setDataset(col, {
                             action: 'setHours',
                             hour: current.getHours()
                         });
-                    }
-
-                    if (this._settings.renderHour) {
-                        this._settings.renderHour(current.clone(), col);
                     }
 
                     current.add(1, 'hour');
@@ -432,7 +339,7 @@ Object.assign(DateTimePicker.prototype, {
         const current = initialDate.clone().startOf('hour');
         const last = initialDate.clone().endOf('hour');
 
-        const table = this._createTable({
+        const table = this.constructor._createTable({
             borderless: true,
             body: tbody => {
                 const tr = dom.create('tr');
@@ -462,18 +369,13 @@ Object.assign(DateTimePicker.prototype, {
                     });
                     dom.append(row, col);
 
-                    if (!this._isValid(current, 'second')) {
+                    if (!this._isValid(current, 'minute')) {
                         dom.addClass(col, 'disabled');
                     } else {
-                        dom.addClass(col, 'action');
                         dom.setDataset(col, {
                             action: 'setMinutes',
                             minute: current.getMinutes()
                         });
-                    }
-
-                    if (this._settings.renderMinute) {
-                        this._settings.renderMinute(current.clone(), col);
                     }
 
                     current.add(stepping, 'minutes');
@@ -497,7 +399,34 @@ Object.assign(DateTimePicker.prototype, {
         start.sub(1, 'second');
         end.add(1, 'second');
 
-        const table = this._createTable({
+        let prev, next;
+
+        if (this._isAfterMin(start)) {
+            prev = {
+                data: {
+                    action: 'prev',
+                    unit: 'year'
+                },
+                attr: {
+                    title: this._settings.tooltips.prevYear
+                }
+            };
+        }
+
+        if (this._isBeforeMax(end)) {
+            next = {
+                data: {
+                    action: 'next',
+                    unit: 'year'
+                },
+                attr: {
+                    title: this._settings.tooltips.nextYear
+                }
+            };
+        }
+
+        const table = this.constructor._createTable({
+            icons: this._settings.icons,
             header: {
                 title: this._viewDate.format('yyyy'),
                 wide: true,
@@ -508,28 +437,8 @@ Object.assign(DateTimePicker.prototype, {
                 attr: {
                     title: this._settings.tooltips.selectYear
                 },
-                prev: this._isDateBetweenMinMax(start) ?
-                    {
-                        data: {
-                            action: 'prev',
-                            unit: 'year'
-                        },
-                        attr: {
-                            title: this._settings.tooltips.prevYear
-                        }
-                    } :
-                    false,
-                next: this._isDateBetweenMinMax(end) ?
-                    {
-                        data: {
-                            action: 'next',
-                            unit: 'year'
-                        },
-                        attr: {
-                            title: this._settings.tooltips.nextYear
-                        }
-                    } :
-                    false
+                prev,
+                next
             },
             body: tbody => {
                 const tr = dom.create('tr');
@@ -559,11 +468,9 @@ Object.assign(DateTimePicker.prototype, {
                         dom.addClass(col, 'active');
                     }
 
-                    if (!this._isDateBetweenMinMax(current, 'month')) {
+                    if (!this._isValid(current, 'month')) {
                         dom.addClass(col, 'disabled');
                     } else {
-                        dom.addClass(col, 'action');
-
                         if (this._settings.minView === 'year') {
                             dom.setDataset(col, {
                                 action: this._settings.multiDate ?
@@ -605,7 +512,7 @@ Object.assign(DateTimePicker.prototype, {
         const current = initialDate.clone().startOf('minute');
         const last = initialDate.clone().endOf('minute');
 
-        const table = this._createTable({
+        const table = this.constructor._createTable({
             borderless: true,
             body: tbody => {
                 const tr = dom.create('tr');
@@ -634,15 +541,10 @@ Object.assign(DateTimePicker.prototype, {
                     if (!this._isValid(current, 'second')) {
                         dom.addClass(col, 'disabled');
                     } else {
-                        dom.addClass(col, 'action');
                         dom.setDataset(col, {
                             action: 'setSeconds',
                             second: current.getSeconds()
                         });
-                    }
-
-                    if (this._settings.renderSecond) {
-                        this._settings.renderSecond(current.clone(), col);
                     }
 
                     current.add(5, 'seconds');
@@ -661,7 +563,7 @@ Object.assign(DateTimePicker.prototype, {
             this._date :
             this._now();
 
-        const table = this._createTable({
+        const table = this.constructor._createTable({
             borderless: true,
             body: tbody => {
                 const separators = this._hasHours + this._hasMinutes + this._hasSeconds - 1;
@@ -679,215 +581,169 @@ Object.assign(DateTimePicker.prototype, {
                 dom.append(tbody, downTr);
 
                 if (this._hasHours) {
-                    const hourUpTd = dom.create('td', {
-                        html: `<span class="${this._settings.icons.up}"></span>`,
-                        class: 'text-primary bw-bold py-4 px-0',
-                        style: {
-                            width: `${cellWidth}%`
-                        }
-                    });
+                    let increment, decrement;
 
                     const nextHour = initialDate.clone().add(1, 'hour');
-                    if (!this._isValid(nextHour, 'second')) {
-                        dom.addClass(hourUpTd, 'disabled');
-                    } else {
-                        dom.addClass(hourUpTd, 'action');
-                        dom.setDataset(hourUpTd, {
-                            action: 'nextTime',
-                            unit: 'hour'
-                        });
-                        dom.setAttribute(hourUpTd, 'title', this._settings.tooltips.incrementHour);
+                    if (this._isValid(nextHour, 'hour')) {
+                        increment = {
+                            data: {
+                                action: 'nextTime',
+                                unit: 'hour'
+                            },
+                            attr: {
+                                title: this._settings.tooltips.incrementHour
+                            }
+                        };
                     }
-
-                    dom.append(upTr, hourUpTd);
-
-                    const hourTd = dom.create('td', {
-                        text: initialDate.format(this._useDayPeriod ? 'hh' : 'HH'),
-                        class: 'action time py-2 px-0',
-                        dataset: {
-                            action: 'changeTimeView',
-                            timeView: 'hours'
-                        },
-                        attributes: {
-                            title: this._settings.tooltips.selectHour
-                        }
-                    });
-                    dom.append(timeTr, hourTd);
-
-                    const hourDownTd = dom.create('td', {
-                        html: `<span class="${this._settings.icons.down}"></span>`,
-                        class: 'text-primary bw-bold py-4 px-0'
-                    });
 
                     const prevHour = initialDate.clone().sub(1, 'hour');
-                    if (!this._isValid(prevHour, 'second')) {
-                        dom.addClass(hourDownTd, 'disabled');
-                    } else {
-                        dom.addClass(hourDownTd, 'action');
-                        dom.setDataset(hourDownTd, {
-                            action: 'prevTime',
-                            unit: 'hour'
-                        });
-                        dom.setAttribute(hourDownTd, 'title', this._settings.tooltips.decrementHour);
+                    if (this._isValid(prevHour, 'hour')) {
+                        decrement = {
+                            data: {
+                                action: 'prevTime',
+                                unit: 'hour'
+                            },
+                            attr: {
+                                title: this._settings.tooltips.decrementHour
+                            }
+                        };
                     }
 
-                    dom.append(downTr, hourDownTd);
+                    this.constructor._renderTimeColumn({
+                        icons: this._settings.icons,
+                        increment,
+                        select: {
+                            text: initialDate.format(this._useDayPeriod ? 'hh' : 'HH'),
+                            data: {
+                                action: 'changeTimeView',
+                                timeView: 'hours'
+                            },
+                            attr: {
+                                title: this._settings.tooltips.selectHour
+                            }
+                        },
+                        decrement,
+                        cellWidth,
+                        upTr,
+                        timeTr,
+                        downTr
+                    });
                 }
 
                 if (this._hasHours && this._hasMinutes) {
-                    const seperatorUpTd = dom.create('td', {
-                        style: {
-                            width: `${separatorWidth}%`
-                        }
-                    });
-                    dom.append(upTr, seperatorUpTd);
-
-                    const separatorTd = dom.create('td', {
-                        text: ':',
-                        class: 'time py-2'
-                    });
-                    dom.append(timeTr, separatorTd);
-
-                    const separatorDownTd = dom.create('td');
-                    dom.append(downTr, separatorDownTd);
+                    this.constructor._renderTimeSeparator({ separatorWidth, upTr, timeTr, downTr });
                 }
 
                 if (this._hasMinutes) {
-                    const minuteUpTd = dom.create('td', {
-                        html: `<span class="${this._settings.icons.up}"></span>`,
-                        class: 'text-primary bw-bold py-4 px-0',
-                        style: {
-                            width: `${cellWidth}%`
-                        }
-                    });
+                    let increment, decrement;
 
                     const initialMinutes = initialDate.getMinutes();
                     const nextMinutes = Math.min(initialMinutes + this._settings.stepping, 60);
                     const nextMinute = initialDate.clone().setMinutes(nextMinutes);
-                    if (!this._isValid(nextMinute, 'second')) {
-                        dom.addClass(minuteUpTd, 'disabled');
-                    } else {
-                        dom.addClass(minuteUpTd, 'action');
-                        dom.setDataset(minuteUpTd, {
-                            action: 'nextTime',
-                            unit: 'minute'
-                        });
-                        dom.setAttribute(minuteUpTd, 'title', this._settings.tooltips.incrementMinute);
+                    if (this._isValid(nextMinute, 'minute')) {
+                        increment = {
+                            data: {
+                                action: 'nextTime',
+                                unit: 'minute'
+                            },
+                            attr: {
+                                title: this._settings.tooltips.incrementMinute
+                            }
+                        };
                     }
-
-                    dom.append(upTr, minuteUpTd);
-
-                    const minuteTd = dom.create('td', {
-                        text: initialDate.format('mm'),
-                        class: 'action time py-2 px-0',
-                        dataset: {
-                            action: 'changeTimeView',
-                            timeView: 'minutes'
-                        },
-                        attributes: {
-                            title: this._settings.tooltips.selectMinute
-                        }
-                    });
-                    dom.append(timeTr, minuteTd);
-
-                    const minuteDownTd = dom.create('td', {
-                        html: `<span class="${this._settings.icons.down}"></span>`,
-                        class: 'action text-primary bw-bold py-4 px-0'
-                    });
 
                     const prevMinute = initialDate.clone().sub(this._settings.stepping, 'minute');
-                    if (!this._isValid(prevMinute, 'second')) {
-                        dom.addClass(minuteDownTd, 'disabled');
-                    } else {
-                        dom.addClass(minuteDownTd, 'action');
-                        dom.setDataset(minuteDownTd, {
-                            action: 'prevTime',
-                            unit: 'minute'
-                        });
-                        dom.setAttribute(minuteDownTd, 'title', this._settings.tooltips.decrementMinute);
+                    if (this._isValid(prevMinute, 'minute')) {
+                        decrement = {
+                            data: {
+                                action: 'prevTime',
+                                unit: 'minute'
+                            },
+                            attr: {
+                                title: this._settings.tooltips.decrementMinute
+                            }
+                        };
                     }
 
-                    dom.append(downTr, minuteDownTd);
+                    this.constructor._renderTimeColumn({
+                        icons: this._settings.icons,
+                        increment,
+                        select: {
+                            text: initialDate.format('mm'),
+                            data: {
+                                action: 'changeTimeView',
+                                timeView: 'minutes'
+                            },
+                            attr: {
+                                title: this._settings.tooltips.selectMinute
+                            }
+                        },
+                        decrement,
+                        cellWidth,
+                        upTr,
+                        timeTr,
+                        downTr
+                    });
                 }
 
                 if ((this._hasHours || this._hasMinutes) && this._hasSeconds) {
-                    const seperatorUpTd = dom.create('td', {
-                        style: {
-                            width: `${separatorWidth}%`
-                        }
-                    });
-                    dom.append(upTr, seperatorUpTd);
-
-                    const separatorTd = dom.create('td', {
-                        text: ':',
-                        class: 'time py-2'
-                    });
-                    dom.append(timeTr, separatorTd);
-
-                    const separatorDownTd = dom.create('td');
-                    dom.append(downTr, separatorDownTd);
+                    this.constructor._renderTimeSeparator({ separatorWidth, upTr, timeTr, downTr });
                 }
 
                 if (this._hasSeconds) {
-                    const secondUpTd = dom.create('td', {
-                        html: `<span class="${this._settings.icons.up}"></span>`,
-                        class: 'text-primary bw-bold py-4 px-0',
-                        style: {
-                            width: `${cellWidth}%`
-                        }
-                    });
+                    let increment, decrement;
 
                     const nextSecond = initialDate.clone().add(1, 'second');
-                    if (!this._isValid(nextSecond, 'second')) {
-                        dom.addClass(secondUpTd, 'disabled');
-                    } else {
-                        dom.addClass(secondUpTd, 'action');
-                        dom.setDataset(secondUpTd, {
-                            action: 'nextTime',
-                            unit: 'second'
-                        });
-                        dom.setAttribute(secondUpTd, 'title', this._settings.tooltips.incrementSecond);
+                    if (this._isValid(nextSecond, 'second')) {
+                        increment = {
+                            data: {
+                                action: 'nextTime',
+                                unit: 'second'
+                            },
+                            attr: {
+                                title: this._settings.tooltips.incrementSecond
+                            }
+                        };
                     }
-
-                    dom.append(upTr, secondUpTd);
-
-                    const secondTd = dom.create('td', {
-                        text: initialDate.format('ss'),
-                        class: 'action time py-2 px-0',
-                        dataset: {
-                            action: 'changeTimeView',
-                            timeView: 'seconds'
-                        },
-                        attributes: {
-                            title: this._settings.tooltips.selectSecond
-                        }
-                    });
-                    dom.append(timeTr, secondTd);
-
-                    const secondDownTd = dom.create('td', {
-                        html: `<span class="${this._settings.icons.down}"></span>`,
-                        class: 'action text-primary bw-bold py-4 px-0'
-                    });
 
                     const prevSecond = initialDate.clone().sub(1, 'second');
-                    if (!this._isValid(prevSecond, 'second')) {
-                        dom.addClass(secondDownTd, 'disabled');
-                    } else {
-                        dom.addClass(secondDownTd, 'action');
-                        dom.setDataset(secondDownTd, {
-                            action: 'prevTime',
-                            unit: 'second'
-                        });
-                        dom.setAttribute(secondDownTd, 'title', this._settings.tooltips.decrementSecond);
+                    if (this._isValid(prevSecond, 'second')) {
+                        decrement = {
+                            data: {
+                                action: 'prevTime',
+                                unit: 'second'
+                            },
+                            attr: {
+                                title: this._settings.tooltips.decrementSecond
+                            }
+                        };
                     }
 
-                    dom.append(downTr, secondDownTd);
+                    this.constructor._renderTimeColumn({
+                        icons: this._settings.icons,
+                        increment,
+                        select: {
+                            text: initialDate.format('ss'),
+                            data: {
+                                action: 'changeTimeView',
+                                timeView: 'seconds'
+                            },
+                            attr: {
+                                title: this._settings.tooltips.selectSecond
+                            }
+                        },
+                        decrement,
+                        cellWidth,
+                        upTr,
+                        timeTr,
+                        downTr
+                    });
                 }
 
                 if (this._useDayPeriod) {
                     const periodUpTd = dom.create('td', {
                         style: {
-                            width: '22%'
+                            width: `${cellWidth}%`
                         }
                     });
                     dom.append(upTr, periodUpTd);
@@ -942,34 +798,41 @@ Object.assign(DateTimePicker.prototype, {
         start.sub(1, 'second');
         end.add(1, 'second');
 
-        const table = this._createTable({
+        let prev, next;
+
+        if (this._isAfterMin(start)) {
+            prev = {
+                data: {
+                    action: 'prev',
+                    unit: 'years',
+                    amount: 10
+                },
+                attr: {
+                    title: this._settings.tooltips.prevDecade
+                }
+            };
+        }
+
+        if (this._isBeforeMax(end)) {
+            next = {
+                data: {
+                    action: 'next',
+                    unit: 'years',
+                    amount: 10
+                },
+                attr: {
+                    title: this._settings.tooltips.nextDecade
+                }
+            };
+        }
+
+        const table = this.constructor._createTable({
+            icons: this._settings.icons,
             header: {
                 title: `${start.format('yyyy')} - ${end.format('yyyy')}`,
                 wide: true,
-                prev: this._isDateBetweenMinMax(start) ?
-                    {
-                        data: {
-                            action: 'prev',
-                            unit: 'years',
-                            amount: 10
-                        },
-                        attr: {
-                            title: this._settings.tooltips.prevDecade
-                        }
-                    } :
-                    false,
-                next: this._isDateBetweenMinMax(end) ?
-                    {
-                        data: {
-                            action: 'next',
-                            unit: 'years',
-                            amount: 10
-                        },
-                        attr: {
-                            title: this._settings.tooltips.nextDecade
-                        }
-                    } :
-                    false
+                prev,
+                next
             },
             body: tbody => {
                 const tr = dom.create('tr');
@@ -1003,11 +866,9 @@ Object.assign(DateTimePicker.prototype, {
                         dom.addClass(col, 'text-secondary');
                     }
 
-                    if (!this._isDateBetweenMinMax(current, 'year')) {
+                    if (!this._isValid(current, 'year')) {
                         dom.addClass(col, 'disabled');
                     } else {
-                        dom.addClass(col, 'action');
-
                         if (this._settings.minView === 'decade') {
                             dom.setDataset(col, {
                                 action: this._settings.multiDate ?

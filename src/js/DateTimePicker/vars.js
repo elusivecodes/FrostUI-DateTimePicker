@@ -6,15 +6,13 @@ DateTimePicker.defaults = {
     defaultDate: null,
     minDate: null,
     maxDate: null,
-    enabledDates: null,
-    disabledDates: null,
-    enabledDays: null,
-    disabledDays: null,
-    enabledHours: null,
-    disabledHours: null,
-    disabledTimeIntervals: null,
-    multiDate: false,
-    multiDateSeparator: ',',
+    isValidDay: null,
+    isValidMonth: null,
+    isValidTime: null,
+    isValidYear: null,
+    renderDay: null,
+    renderMonth: null,
+    renderYear: null,
     icons: {
         up: 'icon-arrow-up',
         right: 'icon-arrow-right',
@@ -94,17 +92,16 @@ DateTimePicker.defaults = {
         }
 
         e.preventDefault();
-        dtp._setDate(date);
+
+        if (dtp._isValid(date)) {
+            dtp._setDate(date);
+        }
     },
-    renderDay: null,
-    renderHour: null,
-    renderMinute: null,
-    renderMonth: null,
-    renderSecond: null,
-    renderYear: null,
+    multiDate: false,
+    multiDateSeparator: ',',
     useCurrent: false,
     keepOpen: false,
-    focusOnShow: false,
+    focusOnShow: true,
     minView: null,
     inline: false,
     sideBySide: false,
@@ -120,10 +117,6 @@ DateTimePicker.defaults = {
 };
 
 DateTimePicker._formatTokenRegExp = /([a-z])\1*|'[^']*'/ig;
-DateTimePicker._dateTokenRegExp = /[GyYqQMLwWdDFEec]/;
-DateTimePicker._hourTokenRegExp = /[hHKk]/;
-DateTimePicker._minuteTokenRegExp = /[m]/;
-DateTimePicker._secondTokenRegExp = /[s]/;
 DateTimePicker._dayPeriods = {};
 DateTimePicker._defaultDateFormats = {};
 DateTimePicker._defaultFormats = {};

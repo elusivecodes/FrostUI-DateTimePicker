@@ -17,12 +17,14 @@
         border-bottom: 0;
     }
 
-    .action {
-        cursor: pointer;
-        border-radius: .25em;
-
-        &:not(.disabled):hover {
-            background: #eee;
+    [data-action] {
+        &:not(.btn) {
+            cursor: pointer;
+            border-radius: .25em;
+    
+            &:hover {
+                background: #eee;
+            }
         }
 
         &.active {
@@ -33,24 +35,24 @@
                 background: #3454b4;
             }  
         }
+    }
 
-        &.today {
-            position: relative;
+    .today {
+        position: relative;
 
-            &:before {
-                display: inline-block;
-                position: absolute;
-                bottom: 4px;
-                right: 4px;
-                border: solid transparent;
-                border-width: 0 0 7px 7px;
-                border-bottom-color: royalblue;
-                border-top-color: rgba(0, 0, 0, 0.2);
-                content: '';
+        &:before {
+            display: inline-block;
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            border: solid transparent;
+            border-width: 0 0 7px 7px;
+            border-bottom-color: royalblue;
+            border-top-color: rgba(0, 0, 0, 0.2);
+            content: '';
 
-                &.active {
-                    border-bottom-color: white;
-                }
+            &.active {
+                border-bottom-color: white;
             }
         }
     }
@@ -60,7 +62,7 @@
         cursor: not-allowed;
     }
 
-    .time {
+    .time-display {
         font-size: 1.25rem;
     }
 }
@@ -74,8 +76,4 @@
     .datetimepicker-full {
         width: 600px;
     }
-}
-
-.icon-clock::before {
-    content: '\1f552';
 }

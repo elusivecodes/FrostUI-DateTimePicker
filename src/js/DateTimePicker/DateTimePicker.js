@@ -16,7 +16,7 @@ class DateTimePicker {
      * @param {number} [settings.minContact=false] The minimum amount of contact the datetimepicker must make with the toggle.
      * @returns {DateTimePicker} A new DateTimePicker object.
      */
-    constructor(node, settings) {
+    constructor(node, settings, autoInit = false) {
         this._node = node;
 
         this._settings = Core.extend(
@@ -26,15 +26,11 @@ class DateTimePicker {
             settings
         );
 
+        this._autoInit = autoInit;
         this._date = null;
         this._dates = [];
         this._minDate = null;
         this._maxDate = null;
-        this._enabledDates = null;
-        this._disabledDates = null;
-        this._disabledDays = null;
-        this._disabledHours = null;
-        this._disabledTimeIntervals = null;
         this._timeViewMode = null;
         this._hasDate = false;
         this._hasHours = false;
@@ -47,12 +43,12 @@ class DateTimePicker {
             timeZone: this._settings.timeZone
         };
 
-        this._useDayPeriod = this.constructor.checkDayPeriod(this._settings.locale);
+        this._useDayPeriod = this.constructor._checkDayPeriod(this._settings.locale);
 
         if (!this._settings.format) {
             this._settings.format = this._settings.multiDate ?
-                this.constructor.getDefaultDateFormat(this._settings.locale, this._useDayPeriod) :
-                this.constructor.getDefaultFormat(this._settings.locale, this._useDayPeriod);
+                this.constructor._getDefaultDateFormat(this._settings.locale, this._useDayPeriod) :
+                this.constructor._getDefaultFormat(this._settings.locale, this._useDayPeriod);
         }
 
         this._checkFormat();
@@ -79,9 +75,8 @@ class DateTimePicker {
             this._popper.destroy();
         }
 
+        dom.removeEvent(this._node, 'focus.frost.datetimepicker blur.frost.datetimepicker input.frost.datetimepicker keydown.frost.datetimepicker');
         dom.remove(this._menuNode);
-        dom.removeEvent(this._node, 'focus.frost.datetimepicker');
-        dom.removeEvent(this._node, 'keydown.frost.datetimepicker');
         dom.removeData(this._node, 'datetimepicker');
     }
 
@@ -184,10 +179,10 @@ class DateTimePicker {
      * @param {number} [settings.minContact=false] The minimum amount of contact the datetimepicker must make with the toggle.
      * @returns {DateTimePicker} A new DateTimePicker object.
      */
-    static init(node, settings) {
+    static init(node, settings, autoInit = false) {
         return dom.hasData(node, 'datetimepicker') ?
             dom.getData(node, 'datetimepicker') :
-            new this(node, settings);
+            new this(node, settings, autoInit);
     }
 
 }

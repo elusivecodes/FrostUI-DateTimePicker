@@ -1,5 +1,5 @@
 /**
- * DateTimePicker (Static)
+ * DateTimePicker (Static) Helpers
  */
 
 Object.assign(DateTimePicker, {
@@ -9,7 +9,7 @@ Object.assign(DateTimePicker, {
      * @param {string} locale The locale to check.
      * @returns {Boolean} Whether the locale uses a day period component.
      */
-    checkDayPeriod(locale) {
+    _checkDayPeriod(locale) {
         if (!(locale in this._dayPeriods)) {
             const formatter = new Intl.DateTimeFormat(locale, {
                 hour: '2-digit'
@@ -27,7 +27,7 @@ Object.assign(DateTimePicker, {
      * @param {string} locale The input locale.
      * @returns {string} The default date format.
      */
-    getDefaultDateFormat(locale) {
+    _getDefaultDateFormat(locale) {
         if (!(locale in this._defaultDateFormats)) {
             this._defaultDateFormats[locale] = this._formatFromParts(locale, {
                 year: 'numeric',
@@ -45,7 +45,7 @@ Object.assign(DateTimePicker, {
      * @param {Boolean} hasDayPeriod Whether the locale uses a dayPeriod.
      * @returns {string} The default format.
      */
-    getDefaultFormat(locale, hasDayPeriod) {
+    _getDefaultFormat(locale, hasDayPeriod) {
         if (!(locale in this._defaultFormats)) {
             this._defaultFormats[locale] = this._formatFromParts(locale, {
                 year: 'numeric',

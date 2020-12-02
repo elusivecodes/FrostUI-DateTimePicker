@@ -15,17 +15,165 @@
 <body>
     <div class="container pt-5">
         <div class="mb-4">
-            <input type="text" class="input-filled" id="input" />
+            <label for="dtpDefault">Default</label>
+            <div class="input-group input-group-filled">
+                <div class="form-input">
+                    <input class="input-filled" type="text" id="dtpDefault" placeholder="Placeholder" />
+                    <div class="ripple-line"></div>
+                </div>
+                <button class="btn ripple btn-outline-dark" role="button" data-toggle="datetimepicker"
+                    data-target="#dtpDefault">
+                    <span class="icon-calendar"></span>
+                </button>
+            </div>
+        </div>
+        <div class="mb-4">
+            <label for="dtpLocale">Locale</label>
+            <div class="input-group input-group-filled">
+                <div class="form-input">
+                    <input class="input-filled" type="text" id="dtpLocale" placeholder="Placeholder"
+                        data-locale="ar-eg" />
+                    <div class="ripple-line"></div>
+                </div>
+                <button class="btn ripple btn-outline-dark" role="button" data-toggle="datetimepicker"
+                    data-target="#dtpLocale">
+                    <span class="icon-calendar"></span>
+                </button>
+            </div>
+        </div>
+        <div class="mb-4">
+            <label for="dtpTime">Time Only</label>
+            <div class="input-group input-group-filled">
+                <div class="form-input">
+                    <input class="input-filled" type="text" id="dtpTime" placeholder="Placeholder"
+                        data-format="hh:mm a" />
+                    <div class="ripple-line"></div>
+                </div>
+                <button class="btn ripple btn-outline-dark" role="button" data-toggle="datetimepicker"
+                    data-target="#dtpTime">
+                    <span class="icon-clock"></span>
+                </button>
+            </div>
+        </div>
+        <div class="mb-4">
+            <label for="dtpDate">Date Only</label>
+            <div class="input-group input-group-filled">
+                <div class="form-input">
+                    <input class="input-filled" type="text" id="dtpDate" placeholder="Placeholder"
+                        data-format="dd/MM/yyyy" />
+                    <div class="ripple-line"></div>
+                </div>
+                <button class="btn ripple btn-outline-dark" role="button" data-toggle="datetimepicker"
+                    data-target="#dtpDate">
+                    <span class="icon-calendar"></span>
+                </button>
+            </div>
+        </div>
+        <div class="mb-4">
+            <label for="dtpMulti">Multi-Date</label>
+            <div class="input-group input-group-filled">
+                <div class="form-input">
+                    <input class="input-filled" type="text" id="dtpMulti" placeholder="Placeholder"
+                        data-multi-date="true" />
+                    <div class="ripple-line"></div>
+                </div>
+                <button class="btn ripple btn-outline-dark" role="button" data-toggle="datetimepicker"
+                    data-target="#dtpMulti">
+                    <span class="icon-calendar"></span>
+                </button>
+            </div>
+        </div>
+        <div class="mb-4">
+            <label for="dtpDisabledDates">Disabled Dates</label>
+            <div class="input-group input-group-filled">
+                <div class="form-input">
+                    <input class="input-filled" type="text" id="dtpDisabledDates" placeholder="Placeholder" />
+                    <div class="ripple-line"></div>
+                </div>
+                <button class="btn ripple btn-outline-dark" role="button" data-toggle="datetimepicker"
+                    data-target="#dtpDisabledDates">
+                    <span class="icon-calendar"></span>
+                </button>
+            </div>
+        </div>
+        <div class="mb-4">
+            <label for="dtpDisabledDays">Disabled Days</label>
+            <div class="input-group input-group-filled">
+                <div class="form-input">
+                    <input class="input-filled" type="text" id="dtpDisabledDays" placeholder="Placeholder" />
+                    <div class="ripple-line"></div>
+                </div>
+                <button class="btn ripple btn-outline-dark" role="button" data-toggle="datetimepicker"
+                    data-target="#dtpDisabledDays">
+                    <span class="icon-calendar"></span>
+                </button>
+            </div>
+        </div>
+        <div class="mb-4">
+            <label for="dtpMinMax">Min/Max Dates</label>
+            <div class="input-group input-group-filled">
+                <div class="form-input">
+                    <input class="input-filled" type="text" id="dtpMinMax" placeholder="Placeholder" />
+                    <div class="ripple-line"></div>
+                </div>
+                <button class="btn ripple btn-outline-dark" role="button" data-toggle="datetimepicker"
+                    data-target="#dtpMinMax">
+                    <span class="icon-calendar"></span>
+                </button>
+            </div>
+        </div>
+        <!-- min view -->
+        <div class="mb-4">
+            <label for="dtpInline">Inline</label>
+            <div class="form-input">
+                <input type="text" class="input-filled" id="dtpInline" data-inline="true" data-side-by-side="true" />
+                <div class="ripple-line"></div>
+            </div>
         </div>
     </div>
     <script>
-        const input = dom.findOne('#input');
-        const datetimepicker = new UI.DateTimePicker(input, {
-            locale: 'en',
-            format: 'dd/MM/yyyy HH:mm:ss',
-            minDate: DateTime.fromArray([2020, 11, 29, 12, 44, 0])
+        const dtpDefault = dom.findOne('#dtpDefault');
+        const dtpLocale = dom.findOne('#dtpLocale');
+        const dtpTime = dom.findOne('#dtpTime');
+        const dtpDate = dom.findOne('#dtpDate');
+        const dtpMulti = dom.findOne('#dtpMulti');
+        const dtpDisabledDates = dom.findOne('#dtpDisabledDates');
+        const dtpDisabledDays = dom.findOne('#dtpDisabledDays');
+        const dtpMinMax = dom.findOne('#dtpMinMax');
+        const dtpInline = dom.findOne('#dtpInline');
+
+        UI.DateTimePicker.init(dtpDefault);
+        UI.DateTimePicker.init(dtpLocale);
+        UI.DateTimePicker.init(dtpTime);
+        UI.DateTimePicker.init(dtpDate);
+        UI.DateTimePicker.init(dtpMulti);
+        UI.DateTimePicker.init(dtpDisabledDates, {
+            isValidDay: date => {
+                for (const amount of [3, 5, 9]) {
+                    const invalid = DateTime.now().add(amount, 'days');
+
+                    if (date.isSame(invalid, 'day')) {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
         });
-        console.log(datetimepicker);
+        UI.DateTimePicker.init(dtpDisabledDays, {
+            isValidDay: date => {
+                if ([0, 6].includes(date.getDay())) {
+                    return false;
+                }
+
+                return true;
+            }
+        });
+        UI.DateTimePicker.init(dtpMinMax, {
+            minDate: DateTime.now().sub(5, 'days'),
+            maxDate: DateTime.now().add(1, 'month')
+        });
+        UI.DateTimePicker.init(dtpInline);
     </script>
 </body>
 

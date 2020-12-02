@@ -16,24 +16,24 @@
 .datetimepicker .table > tbody > tr:last-child > td {
   border-bottom: 0;
 }
-.datetimepicker .action {
+.datetimepicker [data-action]:not(.btn) {
   cursor: pointer;
   border-radius: 0.25em;
 }
-.datetimepicker .action:not(.disabled):hover {
+.datetimepicker [data-action]:not(.btn):hover {
   background: #eee;
 }
-.datetimepicker .action.active {
+.datetimepicker [data-action].active {
   background: royalblue;
   color: white;
 }
-.datetimepicker .action.active:hover {
+.datetimepicker [data-action].active:hover {
   background: #3454b4;
 }
-.datetimepicker .action.today {
+.datetimepicker .today {
   position: relative;
 }
-.datetimepicker .action.today:before {
+.datetimepicker .today:before {
   display: inline-block;
   position: absolute;
   bottom: 4px;
@@ -44,14 +44,14 @@
   border-top-color: rgba(0, 0, 0, 0.2);
   content: '';
 }
-.datetimepicker .action.today:before.active {
+.datetimepicker .today:before.active {
   border-bottom-color: white;
 }
 .datetimepicker .disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
-.datetimepicker .time {
+.datetimepicker .time-display {
   font-size: 1.25rem;
 }
 .datetimepicker-inline {
@@ -62,7 +62,4 @@
   .datetimepicker-full {
     width: 600px;
   }
-}
-.icon-clock::before {
-  content: '\1f552';
 }
