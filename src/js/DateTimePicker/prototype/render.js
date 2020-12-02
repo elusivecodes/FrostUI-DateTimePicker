@@ -111,7 +111,7 @@ Object.assign(DateTimePicker.prototype, {
 
         if (this._hasDate) {
             this._dateContainer = dom.create('div', {
-                class: 'col d-flex flex-column align-items-center'
+                class: 'col d-flex flex-column'
             });
             dom.append(this._container, this._dateContainer);
 
@@ -120,7 +120,7 @@ Object.assign(DateTimePicker.prototype, {
 
         if (this._hasTime) {
             this._timeContainer = dom.create('div', {
-                class: 'col d-flex flex-column align-items-center'
+                class: 'col d-flex flex-column'
             });
             dom.append(this._container, this._timeContainer);
 

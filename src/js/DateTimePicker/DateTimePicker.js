@@ -114,6 +114,7 @@ class DateTimePicker {
             this._settings.inline ||
             this._animating ||
             dom.isConnected(this._menuNode) ||
+            dom.is(this._node, ':disabled') ||
             !dom.triggerOne(this._node, 'show.frost.datetimepicker')
         ) {
             return;

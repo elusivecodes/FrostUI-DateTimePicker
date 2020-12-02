@@ -11,7 +11,7 @@ Object.assign(DateTimePicker, {
      */
     _createTable(options) {
         const table = dom.create('table', {
-            class: 'table table-sm text-center m-0'
+            class: 'table table-sm text-center mx-0 my-auto'
         });
 
         if (options.borderless) {

@@ -149,6 +149,7 @@
                 this._settings.inline ||
                 this._animating ||
                 dom.isConnected(this._menuNode) ||
+                dom.is(this._node, ':disabled') ||
                 !dom.triggerOne(this._node, 'show.frost.datetimepicker')
             ) {
                 return;
@@ -997,7 +998,7 @@
 
             if (this._hasDate) {
                 this._dateContainer = dom.create('div', {
-                    class: 'col d-flex flex-column align-items-center'
+                    class: 'col d-flex flex-column'
                 });
                 dom.append(this._container, this._dateContainer);
 
@@ -1006,7 +1007,7 @@
 
             if (this._hasTime) {
                 this._timeContainer = dom.create('div', {
-                    class: 'col d-flex flex-column align-items-center'
+                    class: 'col d-flex flex-column'
                 });
                 dom.append(this._container, this._timeContainer);
 
@@ -2010,7 +2011,7 @@
          */
         _createTable(options) {
             const table = dom.create('table', {
-                class: 'table table-sm text-center m-0'
+                class: 'table table-sm text-center mx-0 my-auto'
             });
 
             if (options.borderless) {
