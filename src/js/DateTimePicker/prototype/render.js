@@ -30,7 +30,7 @@ Object.assign(DateTimePicker.prototype, {
 
                     const td = dom.create('td', {
                         html: '<span. class="icon-clock"></>',
-                        class: 'py-2',
+                        class: 'dtp-action py-2',
                         attributes: {
                             colspan: 7,
                             title: this._settings.tooltips.selectTime
@@ -44,6 +44,10 @@ Object.assign(DateTimePicker.prototype, {
             });
 
             dom.append(this._dateContainer, table);
+        }
+
+        if (!this._settings.inline && this._popper) {
+            this._popper.update();
         }
     },
 
@@ -61,7 +65,7 @@ Object.assign(DateTimePicker.prototype, {
 
                     const td = dom.create('td', {
                         html: '<span class="icon-calendar"></span>',
-                        class: 'py-2',
+                        class: 'dtp-action py-2',
                         attributes: {
                             colspan: 4,
                             title: this._settings.tooltips.selectDate
@@ -90,6 +94,10 @@ Object.assign(DateTimePicker.prototype, {
             default:
                 this._renderTime();
                 break;
+        }
+
+        if (!this._settings.inline && this._popper) {
+            this._popper.update();
         }
     },
 
@@ -129,7 +137,7 @@ Object.assign(DateTimePicker.prototype, {
 
         if (this._hasDate && this._hasTime) {
             if (this._settings.sideBySide) {
-                dom.addClass(this._menuNode, 'datetimepicker-full')
+                dom.addClass(this._menuNode, 'dtp-wide')
                 dom.addClass(this._container, 'row-cols-md-2')
             } else {
                 dom.setStyle(this._timeContainer, 'display', 'none', true);
@@ -137,7 +145,7 @@ Object.assign(DateTimePicker.prototype, {
         }
 
         if (this._settings.inline) {
-            dom.addClass(this._menuNode, 'datetimepicker-inline');
+            dom.addClass(this._menuNode, 'dtp-inline');
 
             dom.after(this._node, this._menuNode);
             dom.hide(this._node);
@@ -240,14 +248,15 @@ Object.assign(DateTimePicker.prototype, {
                     dom.append(tr, td);
 
                     if (this._isCurrent(current, 'day')) {
-                        dom.addClass(td, 'active');
+                        dom.addClass(td, 'dtp-active');
                     } else if (!this._viewDate.isSame(current, 'month')) {
                         dom.addClass(td, 'text-secondary');
                     }
 
                     if (!this._isValid(current, 'day')) {
-                        dom.addClass(td, 'disabled');
+                        dom.addClass(td, 'dtp-disabled');
                     } else {
+                        dom.addClass(td, 'dtp-action');
                         dom.setDataset(td, {
                             action: this._settings.multiDate ?
                                 'setDateMulti' :
@@ -259,7 +268,7 @@ Object.assign(DateTimePicker.prototype, {
                     }
 
                     if (now.isSame(current, 'day')) {
-                        dom.addClass(td, 'today');
+                        dom.addClass(td, 'dtp-today');
                     }
 
                     if (this._settings.renderDay) {
@@ -312,8 +321,9 @@ Object.assign(DateTimePicker.prototype, {
                     dom.append(row, col);
 
                     if (!this._isValid(current, 'hour')) {
-                        dom.addClass(col, 'disabled');
+                        dom.addClass(col, 'dtp-disabled');
                     } else {
+                        dom.addClass(col, 'dtp-action');
                         dom.setDataset(col, {
                             action: 'setHours',
                             hour: current.getHours()
@@ -370,8 +380,9 @@ Object.assign(DateTimePicker.prototype, {
                     dom.append(row, col);
 
                     if (!this._isValid(current, 'minute')) {
-                        dom.addClass(col, 'disabled');
+                        dom.addClass(col, 'dtp-disabled');
                     } else {
+                        dom.addClass(col, 'dtp-action');
                         dom.setDataset(col, {
                             action: 'setMinutes',
                             minute: current.getMinutes()
@@ -465,13 +476,14 @@ Object.assign(DateTimePicker.prototype, {
                     dom.append(row, col);
 
                     if (this._isCurrent(current, 'month')) {
-                        dom.addClass(col, 'active');
+                        dom.addClass(col, 'dtp-active');
                     }
 
                     if (!this._isValid(current, 'month')) {
-                        dom.addClass(col, 'disabled');
+                        dom.addClass(col, 'dtp-disabled');
                     } else {
-                        if (this._settings.minView === 'year') {
+                        dom.addClass(col, 'dtp-action');
+                        if (this._settings.minView === 'months') {
                             dom.setDataset(col, {
                                 action: this._settings.multiDate ?
                                     'setDateMulti' :
@@ -539,8 +551,9 @@ Object.assign(DateTimePicker.prototype, {
                     dom.append(row, col);
 
                     if (!this._isValid(current, 'second')) {
-                        dom.addClass(col, 'disabled');
+                        dom.addClass(col, 'dtp-disabled');
                     } else {
+                        dom.addClass(col, 'dtp-action');
                         dom.setDataset(col, {
                             action: 'setSeconds',
                             second: current.getSeconds()
@@ -761,7 +774,7 @@ Object.assign(DateTimePicker.prototype, {
                         currentHours + (currentHours < 12 ? 12 : -12)
                     );
                     if (!this._isValid(otherPeriod, 'second')) {
-                        dom.addClass(periodButton, 'disabled');
+                        dom.addClass(periodButton, 'dtp-disabled');
                     } else {
                         dom.setDataset(periodButton, {
                             action: 'togglePeriod'
@@ -861,15 +874,16 @@ Object.assign(DateTimePicker.prototype, {
                     dom.append(row, col);
 
                     if (this._isCurrent(current, 'year')) {
-                        dom.addClass(col, 'active');
+                        dom.addClass(col, 'dtp-active');
                     } else if (thisYear < startYear || thisYear > endYear) {
                         dom.addClass(col, 'text-secondary');
                     }
 
                     if (!this._isValid(current, 'year')) {
-                        dom.addClass(col, 'disabled');
+                        dom.addClass(col, 'dtp-disabled');
                     } else {
-                        if (this._settings.minView === 'decade') {
+                        dom.addClass(col, 'dtp-action');
+                        if (this._settings.minView === 'years') {
                             dom.setDataset(col, {
                                 action: this._settings.multiDate ?
                                     'setDateMulti' :

@@ -17,30 +17,10 @@
         border-bottom: 0;
     }
 
-    [data-action] {
-        &:not(.btn) {
-            cursor: pointer;
-            border-radius: .25em;
-    
-            &:hover {
-                background: #eee;
-            }
-        }
-
-        &.active {
-            background: royalblue;
-            color: white;
-
-            &:hover {
-                background: #3454b4;
-            }  
-        }
-    }
-
-    .today {
+    .dtp-today {
         position: relative;
 
-        &:before {
+        &::before {
             display: inline-block;
             position: absolute;
             bottom: 4px;
@@ -50,30 +30,48 @@
             border-bottom-color: royalblue;
             border-top-color: rgba(0, 0, 0, 0.2);
             content: '';
+        }
 
-            &.active {
-                border-bottom-color: white;
+        &.dtp-active::before {
+            border-bottom-color: white;
+        }
+    }
+
+    .dtp-action {
+        cursor: pointer;
+        border-radius: .25em;
+
+        &:hover {
+            background: #eee;
+        }
+
+        &.dtp-active {
+            background: royalblue;
+            color: white;
+
+            &:hover {
+                background: #3454b4;
             }
         }
     }
 
-    .disabled {
+    .dtp-disabled {
         opacity: 0.5;
         cursor: not-allowed;
     }
 
-    .time-display {
+    .dtp-time {
         font-size: 1.25rem;
     }
 }
 
-.datetimepicker-inline {
+.dtp-inline {
     display: block;
     border: 0;
 }
 
 @media (min-width: 768px) {
-    .datetimepicker-full {
+    .dtp-wide {
         width: 600px;
     }
 }

@@ -21,6 +21,30 @@ Object.assign(DateTimePicker.prototype, {
     },
 
     /**
+     * Get the maximum date.
+     * @return {DateTime|array} The maximum date.
+     */
+    getMaxDate() {
+        if (!this._maxDate) {
+            return null;
+        }
+
+        return this._maxDate.clone();
+    },
+
+    /**
+     * Get the minimum date.
+     * @return {DateTime|array} The minimum date.
+     */
+    getMinDate() {
+        if (!this._minDate) {
+            return null;
+        }
+
+        return this._minDate.clone();
+    },
+
+    /**
      * Get the view date.
      * @return {DateTime} The view date.
      */

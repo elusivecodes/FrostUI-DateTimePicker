@@ -43,12 +43,39 @@
          * New DateTimePicker constructor.
          * @param {HTMLElement} node The input node.
          * @param {object} [settings] The options to create the DateTimePicker with.
+         * @param {string} [settings.format] The format string.
+         * @param {string} [settings.locale] The locale to use.
+         * @param {string} [setting.timeZone] The timeZone to use.
+         * @param {string|number|array|Date|DateTime} [settings.defaultDate] The default date to use.
+         * @param {string|number|array|Date|DateTime} [settings.minDate] The minimum allowed date.
+         * @param {string|number|array|Date|DateTime} [settings.maxDate] The maximum allowed date.
+         * @param {DateTimePicker~validCallback} [settings.isValidDay] The valid day callback.
+         * @param {DateTimePicker~validCallback} [settings.isValidMonth] The valid month callback.
+         * @param {DateTimePicker~validCallback} [settings.isValidTime] The valid time callback.
+         * @param {DateTimePicker~validCallback} [settings.isValidYear] The valid year callback.
+         * @param {DateTimePicker~renderCallback} [settings.renderDay] The render day callback
+         * @param {DateTimePicker~renderCallback} [settings.renderMonth] The render month callback
+         * @param {DateTimePicker~renderCallback} [settings.renderYear] The render year callback
+         * @param {object} [settings.icons] Class names to use for icons.
+         * @param {object} [settings.tooltips] Tooltips to use for actions.
+         * @param {function} [settings.keyDown] The keydown callback.
+         * @param {Boolean} [settings.multiDate=false] Whether to allow selecting multiple dates.
+         * @param {string} [settings.multiDateSeparator=,] The multiple date separator.
+         * @param {Boolean} [settings.useCurrent=false] Whether to use the current time as the default date.
+         * @param {Boolean} [settings.keepOpen=false] Whether to keep the date picker open after selecting a date.
+         * @param {Boolean} [settings.focusOnShow=true] Whether to focus the input when the date picker is shown.
+         * @param {Boolean} [settings.inline=false] Whether to render the date picker inline.
+         * @param {Boolean} [settings.sideBySide=false] Whether to render the date and time pickers side by side.
+         * @param {Boolean} [settings.keepInvalid=false] Whether to keep invalid date inputs.
+         * @param {string} [settings.minView] The minimum date view to display.
+         * @param {number} [settings.stepping=1] The minute stepping interval.
          * @param {number} [settings.duration=100] The duration of the animation.
          * @param {string} [settings.placement=bottom] The placement of the datetimepicker relative to the toggle.
          * @param {string} [settings.position=start] The position of the datetimepicker relative to the toggle.
          * @param {Boolean} [settings.fixed=false] Whether the datetimepicker position is fixed.
          * @param {number} [settings.spacing=2] The spacing between the datetimepicker and the toggle.
          * @param {number} [settings.minContact=false] The minimum amount of contact the datetimepicker must make with the toggle.
+         * @param {Boolean} [autoInit=false] Whether the date picker was initialized from a toggle event.
          * @returns {DateTimePicker} A new DateTimePicker object.
          */
         constructor(node, settings, autoInit = false) {
@@ -88,9 +115,9 @@
 
             this._checkFormat();
             this._parseSettings();
+            this._update();
             this._render();
             this._events();
-            this._update();
 
             dom.setData(this._node, 'datetimepicker', this);
         }
@@ -187,7 +214,7 @@
          * @param {HTMLElement} [target] The target node.
          */
         static autoHide(target) {
-            const menus = dom.find('.datetimepicker:not(.datetimepicker-inline)');
+            const menus = dom.find('.datetimepicker:not(.dtp-inline)');
 
             for (const menu of menus) {
                 const selector = dom.getDataset(menu, 'trigger');
@@ -202,17 +229,43 @@
             }
         }
 
-
         /**
          * Initialize a DateTimePicker.
          * @param {HTMLElement} node The input node.
          * @param {object} [settings] The options to create the DateTimePicker with.
+         * @param {string} [settings.format] The format string.
+         * @param {string} [settings.locale] The locale to use.
+         * @param {string} [setting.timeZone] The timeZone to use.
+         * @param {string|number|array|Date|DateTime} [settings.defaultDate] The default date to use.
+         * @param {string|number|array|Date|DateTime} [settings.minDate] The minimum allowed date.
+         * @param {string|number|array|Date|DateTime} [settings.maxDate] The maximum allowed date.
+         * @param {DateTimePicker~validCallback} [settings.isValidDay] The valid day callback.
+         * @param {DateTimePicker~validCallback} [settings.isValidMonth] The valid month callback.
+         * @param {DateTimePicker~validCallback} [settings.isValidTime] The valid time callback.
+         * @param {DateTimePicker~validCallback} [settings.isValidYear] The valid year callback.
+         * @param {DateTimePicker~renderCallback} [settings.renderDay] The render day callback
+         * @param {DateTimePicker~renderCallback} [settings.renderMonth] The render month callback
+         * @param {DateTimePicker~renderCallback} [settings.renderYear] The render year callback
+         * @param {object} [settings.icons] Class names to use for icons.
+         * @param {object} [settings.tooltips] Tooltips to use for actions.
+         * @param {function} [settings.keyDown] The keydown callback.
+         * @param {Boolean} [settings.multiDate=false] Whether to allow selecting multiple dates.
+         * @param {string} [settings.multiDateSeparator=,] The multiple date separator.
+         * @param {Boolean} [settings.useCurrent=false] Whether to use the current time as the default date.
+         * @param {Boolean} [settings.keepOpen=false] Whether to keep the date picker open after selecting a date.
+         * @param {Boolean} [settings.focusOnShow=true] Whether to focus the input when the date picker is shown.
+         * @param {Boolean} [settings.inline=false] Whether to render the date picker inline.
+         * @param {Boolean} [settings.sideBySide=false] Whether to render the date and time pickers side by side.
+         * @param {Boolean} [settings.keepInvalid=false] Whether to keep invalid date inputs.
+         * @param {string} [settings.minView] The minimum date view to display.
+         * @param {number} [settings.stepping=1] The minute stepping interval.
          * @param {number} [settings.duration=100] The duration of the animation.
          * @param {string} [settings.placement=bottom] The placement of the datetimepicker relative to the toggle.
          * @param {string} [settings.position=start] The position of the datetimepicker relative to the toggle.
          * @param {Boolean} [settings.fixed=false] Whether the datetimepicker position is fixed.
          * @param {number} [settings.spacing=2] The spacing between the datetimepicker and the toggle.
          * @param {number} [settings.minContact=false] The minimum amount of contact the datetimepicker must make with the toggle.
+         * @param {Boolean} [autoInit=false] Whether the date picker was initialized from a toggle event.
          * @returns {DateTimePicker} A new DateTimePicker object.
          */
         static init(node, settings, autoInit = false) {
@@ -262,59 +315,48 @@
                 });
             }
 
-            dom.addEvent(this._node, 'input.frost.datetimepicker', _ => {
+            dom.addEvent(this._node, 'blur.frost.datetimepicker', _ => {
                 const value = dom.getValue(this._node);
                 if (this._settings.multiDate) {
-                    try {
-                        const dates = value.split(this._settings.multiSeparator).map(date => this._makeDate(date));
-                        if (!dates.find(date => !date.isValid)) {
-                            this._setDates(dates);
-                        }
-                    } catch (e) { }
-                } else {
-                    try {
-                        const date = this._makeDate(value);;
-                        if (date.isValid) {
-                            this._setDate(date);
-                        }
-                    } catch (e) { }
-                }
-            });
-
-            if (!this._settings.keepInvalid) {
-                dom.addEvent(this._node, 'blur.frost.datetimepicker', _ => {
-                    const value = dom.getValue(this._node);
-                    if (this._settings.multiDate) {
-                        const values = value.split(this._settings.multiSeparator);
-                        const dates = [];
-                        let error = false;
-                        for (const val of values) {
-                            try {
-                                const date = this._makeDate(val);
+                    const values = value.split(this._settings.multiDateSeparator);
+                    const dates = [];
+                    let error = false;
+                    for (const val of values) {
+                        try {
+                            const date = this._makeDate(val);
+                            if (date.isValid && this._isValid(date, 'second')) {
                                 dates.push(date);
-                            } catch (e) {
+                            } else {
                                 error = true;
                             }
-                        }
-                        if (!error && !dates.find(date => !date.isValid)) {
-                            this._setDates(dates);
-                        } else {
-                            this._setDates([]);
-                        }
-                    } else {
-                        try {
-                            const date = this._makeDate(value);
-                            if (date.isValid) {
-                                this._setDate(date);
-                            } else {
-                                this._setDate(null);
-                            }
                         } catch (e) {
-                            this._setDate(null);
+                            error = true;
+                        }
+
+                        if (error) {
+                            break;
                         }
                     }
-                });
-            }
+                    if (!error) {
+                        this._setDates(dates);
+                    } else if (!this._settings.keepInvalid) {
+                        this._setDates(this._dates);
+                    }
+                } else {
+                    try {
+                        const date = this._makeDate(value);
+                        if (date.isValid && this._isValid(date, 'second')) {
+                            this._setDate(date);
+                        } else if (!this._settings.keepInvalid) {
+                            this._setDate(this._date);
+                        }
+                    } catch (e) {
+                        if (!this._settings.keepInvalid) {
+                            this._setDate(this._date);
+                        }
+                    }
+                }
+            });
 
             if (this._settings.keyDown && !this._settings.inline && !this._settings.multiDate) {
                 dom.addEvent(this._node, 'keydown.frost.datetimepicker', e => {
@@ -362,9 +404,9 @@
                             this._dates.push(tempDate);
                         }
 
-                        this._setDates(this._dates);
-
                         this._viewDate = tempDate.clone();
+
+                        this._setDates(this._dates);
 
                         break;
                     case 'nextTime':
@@ -550,11 +592,11 @@
          */
         _clampDate(date) {
             if (this._minDate && this._minDate.isAfter(date)) {
-                date = this._minDate.clone();
+                date.setTimestamp(this._minDate.getTimestamp());
             }
 
             if (this._maxDate && this._maxDate.isBefore(date)) {
-                date = this._maxDate.clone();
+                date.setTimestamp(this._maxDate.getTimestamp());
             }
         },
 
@@ -795,11 +837,11 @@
                 this._viewDate = this._parseDate(this._settings.viewDate);
             }
 
-            if (!this._settings.viewDate && this._date) {
+            if (!this._viewDate && this._date) {
                 this._viewDate = this._date.clone();
             }
 
-            if (!this._settings.viewDate) {
+            if (!this._viewDate) {
                 this._viewDate = this._now();
             }
         },
@@ -841,10 +883,6 @@
 
             dates = dates.sort((a, b) => a.isBefore(b) ? -1 : 1);
 
-            if (dates.find(date => !this._isValid(date, 'second'))) {
-                // emit error?
-            }
-
             dom.triggerEvent(this._node, 'change.frost.datetimepicker', {
                 old: this._dates.map(date => date.clone()),
                 new: dates.map(date => date.clone())
@@ -869,7 +907,7 @@
                 }
                 value = this._dates
                     .map(date => date.format(this._settings.format))
-                    .join(this._settings.multiSeparator);
+                    .join(this._settings.multiDateSeparator);
             } else if (this._date) {
                 if (!this._settings.keepInvalid) {
                     this._clampDate(this._date);
@@ -917,7 +955,7 @@
 
                         const td = dom.create('td', {
                             html: '<span. class="icon-clock"></>',
-                            class: 'py-2',
+                            class: 'dtp-action py-2',
                             attributes: {
                                 colspan: 7,
                                 title: this._settings.tooltips.selectTime
@@ -931,6 +969,10 @@
                 });
 
                 dom.append(this._dateContainer, table);
+            }
+
+            if (!this._settings.inline && this._popper) {
+                this._popper.update();
             }
         },
 
@@ -948,7 +990,7 @@
 
                         const td = dom.create('td', {
                             html: '<span class="icon-calendar"></span>',
-                            class: 'py-2',
+                            class: 'dtp-action py-2',
                             attributes: {
                                 colspan: 4,
                                 title: this._settings.tooltips.selectDate
@@ -977,6 +1019,10 @@
                 default:
                     this._renderTime();
                     break;
+            }
+
+            if (!this._settings.inline && this._popper) {
+                this._popper.update();
             }
         },
 
@@ -1016,7 +1062,7 @@
 
             if (this._hasDate && this._hasTime) {
                 if (this._settings.sideBySide) {
-                    dom.addClass(this._menuNode, 'datetimepicker-full')
+                    dom.addClass(this._menuNode, 'dtp-wide')
                     dom.addClass(this._container, 'row-cols-md-2')
                 } else {
                     dom.setStyle(this._timeContainer, 'display', 'none', true);
@@ -1024,7 +1070,7 @@
             }
 
             if (this._settings.inline) {
-                dom.addClass(this._menuNode, 'datetimepicker-inline');
+                dom.addClass(this._menuNode, 'dtp-inline');
 
                 dom.after(this._node, this._menuNode);
                 dom.hide(this._node);
@@ -1127,14 +1173,15 @@
                         dom.append(tr, td);
 
                         if (this._isCurrent(current, 'day')) {
-                            dom.addClass(td, 'active');
+                            dom.addClass(td, 'dtp-active');
                         } else if (!this._viewDate.isSame(current, 'month')) {
                             dom.addClass(td, 'text-secondary');
                         }
 
                         if (!this._isValid(current, 'day')) {
-                            dom.addClass(td, 'disabled');
+                            dom.addClass(td, 'dtp-disabled');
                         } else {
+                            dom.addClass(td, 'dtp-action');
                             dom.setDataset(td, {
                                 action: this._settings.multiDate ?
                                     'setDateMulti' :
@@ -1146,7 +1193,7 @@
                         }
 
                         if (now.isSame(current, 'day')) {
-                            dom.addClass(td, 'today');
+                            dom.addClass(td, 'dtp-today');
                         }
 
                         if (this._settings.renderDay) {
@@ -1199,8 +1246,9 @@
                         dom.append(row, col);
 
                         if (!this._isValid(current, 'hour')) {
-                            dom.addClass(col, 'disabled');
+                            dom.addClass(col, 'dtp-disabled');
                         } else {
+                            dom.addClass(col, 'dtp-action');
                             dom.setDataset(col, {
                                 action: 'setHours',
                                 hour: current.getHours()
@@ -1257,8 +1305,9 @@
                         dom.append(row, col);
 
                         if (!this._isValid(current, 'minute')) {
-                            dom.addClass(col, 'disabled');
+                            dom.addClass(col, 'dtp-disabled');
                         } else {
+                            dom.addClass(col, 'dtp-action');
                             dom.setDataset(col, {
                                 action: 'setMinutes',
                                 minute: current.getMinutes()
@@ -1352,13 +1401,14 @@
                         dom.append(row, col);
 
                         if (this._isCurrent(current, 'month')) {
-                            dom.addClass(col, 'active');
+                            dom.addClass(col, 'dtp-active');
                         }
 
                         if (!this._isValid(current, 'month')) {
-                            dom.addClass(col, 'disabled');
+                            dom.addClass(col, 'dtp-disabled');
                         } else {
-                            if (this._settings.minView === 'year') {
+                            dom.addClass(col, 'dtp-action');
+                            if (this._settings.minView === 'months') {
                                 dom.setDataset(col, {
                                     action: this._settings.multiDate ?
                                         'setDateMulti' :
@@ -1426,8 +1476,9 @@
                         dom.append(row, col);
 
                         if (!this._isValid(current, 'second')) {
-                            dom.addClass(col, 'disabled');
+                            dom.addClass(col, 'dtp-disabled');
                         } else {
+                            dom.addClass(col, 'dtp-action');
                             dom.setDataset(col, {
                                 action: 'setSeconds',
                                 second: current.getSeconds()
@@ -1648,7 +1699,7 @@
                             currentHours + (currentHours < 12 ? 12 : -12)
                         );
                         if (!this._isValid(otherPeriod, 'second')) {
-                            dom.addClass(periodButton, 'disabled');
+                            dom.addClass(periodButton, 'dtp-disabled');
                         } else {
                             dom.setDataset(periodButton, {
                                 action: 'togglePeriod'
@@ -1748,15 +1799,16 @@
                         dom.append(row, col);
 
                         if (this._isCurrent(current, 'year')) {
-                            dom.addClass(col, 'active');
+                            dom.addClass(col, 'dtp-active');
                         } else if (thisYear < startYear || thisYear > endYear) {
                             dom.addClass(col, 'text-secondary');
                         }
 
                         if (!this._isValid(current, 'year')) {
-                            dom.addClass(col, 'disabled');
+                            dom.addClass(col, 'dtp-disabled');
                         } else {
-                            if (this._settings.minView === 'decade') {
+                            dom.addClass(col, 'dtp-action');
+                            if (this._settings.minView === 'years') {
                                 dom.setDataset(col, {
                                     action: this._settings.multiDate ?
                                         'setDateMulti' :
@@ -1807,6 +1859,30 @@
             }
 
             return this._date.clone();
+        },
+
+        /**
+         * Get the maximum date.
+         * @return {DateTime|array} The maximum date.
+         */
+        getMaxDate() {
+            if (!this._maxDate) {
+                return null;
+            }
+
+            return this._maxDate.clone();
+        },
+
+        /**
+         * Get the minimum date.
+         * @return {DateTime|array} The minimum date.
+         */
+        getMinDate() {
+            if (!this._minDate) {
+                return null;
+            }
+
+            return this._minDate.clone();
         },
 
         /**
@@ -2031,8 +2107,9 @@
                 });
 
                 if (!options.header.prev) {
-                    dom.addClass(prevTd, 'disabled');
+                    dom.addClass(prevTd, 'dtp-disabled');
                 } else {
+                    dom.addClass(prevTd, 'dtp-action');
                     dom.setDataset(prevTd, options.header.prev.data);
                     dom.setAttribute(prevTd, options.header.prev.attr);
                 }
@@ -2051,7 +2128,7 @@
                 dom.append(tr, titleTd);
 
                 if (options.header.data) {
-                    dom.addClass(titleTd, 'action');
+                    dom.addClass(titleTd, 'dtp-action');
                 }
 
                 if (options.header.wide) {
@@ -2064,8 +2141,9 @@
                 });
 
                 if (!options.header.next) {
-                    dom.addClass(nextTd, 'disabled');
+                    dom.addClass(nextTd, 'dtp-disabled');
                 } else {
+                    dom.addClass(nextTd, 'dtp-action');
                     dom.setDataset(nextTd, options.header.next.data);
                     dom.setAttribute(nextTd, options.header.next.attr);
                 }
@@ -2098,18 +2176,19 @@
                 }
             });
 
-            if (options.increment) {
+            if (!options.increment) {
+                dom.addClass(upTd, 'dtp-disabled');
+            } else {
+                dom.addClass(upTd, 'dtp-action');
                 dom.setDataset(upTd, options.increment.data);
                 dom.setAttribute(upTd, options.increment.attr);
-            } else {
-                dom.addClass(upTd, 'disabled');
             }
 
             dom.append(options.upTr, upTd);
 
             const selectTd = dom.create('td', {
                 text: options.select.text,
-                class: 'time-display py-2 px-0',
+                class: 'dtp-action dtp-time py-2 px-0',
                 dataset: options.select.data,
                 attributes: options.select.attr
             });
@@ -2120,11 +2199,12 @@
                 class: 'text-primary bw-bold py-4 px-0'
             });
 
-            if (options.decrement) {
+            if (!options.decrement) {
+                dom.addClass(downTd, 'dtp-disabled');
+            } else {
+                dom.addClass(downTd, 'dtp-action');
                 dom.setDataset(downTd, options.decrement.data);
                 dom.setAttribute(downTd, options.decrement.attr);
-            } else {
-                dom.addClass(downTd, 'disabled');
             }
 
             dom.append(options.downTr, downTd);
@@ -2155,6 +2235,17 @@
     });
 
 
+    /**
+     * @callback DateTimePicker~validCallback
+     * @param {DateTime} date The date to test.
+     */
+
+    /**
+     * @callback DateTimePicker~renderCallback
+     * @param {DateTime} date The date being rendered.
+     * @param {HTMLElement} element The element being rendered.
+     */
+
     // DateTimePicker default options
     DateTimePicker.defaults = {
         format: null,
@@ -2163,13 +2254,6 @@
         defaultDate: null,
         minDate: null,
         maxDate: null,
-        isValidDay: null,
-        isValidMonth: null,
-        isValidTime: null,
-        isValidYear: null,
-        renderDay: null,
-        renderMonth: null,
-        renderYear: null,
         icons: {
             up: 'icon-arrow-up',
             right: 'icon-arrow-right',
@@ -2198,6 +2282,13 @@
             selectYear: 'Select Year',
             togglePeriod: 'Toggle Period'
         },
+        isValidDay: null,
+        isValidMonth: null,
+        isValidTime: null,
+        isValidYear: null,
+        renderDay: null,
+        renderMonth: null,
+        renderYear: null,
         keyDown: (e, dtp) => {
             let date = dtp._date ?
                 dtp._date :
@@ -2250,7 +2341,7 @@
 
             e.preventDefault();
 
-            if (dtp._isValid(date)) {
+            if (!date || dtp._isValid(date, 'second')) {
                 dtp._setDate(date);
             }
         },
@@ -2259,12 +2350,11 @@
         useCurrent: false,
         keepOpen: false,
         focusOnShow: true,
-        minView: null,
         inline: false,
         sideBySide: false,
         keepInvalid: false,
+        minView: null,
         stepping: 1,
-
         duration: 100,
         placement: 'bottom',
         position: 'start',
@@ -2273,7 +2363,10 @@
         minContact: false
     };
 
+    // Format token RegExp
     DateTimePicker._formatTokenRegExp = /([a-z])\1*|'[^']*'/ig;
+
+    // Cache values
     DateTimePicker._dayPeriods = {};
     DateTimePicker._defaultDateFormats = {};
     DateTimePicker._defaultFormats = {};

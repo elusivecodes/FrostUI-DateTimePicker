@@ -1,3 +1,14 @@
+/**
+ * @callback DateTimePicker~validCallback
+ * @param {DateTime} date The date to test.
+ */
+
+/**
+ * @callback DateTimePicker~renderCallback
+ * @param {DateTime} date The date being rendered.
+ * @param {HTMLElement} element The element being rendered.
+ */
+
 // DateTimePicker default options
 DateTimePicker.defaults = {
     format: null,
@@ -6,13 +17,6 @@ DateTimePicker.defaults = {
     defaultDate: null,
     minDate: null,
     maxDate: null,
-    isValidDay: null,
-    isValidMonth: null,
-    isValidTime: null,
-    isValidYear: null,
-    renderDay: null,
-    renderMonth: null,
-    renderYear: null,
     icons: {
         up: 'icon-arrow-up',
         right: 'icon-arrow-right',
@@ -41,6 +45,13 @@ DateTimePicker.defaults = {
         selectYear: 'Select Year',
         togglePeriod: 'Toggle Period'
     },
+    isValidDay: null,
+    isValidMonth: null,
+    isValidTime: null,
+    isValidYear: null,
+    renderDay: null,
+    renderMonth: null,
+    renderYear: null,
     keyDown: (e, dtp) => {
         let date = dtp._date ?
             dtp._date :
@@ -93,7 +104,7 @@ DateTimePicker.defaults = {
 
         e.preventDefault();
 
-        if (dtp._isValid(date)) {
+        if (!date || dtp._isValid(date, 'second')) {
             dtp._setDate(date);
         }
     },
@@ -102,12 +113,11 @@ DateTimePicker.defaults = {
     useCurrent: false,
     keepOpen: false,
     focusOnShow: true,
-    minView: null,
     inline: false,
     sideBySide: false,
     keepInvalid: false,
+    minView: null,
     stepping: 1,
-
     duration: 100,
     placement: 'bottom',
     position: 'start',
@@ -116,7 +126,10 @@ DateTimePicker.defaults = {
     minContact: false
 };
 
+// Format token RegExp
 DateTimePicker._formatTokenRegExp = /([a-z])\1*|'[^']*'/ig;
+
+// Cache values
 DateTimePicker._dayPeriods = {};
 DateTimePicker._defaultDateFormats = {};
 DateTimePicker._defaultFormats = {};

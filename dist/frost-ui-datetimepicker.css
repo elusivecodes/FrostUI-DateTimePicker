@@ -16,24 +16,10 @@
 .datetimepicker .table > tbody > tr:last-child > td {
   border-bottom: 0;
 }
-.datetimepicker [data-action]:not(.btn) {
-  cursor: pointer;
-  border-radius: 0.25em;
-}
-.datetimepicker [data-action]:not(.btn):hover {
-  background: #eee;
-}
-.datetimepicker [data-action].active {
-  background: royalblue;
-  color: white;
-}
-.datetimepicker [data-action].active:hover {
-  background: #3454b4;
-}
-.datetimepicker .today {
+.datetimepicker .dtp-today {
   position: relative;
 }
-.datetimepicker .today:before {
+.datetimepicker .dtp-today::before {
   display: inline-block;
   position: absolute;
   bottom: 4px;
@@ -44,22 +30,36 @@
   border-top-color: rgba(0, 0, 0, 0.2);
   content: '';
 }
-.datetimepicker .today:before.active {
+.datetimepicker .dtp-today.dtp-active::before {
   border-bottom-color: white;
 }
-.datetimepicker .disabled {
+.datetimepicker .dtp-action {
+  cursor: pointer;
+  border-radius: 0.25em;
+}
+.datetimepicker .dtp-action:hover {
+  background: #eee;
+}
+.datetimepicker .dtp-action.dtp-active {
+  background: royalblue;
+  color: white;
+}
+.datetimepicker .dtp-action.dtp-active:hover {
+  background: #3454b4;
+}
+.datetimepicker .dtp-disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
-.datetimepicker .time-display {
+.datetimepicker .dtp-time {
   font-size: 1.25rem;
 }
-.datetimepicker-inline {
+.dtp-inline {
   display: block;
   border: 0;
 }
 @media (min-width: 768px) {
-  .datetimepicker-full {
+  .dtp-wide {
     width: 600px;
   }
 }

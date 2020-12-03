@@ -64,11 +64,11 @@ Object.assign(DateTimePicker.prototype, {
      */
     _clampDate(date) {
         if (this._minDate && this._minDate.isAfter(date)) {
-            date = this._minDate.clone();
+            date.setTimestamp(this._minDate.getTimestamp());
         }
 
         if (this._maxDate && this._maxDate.isBefore(date)) {
-            date = this._maxDate.clone();
+            date.setTimestamp(this._maxDate.getTimestamp());
         }
     },
 
@@ -309,11 +309,11 @@ Object.assign(DateTimePicker.prototype, {
             this._viewDate = this._parseDate(this._settings.viewDate);
         }
 
-        if (!this._settings.viewDate && this._date) {
+        if (!this._viewDate && this._date) {
             this._viewDate = this._date.clone();
         }
 
-        if (!this._settings.viewDate) {
+        if (!this._viewDate) {
             this._viewDate = this._now();
         }
     },
@@ -355,10 +355,6 @@ Object.assign(DateTimePicker.prototype, {
 
         dates = dates.sort((a, b) => a.isBefore(b) ? -1 : 1);
 
-        if (dates.find(date => !this._isValid(date, 'second'))) {
-            // emit error?
-        }
-
         dom.triggerEvent(this._node, 'change.frost.datetimepicker', {
             old: this._dates.map(date => date.clone()),
             new: dates.map(date => date.clone())
@@ -383,7 +379,7 @@ Object.assign(DateTimePicker.prototype, {
             }
             value = this._dates
                 .map(date => date.format(this._settings.format))
-                .join(this._settings.multiSeparator);
+                .join(this._settings.multiDateSeparator);
         } else if (this._date) {
             if (!this._settings.keepInvalid) {
                 this._clampDate(this._date);

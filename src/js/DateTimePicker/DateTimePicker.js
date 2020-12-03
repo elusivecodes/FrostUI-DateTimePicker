@@ -8,12 +8,39 @@ class DateTimePicker {
      * New DateTimePicker constructor.
      * @param {HTMLElement} node The input node.
      * @param {object} [settings] The options to create the DateTimePicker with.
+     * @param {string} [settings.format] The format string.
+     * @param {string} [settings.locale] The locale to use.
+     * @param {string} [setting.timeZone] The timeZone to use.
+     * @param {string|number|array|Date|DateTime} [settings.defaultDate] The default date to use.
+     * @param {string|number|array|Date|DateTime} [settings.minDate] The minimum allowed date.
+     * @param {string|number|array|Date|DateTime} [settings.maxDate] The maximum allowed date.
+     * @param {DateTimePicker~validCallback} [settings.isValidDay] The valid day callback.
+     * @param {DateTimePicker~validCallback} [settings.isValidMonth] The valid month callback.
+     * @param {DateTimePicker~validCallback} [settings.isValidTime] The valid time callback.
+     * @param {DateTimePicker~validCallback} [settings.isValidYear] The valid year callback.
+     * @param {DateTimePicker~renderCallback} [settings.renderDay] The render day callback
+     * @param {DateTimePicker~renderCallback} [settings.renderMonth] The render month callback
+     * @param {DateTimePicker~renderCallback} [settings.renderYear] The render year callback
+     * @param {object} [settings.icons] Class names to use for icons.
+     * @param {object} [settings.tooltips] Tooltips to use for actions.
+     * @param {function} [settings.keyDown] The keydown callback.
+     * @param {Boolean} [settings.multiDate=false] Whether to allow selecting multiple dates.
+     * @param {string} [settings.multiDateSeparator=,] The multiple date separator.
+     * @param {Boolean} [settings.useCurrent=false] Whether to use the current time as the default date.
+     * @param {Boolean} [settings.keepOpen=false] Whether to keep the date picker open after selecting a date.
+     * @param {Boolean} [settings.focusOnShow=true] Whether to focus the input when the date picker is shown.
+     * @param {Boolean} [settings.inline=false] Whether to render the date picker inline.
+     * @param {Boolean} [settings.sideBySide=false] Whether to render the date and time pickers side by side.
+     * @param {Boolean} [settings.keepInvalid=false] Whether to keep invalid date inputs.
+     * @param {string} [settings.minView] The minimum date view to display.
+     * @param {number} [settings.stepping=1] The minute stepping interval.
      * @param {number} [settings.duration=100] The duration of the animation.
      * @param {string} [settings.placement=bottom] The placement of the datetimepicker relative to the toggle.
      * @param {string} [settings.position=start] The position of the datetimepicker relative to the toggle.
      * @param {Boolean} [settings.fixed=false] Whether the datetimepicker position is fixed.
      * @param {number} [settings.spacing=2] The spacing between the datetimepicker and the toggle.
      * @param {number} [settings.minContact=false] The minimum amount of contact the datetimepicker must make with the toggle.
+     * @param {Boolean} [autoInit=false] Whether the date picker was initialized from a toggle event.
      * @returns {DateTimePicker} A new DateTimePicker object.
      */
     constructor(node, settings, autoInit = false) {
@@ -53,9 +80,9 @@ class DateTimePicker {
 
         this._checkFormat();
         this._parseSettings();
+        this._update();
         this._render();
         this._events();
-        this._update();
 
         dom.setData(this._node, 'datetimepicker', this);
     }
@@ -152,7 +179,7 @@ class DateTimePicker {
      * @param {HTMLElement} [target] The target node.
      */
     static autoHide(target) {
-        const menus = dom.find('.datetimepicker:not(.datetimepicker-inline)');
+        const menus = dom.find('.datetimepicker:not(.dtp-inline)');
 
         for (const menu of menus) {
             const selector = dom.getDataset(menu, 'trigger');
@@ -167,17 +194,43 @@ class DateTimePicker {
         }
     }
 
-
     /**
      * Initialize a DateTimePicker.
      * @param {HTMLElement} node The input node.
      * @param {object} [settings] The options to create the DateTimePicker with.
+     * @param {string} [settings.format] The format string.
+     * @param {string} [settings.locale] The locale to use.
+     * @param {string} [setting.timeZone] The timeZone to use.
+     * @param {string|number|array|Date|DateTime} [settings.defaultDate] The default date to use.
+     * @param {string|number|array|Date|DateTime} [settings.minDate] The minimum allowed date.
+     * @param {string|number|array|Date|DateTime} [settings.maxDate] The maximum allowed date.
+     * @param {DateTimePicker~validCallback} [settings.isValidDay] The valid day callback.
+     * @param {DateTimePicker~validCallback} [settings.isValidMonth] The valid month callback.
+     * @param {DateTimePicker~validCallback} [settings.isValidTime] The valid time callback.
+     * @param {DateTimePicker~validCallback} [settings.isValidYear] The valid year callback.
+     * @param {DateTimePicker~renderCallback} [settings.renderDay] The render day callback
+     * @param {DateTimePicker~renderCallback} [settings.renderMonth] The render month callback
+     * @param {DateTimePicker~renderCallback} [settings.renderYear] The render year callback
+     * @param {object} [settings.icons] Class names to use for icons.
+     * @param {object} [settings.tooltips] Tooltips to use for actions.
+     * @param {function} [settings.keyDown] The keydown callback.
+     * @param {Boolean} [settings.multiDate=false] Whether to allow selecting multiple dates.
+     * @param {string} [settings.multiDateSeparator=,] The multiple date separator.
+     * @param {Boolean} [settings.useCurrent=false] Whether to use the current time as the default date.
+     * @param {Boolean} [settings.keepOpen=false] Whether to keep the date picker open after selecting a date.
+     * @param {Boolean} [settings.focusOnShow=true] Whether to focus the input when the date picker is shown.
+     * @param {Boolean} [settings.inline=false] Whether to render the date picker inline.
+     * @param {Boolean} [settings.sideBySide=false] Whether to render the date and time pickers side by side.
+     * @param {Boolean} [settings.keepInvalid=false] Whether to keep invalid date inputs.
+     * @param {string} [settings.minView] The minimum date view to display.
+     * @param {number} [settings.stepping=1] The minute stepping interval.
      * @param {number} [settings.duration=100] The duration of the animation.
      * @param {string} [settings.placement=bottom] The placement of the datetimepicker relative to the toggle.
      * @param {string} [settings.position=start] The position of the datetimepicker relative to the toggle.
      * @param {Boolean} [settings.fixed=false] Whether the datetimepicker position is fixed.
      * @param {number} [settings.spacing=2] The spacing between the datetimepicker and the toggle.
      * @param {number} [settings.minContact=false] The minimum amount of contact the datetimepicker must make with the toggle.
+     * @param {Boolean} [autoInit=false] Whether the date picker was initialized from a toggle event.
      * @returns {DateTimePicker} A new DateTimePicker object.
      */
     static init(node, settings, autoInit = false) {

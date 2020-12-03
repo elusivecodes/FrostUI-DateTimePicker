@@ -31,8 +31,9 @@ Object.assign(DateTimePicker, {
             });
 
             if (!options.header.prev) {
-                dom.addClass(prevTd, 'disabled');
+                dom.addClass(prevTd, 'dtp-disabled');
             } else {
+                dom.addClass(prevTd, 'dtp-action');
                 dom.setDataset(prevTd, options.header.prev.data);
                 dom.setAttribute(prevTd, options.header.prev.attr);
             }
@@ -51,7 +52,7 @@ Object.assign(DateTimePicker, {
             dom.append(tr, titleTd);
 
             if (options.header.data) {
-                dom.addClass(titleTd, 'action');
+                dom.addClass(titleTd, 'dtp-action');
             }
 
             if (options.header.wide) {
@@ -64,8 +65,9 @@ Object.assign(DateTimePicker, {
             });
 
             if (!options.header.next) {
-                dom.addClass(nextTd, 'disabled');
+                dom.addClass(nextTd, 'dtp-disabled');
             } else {
+                dom.addClass(nextTd, 'dtp-action');
                 dom.setDataset(nextTd, options.header.next.data);
                 dom.setAttribute(nextTd, options.header.next.attr);
             }
@@ -98,18 +100,19 @@ Object.assign(DateTimePicker, {
             }
         });
 
-        if (options.increment) {
+        if (!options.increment) {
+            dom.addClass(upTd, 'dtp-disabled');
+        } else {
+            dom.addClass(upTd, 'dtp-action');
             dom.setDataset(upTd, options.increment.data);
             dom.setAttribute(upTd, options.increment.attr);
-        } else {
-            dom.addClass(upTd, 'disabled');
         }
 
         dom.append(options.upTr, upTd);
 
         const selectTd = dom.create('td', {
             text: options.select.text,
-            class: 'time-display py-2 px-0',
+            class: 'dtp-action dtp-time py-2 px-0',
             dataset: options.select.data,
             attributes: options.select.attr
         });
@@ -120,11 +123,12 @@ Object.assign(DateTimePicker, {
             class: 'text-primary bw-bold py-4 px-0'
         });
 
-        if (options.decrement) {
+        if (!options.decrement) {
+            dom.addClass(downTd, 'dtp-disabled');
+        } else {
+            dom.addClass(downTd, 'dtp-action');
             dom.setDataset(downTd, options.decrement.data);
             dom.setAttribute(downTd, options.decrement.attr);
-        } else {
-            dom.addClass(downTd, 'disabled');
         }
 
         dom.append(options.downTr, downTd);

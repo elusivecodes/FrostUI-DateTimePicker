@@ -14,59 +14,48 @@ Object.assign(DateTimePicker.prototype, {
             });
         }
 
-        dom.addEvent(this._node, 'input.frost.datetimepicker', _ => {
+        dom.addEvent(this._node, 'blur.frost.datetimepicker', _ => {
             const value = dom.getValue(this._node);
             if (this._settings.multiDate) {
-                try {
-                    const dates = value.split(this._settings.multiSeparator).map(date => this._makeDate(date));
-                    if (!dates.find(date => !date.isValid)) {
-                        this._setDates(dates);
-                    }
-                } catch (e) { }
-            } else {
-                try {
-                    const date = this._makeDate(value);;
-                    if (date.isValid) {
-                        this._setDate(date);
-                    }
-                } catch (e) { }
-            }
-        });
-
-        if (!this._settings.keepInvalid) {
-            dom.addEvent(this._node, 'blur.frost.datetimepicker', _ => {
-                const value = dom.getValue(this._node);
-                if (this._settings.multiDate) {
-                    const values = value.split(this._settings.multiSeparator);
-                    const dates = [];
-                    let error = false;
-                    for (const val of values) {
-                        try {
-                            const date = this._makeDate(val);
+                const values = value.split(this._settings.multiDateSeparator);
+                const dates = [];
+                let error = false;
+                for (const val of values) {
+                    try {
+                        const date = this._makeDate(val);
+                        if (date.isValid && this._isValid(date, 'second')) {
                             dates.push(date);
-                        } catch (e) {
+                        } else {
                             error = true;
                         }
-                    }
-                    if (!error && !dates.find(date => !date.isValid)) {
-                        this._setDates(dates);
-                    } else {
-                        this._setDates([]);
-                    }
-                } else {
-                    try {
-                        const date = this._makeDate(value);
-                        if (date.isValid) {
-                            this._setDate(date);
-                        } else {
-                            this._setDate(null);
-                        }
                     } catch (e) {
-                        this._setDate(null);
+                        error = true;
+                    }
+
+                    if (error) {
+                        break;
                     }
                 }
-            });
-        }
+                if (!error) {
+                    this._setDates(dates);
+                } else if (!this._settings.keepInvalid) {
+                    this._setDates(this._dates);
+                }
+            } else {
+                try {
+                    const date = this._makeDate(value);
+                    if (date.isValid && this._isValid(date, 'second')) {
+                        this._setDate(date);
+                    } else if (!this._settings.keepInvalid) {
+                        this._setDate(this._date);
+                    }
+                } catch (e) {
+                    if (!this._settings.keepInvalid) {
+                        this._setDate(this._date);
+                    }
+                }
+            }
+        });
 
         if (this._settings.keyDown && !this._settings.inline && !this._settings.multiDate) {
             dom.addEvent(this._node, 'keydown.frost.datetimepicker', e => {
@@ -114,9 +103,9 @@ Object.assign(DateTimePicker.prototype, {
                         this._dates.push(tempDate);
                     }
 
-                    this._setDates(this._dates);
-
                     this._viewDate = tempDate.clone();
+
+                    this._setDates(this._dates);
 
                     break;
                 case 'nextTime':

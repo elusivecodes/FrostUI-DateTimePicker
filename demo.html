@@ -31,8 +31,7 @@
             <label for="dtpLocale">Locale</label>
             <div class="input-group input-group-filled">
                 <div class="form-input">
-                    <input class="input-filled" type="text" id="dtpLocale" placeholder="Placeholder"
-                        data-locale="ar-eg" />
+                    <input class="input-filled" type="text" id="dtpLocale" placeholder="Placeholder" data-locale="ru" />
                     <div class="ripple-line"></div>
                 </div>
                 <button class="btn ripple btn-outline-dark" role="button" data-toggle="datetimepicker"
@@ -122,6 +121,20 @@
                 </button>
             </div>
         </div>
+        <div class="mb-4">
+            <label for="dtpMinView">Min View</label>
+            <div class="input-group input-group-filled">
+                <div class="form-input">
+                    <input class="input-filled" type="text" id="dtpMinView" placeholder="Placeholder"
+                        data-format="MM/yyyy" data-min-view="months" />
+                    <div class="ripple-line"></div>
+                </div>
+                <button class="btn ripple btn-outline-dark" role="button" data-toggle="datetimepicker"
+                    data-target="#dtpMinView">
+                    <span class="icon-calendar"></span>
+                </button>
+            </div>
+        </div>
         <!-- min view -->
         <div class="mb-4">
             <label for="dtpInline">Inline</label>
@@ -140,6 +153,7 @@
         const dtpDisabledDates = dom.findOne('#dtpDisabledDates');
         const dtpDisabledDays = dom.findOne('#dtpDisabledDays');
         const dtpMinMax = dom.findOne('#dtpMinMax');
+        const dtpMinView = dom.findOne('#dtpMinView');
         const dtpInline = dom.findOne('#dtpInline');
 
         UI.DateTimePicker.init(dtpDefault);
@@ -173,6 +187,7 @@
             minDate: DateTime.now().sub(5, 'days'),
             maxDate: DateTime.now().add(1, 'month')
         });
+        UI.DateTimePicker.init(dtpMinView);
         UI.DateTimePicker.init(dtpInline);
     </script>
 </body>
