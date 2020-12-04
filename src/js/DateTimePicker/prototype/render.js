@@ -29,11 +29,14 @@ Object.assign(DateTimePicker.prototype, {
                     dom.append(tbody, tr);
 
                     const td = dom.create('td', {
-                        html: '<span. class="icon-clock"></>',
-                        class: 'dtp-action py-2',
+                        html: `<span class="${this._settings.icons.time}"></>`,
+                        class: [
+                            this.constructor.classes.action,
+                            this.constructor.classes.spacingNav
+                        ],
                         attributes: {
                             colspan: 7,
-                            title: this._settings.tooltips.selectTime
+                            title: this._settings.lang.selectTime
                         },
                         dataset: {
                             action: 'showTime'
@@ -64,11 +67,14 @@ Object.assign(DateTimePicker.prototype, {
                     dom.append(tbody, row);
 
                     const td = dom.create('td', {
-                        html: '<span class="icon-calendar"></span>',
-                        class: 'dtp-action py-2',
+                        html: `<span class="${this._settings.icons.date}"></span>`,
+                        class: [
+                            this.constructor.classes.action,
+                            this.constructor.classes.spacingNav
+                        ],
                         attributes: {
                             colspan: 4,
-                            title: this._settings.tooltips.selectDate
+                            title: this._settings.lang.selectDate
                         },
                         dataset: {
                             action: 'showDate'
@@ -106,20 +112,20 @@ Object.assign(DateTimePicker.prototype, {
      */
     _render() {
         this._menuNode = dom.create('div', {
-            class: 'datetimepicker',
+            class: this.constructor.classes.menu,
             dataset: {
                 trigger: '#' + dom.getAttribute(this._node, 'id')
             }
         });
 
         this._container = dom.create('div', {
-            class: 'row row-cols-1 gy-0 gx-2'
+            class: this.constructor.classes.container
         });
         dom.append(this._menuNode, this._container);
 
         if (this._hasDate) {
             this._dateContainer = dom.create('div', {
-                class: 'col d-flex flex-column'
+                class: this.constructor.classes.column
             });
             dom.append(this._container, this._dateContainer);
 
@@ -128,7 +134,7 @@ Object.assign(DateTimePicker.prototype, {
 
         if (this._hasTime) {
             this._timeContainer = dom.create('div', {
-                class: 'col d-flex flex-column'
+                class: this.constructor.classes.column
             });
             dom.append(this._container, this._timeContainer);
 
@@ -137,20 +143,20 @@ Object.assign(DateTimePicker.prototype, {
 
         if (this._hasDate && this._hasTime) {
             if (this._settings.sideBySide) {
-                dom.addClass(this._menuNode, 'dtp-wide')
-                dom.addClass(this._container, 'row-cols-md-2')
+                dom.addClass(this._menuNode, this.constructor.classes.menuWide)
+                dom.addClass(this._container, this.constructor.classes.containerColumns)
             } else {
                 dom.setStyle(this._timeContainer, 'display', 'none', true);
             }
         }
 
         if (this._settings.inline) {
-            dom.addClass(this._menuNode, 'dtp-inline');
+            dom.addClass(this._menuNode, this.constructor.classes.menuInline);
 
             dom.after(this._node, this._menuNode);
             dom.hide(this._node);
         } else {
-            dom.addClass(this._menuNode, 'shadow-sm');
+            dom.addClass(this._menuNode, this.constructor.classes.menuShadow);
 
             this._popper = new UI.Popper(
                 this._menuNode,
@@ -188,7 +194,7 @@ Object.assign(DateTimePicker.prototype, {
                     unit: 'month'
                 },
                 attr: {
-                    title: this._settings.tooltips.prevMonth
+                    title: this._settings.lang.prevMonth
                 }
             };
         }
@@ -200,7 +206,7 @@ Object.assign(DateTimePicker.prototype, {
                     unit: 'month'
                 },
                 attr: {
-                    title: this._settings.tooltips.nextMonth
+                    title: this._settings.lang.nextMonth
                 }
             };
         }
@@ -214,7 +220,7 @@ Object.assign(DateTimePicker.prototype, {
                     view: 'months'
                 },
                 attr: {
-                    title: this._settings.tooltips.selectMonth
+                    title: this._settings.lang.selectMonth
                 },
                 prev,
                 next
@@ -227,7 +233,7 @@ Object.assign(DateTimePicker.prototype, {
                 for (let i = 1; i <= 7; i++) {
                     currentDay.setWeekDay(i);
                     const th = dom.create('th', {
-                        class: 'fw-bold',
+                        class: this.constructor.classes.title,
                         text: currentDay.dayName('narrow')
                     });
                     dom.append(tr, th);
@@ -248,15 +254,15 @@ Object.assign(DateTimePicker.prototype, {
                     dom.append(tr, td);
 
                     if (this._isCurrent(current, 'day')) {
-                        dom.addClass(td, 'dtp-active');
+                        dom.addClass(td, this.constructor.classes.active);
                     } else if (!this._viewDate.isSame(current, 'month')) {
-                        dom.addClass(td, 'text-secondary');
+                        dom.addClass(td, this.constructor.classes.secondary);
                     }
 
                     if (!this._isValid(current, 'day')) {
-                        dom.addClass(td, 'dtp-disabled');
+                        dom.addClass(td, this.constructor.classes.disabled);
                     } else {
-                        dom.addClass(td, 'dtp-action');
+                        dom.addClass(td, this.constructor.classes.action);
                         dom.setDataset(td, {
                             action: this._settings.multiDate ?
                                 'setDateMulti' :
@@ -268,7 +274,7 @@ Object.assign(DateTimePicker.prototype, {
                     }
 
                     if (now.isSame(current, 'day')) {
-                        dom.addClass(td, 'dtp-today');
+                        dom.addClass(td, this.constructor.classes.today);
                     }
 
                     if (this._settings.renderDay) {
@@ -301,7 +307,7 @@ Object.assign(DateTimePicker.prototype, {
                 dom.append(tbody, tr);
 
                 const td = dom.create('td', {
-                    class: 'p-0',
+                    class: this.constructor.classes.rowContainer,
                     attributes: {
                         colspan: 7
                     }
@@ -309,21 +315,21 @@ Object.assign(DateTimePicker.prototype, {
                 dom.append(tr, td);
 
                 const row = dom.create('div', {
-                    class: 'row g-0'
+                    class: this.constructor.classes.row
                 });
                 dom.append(td, row);
 
                 while (current.isSameOrBefore(last, 'hour')) {
                     const col = dom.create('div', {
                         text: current.format('HH'),
-                        class: 'col-3 px-1 py-2'
+                        class: this.constructor.classes.timeColumn
                     });
                     dom.append(row, col);
 
                     if (!this._isValid(current, 'hour')) {
-                        dom.addClass(col, 'dtp-disabled');
+                        dom.addClass(col, this.constructor.classes.disabled);
                     } else {
-                        dom.addClass(col, 'dtp-action');
+                        dom.addClass(col, this.constructor.classes.action);
                         dom.setDataset(col, {
                             action: 'setHours',
                             hour: current.getHours()
@@ -356,7 +362,7 @@ Object.assign(DateTimePicker.prototype, {
                 dom.append(tbody, tr);
 
                 const td = dom.create('td', {
-                    class: 'p-0',
+                    class: this.constructor.classes.rowContainer,
                     attributes: {
                         colspan: 7
                     }
@@ -364,7 +370,7 @@ Object.assign(DateTimePicker.prototype, {
                 dom.append(tr, td);
 
                 const row = dom.create('div', {
-                    class: 'row g-0'
+                    class: this.constructor.classes.row
                 });
                 dom.append(td, row);
 
@@ -375,14 +381,14 @@ Object.assign(DateTimePicker.prototype, {
                 while (current.isSameOrBefore(last, 'minute')) {
                     const col = dom.create('span', {
                         text: current.format('mm'),
-                        class: 'col-3 px-1 py-2'
+                        class: this.constructor.classes.timeColumn
                     });
                     dom.append(row, col);
 
                     if (!this._isValid(current, 'minute')) {
-                        dom.addClass(col, 'dtp-disabled');
+                        dom.addClass(col, this.constructor.classes.disabled);
                     } else {
-                        dom.addClass(col, 'dtp-action');
+                        dom.addClass(col, this.constructor.classes.action);
                         dom.setDataset(col, {
                             action: 'setMinutes',
                             minute: current.getMinutes()
@@ -419,7 +425,7 @@ Object.assign(DateTimePicker.prototype, {
                     unit: 'year'
                 },
                 attr: {
-                    title: this._settings.tooltips.prevYear
+                    title: this._settings.lang.prevYear
                 }
             };
         }
@@ -431,7 +437,7 @@ Object.assign(DateTimePicker.prototype, {
                     unit: 'year'
                 },
                 attr: {
-                    title: this._settings.tooltips.nextYear
+                    title: this._settings.lang.nextYear
                 }
             };
         }
@@ -446,7 +452,7 @@ Object.assign(DateTimePicker.prototype, {
                     view: 'years'
                 },
                 attr: {
-                    title: this._settings.tooltips.selectYear
+                    title: this._settings.lang.selectYear
                 },
                 prev,
                 next
@@ -456,7 +462,7 @@ Object.assign(DateTimePicker.prototype, {
                 dom.append(tbody, tr);
 
                 const td = dom.create('td', {
-                    class: 'p-0',
+                    class: this.constructor.classes.rowContainer,
                     attributes: {
                         colspan: 7
                     }
@@ -464,25 +470,25 @@ Object.assign(DateTimePicker.prototype, {
                 dom.append(tr, td);
 
                 const row = dom.create('div', {
-                    class: 'row g-0'
+                    class: this.constructor.classes.row
                 });
                 dom.append(td, row);
 
                 while (current.isSameOrBefore(last, 'month')) {
                     const col = dom.create('div', {
                         text: current.format('MMM'),
-                        class: 'col-4 px-1 py-2'
+                        class: this.constructor.classes.dateColumn
                     });
                     dom.append(row, col);
 
                     if (this._isCurrent(current, 'month')) {
-                        dom.addClass(col, 'dtp-active');
+                        dom.addClass(col, this.constructor.classes.active);
                     }
 
                     if (!this._isValid(current, 'month')) {
-                        dom.addClass(col, 'dtp-disabled');
+                        dom.addClass(col, this.constructor.classes.disabled);
                     } else {
-                        dom.addClass(col, 'dtp-action');
+                        dom.addClass(col, this.constructor.classes.action);
                         if (this._settings.minView === 'months') {
                             dom.setDataset(col, {
                                 action: this._settings.multiDate ?
@@ -531,7 +537,7 @@ Object.assign(DateTimePicker.prototype, {
                 dom.append(tbody, tr);
 
                 const td = dom.create('td', {
-                    class: 'p-0',
+                    class: this.constructor.classes.rowContainer,
                     attributes: {
                         colspan: 7
                     }
@@ -539,21 +545,21 @@ Object.assign(DateTimePicker.prototype, {
                 dom.append(tr, td);
 
                 const row = dom.create('div', {
-                    class: 'row g-0'
+                    class: this.constructor.classes.row
                 });
                 dom.append(td, row);
 
                 while (current.isSameOrBefore(last, 'second')) {
                     const col = dom.create('span', {
                         text: current.format('ss'),
-                        class: 'col-3 px-1 py-2'
+                        class: this.constructor.classes.timeColumn
                     });
                     dom.append(row, col);
 
                     if (!this._isValid(current, 'second')) {
-                        dom.addClass(col, 'dtp-disabled');
+                        dom.addClass(col, this.constructor.classes.disabled);
                     } else {
-                        dom.addClass(col, 'dtp-action');
+                        dom.addClass(col, this.constructor.classes.action);
                         dom.setDataset(col, {
                             action: 'setSeconds',
                             second: current.getSeconds()
@@ -604,7 +610,7 @@ Object.assign(DateTimePicker.prototype, {
                                 unit: 'hour'
                             },
                             attr: {
-                                title: this._settings.tooltips.incrementHour
+                                title: this._settings.lang.incrementHour
                             }
                         };
                     }
@@ -617,7 +623,7 @@ Object.assign(DateTimePicker.prototype, {
                                 unit: 'hour'
                             },
                             attr: {
-                                title: this._settings.tooltips.decrementHour
+                                title: this._settings.lang.decrementHour
                             }
                         };
                     }
@@ -632,7 +638,7 @@ Object.assign(DateTimePicker.prototype, {
                                 timeView: 'hours'
                             },
                             attr: {
-                                title: this._settings.tooltips.selectHour
+                                title: this._settings.lang.selectHour
                             }
                         },
                         decrement,
@@ -660,7 +666,7 @@ Object.assign(DateTimePicker.prototype, {
                                 unit: 'minute'
                             },
                             attr: {
-                                title: this._settings.tooltips.incrementMinute
+                                title: this._settings.lang.incrementMinute
                             }
                         };
                     }
@@ -673,7 +679,7 @@ Object.assign(DateTimePicker.prototype, {
                                 unit: 'minute'
                             },
                             attr: {
-                                title: this._settings.tooltips.decrementMinute
+                                title: this._settings.lang.decrementMinute
                             }
                         };
                     }
@@ -688,7 +694,7 @@ Object.assign(DateTimePicker.prototype, {
                                 timeView: 'minutes'
                             },
                             attr: {
-                                title: this._settings.tooltips.selectMinute
+                                title: this._settings.lang.selectMinute
                             }
                         },
                         decrement,
@@ -714,7 +720,7 @@ Object.assign(DateTimePicker.prototype, {
                                 unit: 'second'
                             },
                             attr: {
-                                title: this._settings.tooltips.incrementSecond
+                                title: this._settings.lang.incrementSecond
                             }
                         };
                     }
@@ -727,7 +733,7 @@ Object.assign(DateTimePicker.prototype, {
                                 unit: 'second'
                             },
                             attr: {
-                                title: this._settings.tooltips.decrementSecond
+                                title: this._settings.lang.decrementSecond
                             }
                         };
                     }
@@ -742,7 +748,7 @@ Object.assign(DateTimePicker.prototype, {
                                 timeView: 'seconds'
                             },
                             attr: {
-                                title: this._settings.tooltips.selectSecond
+                                title: this._settings.lang.selectSecond
                             }
                         },
                         decrement,
@@ -766,7 +772,7 @@ Object.assign(DateTimePicker.prototype, {
 
                     const periodButton = dom.create('span', {
                         text: initialDate.format('aa').toUpperCase(),
-                        class: 'btn btn-primary d-block'
+                        class: this.constructor.classes.periodButton
                     });
 
                     const currentHours = initialDate.getHours();
@@ -774,12 +780,12 @@ Object.assign(DateTimePicker.prototype, {
                         currentHours + (currentHours < 12 ? 12 : -12)
                     );
                     if (!this._isValid(otherPeriod, 'second')) {
-                        dom.addClass(periodButton, 'dtp-disabled');
+                        dom.addClass(periodButton, this.constructor.classes.disabled);
                     } else {
                         dom.setDataset(periodButton, {
                             action: 'togglePeriod'
                         });
-                        dom.setAttribute(periodButton, 'title', this._settings.tooltips.togglePeriod);
+                        dom.setAttribute(periodButton, 'title', this._settings.lang.togglePeriod);
                     }
 
                     dom.append(periodTd, periodButton);
@@ -821,7 +827,7 @@ Object.assign(DateTimePicker.prototype, {
                     amount: 10
                 },
                 attr: {
-                    title: this._settings.tooltips.prevDecade
+                    title: this._settings.lang.prevDecade
                 }
             };
         }
@@ -834,7 +840,7 @@ Object.assign(DateTimePicker.prototype, {
                     amount: 10
                 },
                 attr: {
-                    title: this._settings.tooltips.nextDecade
+                    title: this._settings.lang.nextDecade
                 }
             };
         }
@@ -852,7 +858,7 @@ Object.assign(DateTimePicker.prototype, {
                 dom.append(tbody, tr);
 
                 const td = dom.create('td', {
-                    class: 'p-0',
+                    class: this.constructor.classes.rowContainer,
                     attributes: {
                         colspan: 7
                     }
@@ -860,7 +866,7 @@ Object.assign(DateTimePicker.prototype, {
                 dom.append(tr, td);
 
                 const row = dom.create('div', {
-                    class: 'row g-0'
+                    class: this.constructor.classes.row
                 });
                 dom.append(td, row);
 
@@ -869,20 +875,20 @@ Object.assign(DateTimePicker.prototype, {
 
                     const col = dom.create('div', {
                         text: current.format('yyyy'),
-                        class: 'col-4 px-1 py-2'
+                        class: this.constructor.classes.dateColumn
                     });
                     dom.append(row, col);
 
                     if (this._isCurrent(current, 'year')) {
-                        dom.addClass(col, 'dtp-active');
+                        dom.addClass(col, this.constructor.classes.active);
                     } else if (thisYear < startYear || thisYear > endYear) {
-                        dom.addClass(col, 'text-secondary');
+                        dom.addClass(col, this.constructor.classes.secondary);
                     }
 
                     if (!this._isValid(current, 'year')) {
-                        dom.addClass(col, 'dtp-disabled');
+                        dom.addClass(col, this.constructor.classes.disabled);
                     } else {
-                        dom.addClass(col, 'dtp-action');
+                        dom.addClass(col, this.constructor.classes.action);
                         if (this._settings.minView === 'years') {
                             dom.setDataset(col, {
                                 action: this._settings.multiDate ?

@@ -11,11 +11,11 @@ Object.assign(DateTimePicker, {
      */
     _createTable(options) {
         const table = dom.create('table', {
-            class: 'table table-sm text-center mx-0 my-auto'
+            class: this.classes.table
         });
 
         if (options.borderless) {
-            dom.addClass(table, 'table-borderless');
+            dom.addClass(table, this.classes.borderless);
         }
 
         if (options.header) {
@@ -27,13 +27,13 @@ Object.assign(DateTimePicker, {
 
             const prevTd = dom.create('td', {
                 html: `<span class="${options.icons.left}"></span>`,
-                class: 'action text-primary fw-bold'
+                class: this.classes.navigation
             });
 
             if (!options.header.prev) {
-                dom.addClass(prevTd, 'dtp-disabled');
+                dom.addClass(prevTd, this.classes.disabled);
             } else {
-                dom.addClass(prevTd, 'dtp-action');
+                dom.addClass(prevTd, this.classes.action);
                 dom.setDataset(prevTd, options.header.prev.data);
                 dom.setAttribute(prevTd, options.header.prev.attr);
             }
@@ -41,7 +41,7 @@ Object.assign(DateTimePicker, {
             dom.append(tr, prevTd);
 
             const titleTd = dom.create('td', {
-                class: 'fw-bold',
+                class: this.classes.title,
                 text: options.header.title,
                 attributes: {
                     colspan: 5,
@@ -52,22 +52,22 @@ Object.assign(DateTimePicker, {
             dom.append(tr, titleTd);
 
             if (options.header.data) {
-                dom.addClass(titleTd, 'dtp-action');
+                dom.addClass(titleTd, this.classes.action);
             }
 
             if (options.header.wide) {
-                dom.addClass(titleTd, 'w-100');
+                dom.addClass(titleTd, this.classes.titleWide);
             }
 
             const nextTd = dom.create('td', {
                 html: `<span class="${options.icons.right}"></span>`,
-                class: 'action text-primary fw-bold'
+                class: this.classes.navigation
             });
 
             if (!options.header.next) {
-                dom.addClass(nextTd, 'dtp-disabled');
+                dom.addClass(nextTd, this.classes.disabled);
             } else {
-                dom.addClass(nextTd, 'dtp-action');
+                dom.addClass(nextTd, this.classes.action);
                 dom.setDataset(nextTd, options.header.next.data);
                 dom.setAttribute(nextTd, options.header.next.attr);
             }
@@ -94,16 +94,20 @@ Object.assign(DateTimePicker, {
     _renderTimeColumn(options) {
         const upTd = dom.create('td', {
             html: `<span class="${options.icons.up}"></span>`,
-            class: 'text-primary bw-bold py-4 px-0',
+            class: [
+                this.classes.navigation,
+                this.classes.time,
+                this.classes.spacingTimeNav
+            ],
             style: {
                 width: `${options.cellWidth}%`
             }
         });
 
         if (!options.increment) {
-            dom.addClass(upTd, 'dtp-disabled');
+            dom.addClass(upTd, this.classes.disabled);
         } else {
-            dom.addClass(upTd, 'dtp-action');
+            dom.addClass(upTd, this.classes.action);
             dom.setDataset(upTd, options.increment.data);
             dom.setAttribute(upTd, options.increment.attr);
         }
@@ -112,7 +116,11 @@ Object.assign(DateTimePicker, {
 
         const selectTd = dom.create('td', {
             text: options.select.text,
-            class: 'dtp-action dtp-time py-2 px-0',
+            class: [
+                this.classes.action,
+                this.classes.time,
+                this.classes.spacingTime
+            ],
             dataset: options.select.data,
             attributes: options.select.attr
         });
@@ -120,13 +128,17 @@ Object.assign(DateTimePicker, {
 
         const downTd = dom.create('td', {
             html: `<span class="${options.icons.down}"></span>`,
-            class: 'text-primary bw-bold py-4 px-0'
+            class: [
+                this.classes.navigation,
+                this.classes.time,
+                this.classes.spacingTimeNav
+            ]
         });
 
         if (!options.decrement) {
-            dom.addClass(downTd, 'dtp-disabled');
+            dom.addClass(downTd, this.classes.disabled);
         } else {
-            dom.addClass(downTd, 'dtp-action');
+            dom.addClass(downTd, this.classes.action);
             dom.setDataset(downTd, options.decrement.data);
             dom.setAttribute(downTd, options.decrement.attr);
         }
@@ -148,7 +160,10 @@ Object.assign(DateTimePicker, {
 
         const separatorTd = dom.create('td', {
             text: ':',
-            class: 'time py-2'
+            class: [
+                this.classes.time,
+                this.classes.spacingSeparator
+            ]
         });
         dom.append(options.timeTr, separatorTd);
 

@@ -22,7 +22,7 @@ class DateTimePicker {
      * @param {DateTimePicker~renderCallback} [settings.renderMonth] The render month callback
      * @param {DateTimePicker~renderCallback} [settings.renderYear] The render year callback
      * @param {object} [settings.icons] Class names to use for icons.
-     * @param {object} [settings.tooltips] Tooltips to use for actions.
+     * @param {object} [settings.lang] lang to use for actions.
      * @param {function} [settings.keyDown] The keydown callback.
      * @param {Boolean} [settings.multiDate=false] Whether to allow selecting multiple dates.
      * @param {string} [settings.multiDateSeparator=,] The multiple date separator.
@@ -126,7 +126,6 @@ class DateTimePicker {
             duration: this._settings.duration
         }).then(_ => {
             dom.detach(this._menuNode);
-            dom.setAttribute(this._node, 'aria-expanded', false);
             dom.triggerEvent(this._node, 'hidden.frost.datetimepicker');
         }).catch(_ => { }).finally(_ => {
             this._animating = false;
@@ -154,7 +153,6 @@ class DateTimePicker {
         dom.fadeIn(this._menuNode, {
             duration: this._settings.duration
         }).then(_ => {
-            dom.setAttribute(this._node, 'aria-expanded', true);
             dom.triggerEvent(this._node, 'shown.frost.datetimepicker');
 
             if (this._settings.focusOnShow) {
@@ -212,7 +210,7 @@ class DateTimePicker {
      * @param {DateTimePicker~renderCallback} [settings.renderMonth] The render month callback
      * @param {DateTimePicker~renderCallback} [settings.renderYear] The render year callback
      * @param {object} [settings.icons] Class names to use for icons.
-     * @param {object} [settings.tooltips] Tooltips to use for actions.
+     * @param {object} [settings.lang] lang to use for actions.
      * @param {function} [settings.keyDown] The keydown callback.
      * @param {Boolean} [settings.multiDate=false] Whether to allow selecting multiple dates.
      * @param {string} [settings.multiDateSeparator=,] The multiple date separator.

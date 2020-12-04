@@ -21,9 +21,11 @@ DateTimePicker.defaults = {
         up: 'icon-arrow-up',
         right: 'icon-arrow-right',
         down: 'icon-arrow-down',
-        left: 'icon-arrow-left'
+        left: 'icon-arrow-left',
+        time: 'icon-clock',
+        date: 'icon-calendar'
     },
-    tooltips: {
+    lang: {
         decrementHour: 'Decrement Hour',
         decrementMinute: 'Decrement Minute',
         decrementSecond: 'Decrement Second',
@@ -126,6 +128,37 @@ DateTimePicker.defaults = {
     minContact: false
 };
 
+// Default classes
+DateTimePicker.classes = {
+    action: 'dtp-action',
+    active: 'dtp-active',
+    borderless: 'table-borderless',
+    column: 'col d-flex flex-column',
+    container: 'row row-cols-1 gy-0 gx-2',
+    containerColumns: 'row-cols-md-2',
+    dateColumn: 'col-4 px-1 py-2',
+    disabled: 'dtp-disabled',
+    menu: 'datetimepicker',
+    menuInline: 'dtp-inline',
+    menuShadow: 'shadow-sm',
+    menuWide: 'dtp-wide',
+    navigation: 'text-primary',
+    periodButton: 'btn btn-primary d-block',
+    row: 'row g-0',
+    rowContainer: 'p-0',
+    secondary: 'text-secondary',
+    spacingNav: 'py-2',
+    spacingSeparator: 'py-2',
+    spacingTime: 'py-2 px-0',
+    spacingTimeNav: 'py-4 px-0',
+    table: 'table table-sm text-center mx-0 my-auto',
+    time: 'dtp-time',
+    timeColumn: 'col-3 px-1 py-2',
+    title: 'fw-bold',
+    titleWide: 'w-100',
+    today: 'dtp-today'
+};
+
 // Format token RegExp
 DateTimePicker._formatTokenRegExp = /([a-z])\1*|'[^']*'/ig;
 
@@ -136,7 +169,7 @@ DateTimePicker._defaultFormats = {};
 
 // DateTimePicker QuerySet method
 if (QuerySet) {
-    QuerySet.prototype.dateTimePicker = function(a, ...args) {
+    QuerySet.prototype.datetimepicker = function(a, ...args) {
         let settings, method;
 
         if (Core.isObject(a)) {

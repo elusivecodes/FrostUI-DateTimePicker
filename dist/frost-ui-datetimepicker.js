@@ -57,7 +57,7 @@
          * @param {DateTimePicker~renderCallback} [settings.renderMonth] The render month callback
          * @param {DateTimePicker~renderCallback} [settings.renderYear] The render year callback
          * @param {object} [settings.icons] Class names to use for icons.
-         * @param {object} [settings.tooltips] Tooltips to use for actions.
+         * @param {object} [settings.lang] lang to use for actions.
          * @param {function} [settings.keyDown] The keydown callback.
          * @param {Boolean} [settings.multiDate=false] Whether to allow selecting multiple dates.
          * @param {string} [settings.multiDateSeparator=,] The multiple date separator.
@@ -161,7 +161,6 @@
                 duration: this._settings.duration
             }).then(_ => {
                 dom.detach(this._menuNode);
-                dom.setAttribute(this._node, 'aria-expanded', false);
                 dom.triggerEvent(this._node, 'hidden.frost.datetimepicker');
             }).catch(_ => { }).finally(_ => {
                 this._animating = false;
@@ -189,7 +188,6 @@
             dom.fadeIn(this._menuNode, {
                 duration: this._settings.duration
             }).then(_ => {
-                dom.setAttribute(this._node, 'aria-expanded', true);
                 dom.triggerEvent(this._node, 'shown.frost.datetimepicker');
 
                 if (this._settings.focusOnShow) {
@@ -247,7 +245,7 @@
          * @param {DateTimePicker~renderCallback} [settings.renderMonth] The render month callback
          * @param {DateTimePicker~renderCallback} [settings.renderYear] The render year callback
          * @param {object} [settings.icons] Class names to use for icons.
-         * @param {object} [settings.tooltips] Tooltips to use for actions.
+         * @param {object} [settings.lang] lang to use for actions.
          * @param {function} [settings.keyDown] The keydown callback.
          * @param {Boolean} [settings.multiDate=false] Whether to allow selecting multiple dates.
          * @param {string} [settings.multiDateSeparator=,] The multiple date separator.
@@ -298,6 +296,7 @@
         const datetimepicker = DateTimePicker.init(target, {}, true);
         datetimepicker.toggle(e.currentTarget);
     });
+
 
     /**
      * DateTimePicker Events
@@ -954,11 +953,14 @@
                         dom.append(tbody, tr);
 
                         const td = dom.create('td', {
-                            html: '<span. class="icon-clock"></>',
-                            class: 'dtp-action py-2',
+                            html: `<span class="${this._settings.icons.time}"></>`,
+                            class: [
+                                this.constructor.classes.action,
+                                this.constructor.classes.spacingNav
+                            ],
                             attributes: {
                                 colspan: 7,
-                                title: this._settings.tooltips.selectTime
+                                title: this._settings.lang.selectTime
                             },
                             dataset: {
                                 action: 'showTime'
@@ -989,11 +991,14 @@
                         dom.append(tbody, row);
 
                         const td = dom.create('td', {
-                            html: '<span class="icon-calendar"></span>',
-                            class: 'dtp-action py-2',
+                            html: `<span class="${this._settings.icons.date}"></span>`,
+                            class: [
+                                this.constructor.classes.action,
+                                this.constructor.classes.spacingNav
+                            ],
                             attributes: {
                                 colspan: 4,
-                                title: this._settings.tooltips.selectDate
+                                title: this._settings.lang.selectDate
                             },
                             dataset: {
                                 action: 'showDate'
@@ -1031,20 +1036,20 @@
          */
         _render() {
             this._menuNode = dom.create('div', {
-                class: 'datetimepicker',
+                class: this.constructor.classes.menu,
                 dataset: {
                     trigger: '#' + dom.getAttribute(this._node, 'id')
                 }
             });
 
             this._container = dom.create('div', {
-                class: 'row row-cols-1 gy-0 gx-2'
+                class: this.constructor.classes.container
             });
             dom.append(this._menuNode, this._container);
 
             if (this._hasDate) {
                 this._dateContainer = dom.create('div', {
-                    class: 'col d-flex flex-column'
+                    class: this.constructor.classes.column
                 });
                 dom.append(this._container, this._dateContainer);
 
@@ -1053,7 +1058,7 @@
 
             if (this._hasTime) {
                 this._timeContainer = dom.create('div', {
-                    class: 'col d-flex flex-column'
+                    class: this.constructor.classes.column
                 });
                 dom.append(this._container, this._timeContainer);
 
@@ -1062,20 +1067,20 @@
 
             if (this._hasDate && this._hasTime) {
                 if (this._settings.sideBySide) {
-                    dom.addClass(this._menuNode, 'dtp-wide')
-                    dom.addClass(this._container, 'row-cols-md-2')
+                    dom.addClass(this._menuNode, this.constructor.classes.menuWide)
+                    dom.addClass(this._container, this.constructor.classes.containerColumns)
                 } else {
                     dom.setStyle(this._timeContainer, 'display', 'none', true);
                 }
             }
 
             if (this._settings.inline) {
-                dom.addClass(this._menuNode, 'dtp-inline');
+                dom.addClass(this._menuNode, this.constructor.classes.menuInline);
 
                 dom.after(this._node, this._menuNode);
                 dom.hide(this._node);
             } else {
-                dom.addClass(this._menuNode, 'shadow-sm');
+                dom.addClass(this._menuNode, this.constructor.classes.menuShadow);
 
                 this._popper = new UI.Popper(
                     this._menuNode,
@@ -1113,7 +1118,7 @@
                         unit: 'month'
                     },
                     attr: {
-                        title: this._settings.tooltips.prevMonth
+                        title: this._settings.lang.prevMonth
                     }
                 };
             }
@@ -1125,7 +1130,7 @@
                         unit: 'month'
                     },
                     attr: {
-                        title: this._settings.tooltips.nextMonth
+                        title: this._settings.lang.nextMonth
                     }
                 };
             }
@@ -1139,7 +1144,7 @@
                         view: 'months'
                     },
                     attr: {
-                        title: this._settings.tooltips.selectMonth
+                        title: this._settings.lang.selectMonth
                     },
                     prev,
                     next
@@ -1152,7 +1157,7 @@
                     for (let i = 1; i <= 7; i++) {
                         currentDay.setWeekDay(i);
                         const th = dom.create('th', {
-                            class: 'fw-bold',
+                            class: this.constructor.classes.title,
                             text: currentDay.dayName('narrow')
                         });
                         dom.append(tr, th);
@@ -1173,15 +1178,15 @@
                         dom.append(tr, td);
 
                         if (this._isCurrent(current, 'day')) {
-                            dom.addClass(td, 'dtp-active');
+                            dom.addClass(td, this.constructor.classes.active);
                         } else if (!this._viewDate.isSame(current, 'month')) {
-                            dom.addClass(td, 'text-secondary');
+                            dom.addClass(td, this.constructor.classes.secondary);
                         }
 
                         if (!this._isValid(current, 'day')) {
-                            dom.addClass(td, 'dtp-disabled');
+                            dom.addClass(td, this.constructor.classes.disabled);
                         } else {
-                            dom.addClass(td, 'dtp-action');
+                            dom.addClass(td, this.constructor.classes.action);
                             dom.setDataset(td, {
                                 action: this._settings.multiDate ?
                                     'setDateMulti' :
@@ -1193,7 +1198,7 @@
                         }
 
                         if (now.isSame(current, 'day')) {
-                            dom.addClass(td, 'dtp-today');
+                            dom.addClass(td, this.constructor.classes.today);
                         }
 
                         if (this._settings.renderDay) {
@@ -1226,7 +1231,7 @@
                     dom.append(tbody, tr);
 
                     const td = dom.create('td', {
-                        class: 'p-0',
+                        class: this.constructor.classes.rowContainer,
                         attributes: {
                             colspan: 7
                         }
@@ -1234,21 +1239,21 @@
                     dom.append(tr, td);
 
                     const row = dom.create('div', {
-                        class: 'row g-0'
+                        class: this.constructor.classes.row
                     });
                     dom.append(td, row);
 
                     while (current.isSameOrBefore(last, 'hour')) {
                         const col = dom.create('div', {
                             text: current.format('HH'),
-                            class: 'col-3 px-1 py-2'
+                            class: this.constructor.classes.timeColumn
                         });
                         dom.append(row, col);
 
                         if (!this._isValid(current, 'hour')) {
-                            dom.addClass(col, 'dtp-disabled');
+                            dom.addClass(col, this.constructor.classes.disabled);
                         } else {
-                            dom.addClass(col, 'dtp-action');
+                            dom.addClass(col, this.constructor.classes.action);
                             dom.setDataset(col, {
                                 action: 'setHours',
                                 hour: current.getHours()
@@ -1281,7 +1286,7 @@
                     dom.append(tbody, tr);
 
                     const td = dom.create('td', {
-                        class: 'p-0',
+                        class: this.constructor.classes.rowContainer,
                         attributes: {
                             colspan: 7
                         }
@@ -1289,7 +1294,7 @@
                     dom.append(tr, td);
 
                     const row = dom.create('div', {
-                        class: 'row g-0'
+                        class: this.constructor.classes.row
                     });
                     dom.append(td, row);
 
@@ -1300,14 +1305,14 @@
                     while (current.isSameOrBefore(last, 'minute')) {
                         const col = dom.create('span', {
                             text: current.format('mm'),
-                            class: 'col-3 px-1 py-2'
+                            class: this.constructor.classes.timeColumn
                         });
                         dom.append(row, col);
 
                         if (!this._isValid(current, 'minute')) {
-                            dom.addClass(col, 'dtp-disabled');
+                            dom.addClass(col, this.constructor.classes.disabled);
                         } else {
-                            dom.addClass(col, 'dtp-action');
+                            dom.addClass(col, this.constructor.classes.action);
                             dom.setDataset(col, {
                                 action: 'setMinutes',
                                 minute: current.getMinutes()
@@ -1344,7 +1349,7 @@
                         unit: 'year'
                     },
                     attr: {
-                        title: this._settings.tooltips.prevYear
+                        title: this._settings.lang.prevYear
                     }
                 };
             }
@@ -1356,7 +1361,7 @@
                         unit: 'year'
                     },
                     attr: {
-                        title: this._settings.tooltips.nextYear
+                        title: this._settings.lang.nextYear
                     }
                 };
             }
@@ -1371,7 +1376,7 @@
                         view: 'years'
                     },
                     attr: {
-                        title: this._settings.tooltips.selectYear
+                        title: this._settings.lang.selectYear
                     },
                     prev,
                     next
@@ -1381,7 +1386,7 @@
                     dom.append(tbody, tr);
 
                     const td = dom.create('td', {
-                        class: 'p-0',
+                        class: this.constructor.classes.rowContainer,
                         attributes: {
                             colspan: 7
                         }
@@ -1389,25 +1394,25 @@
                     dom.append(tr, td);
 
                     const row = dom.create('div', {
-                        class: 'row g-0'
+                        class: this.constructor.classes.row
                     });
                     dom.append(td, row);
 
                     while (current.isSameOrBefore(last, 'month')) {
                         const col = dom.create('div', {
                             text: current.format('MMM'),
-                            class: 'col-4 px-1 py-2'
+                            class: this.constructor.classes.dateColumn
                         });
                         dom.append(row, col);
 
                         if (this._isCurrent(current, 'month')) {
-                            dom.addClass(col, 'dtp-active');
+                            dom.addClass(col, this.constructor.classes.active);
                         }
 
                         if (!this._isValid(current, 'month')) {
-                            dom.addClass(col, 'dtp-disabled');
+                            dom.addClass(col, this.constructor.classes.disabled);
                         } else {
-                            dom.addClass(col, 'dtp-action');
+                            dom.addClass(col, this.constructor.classes.action);
                             if (this._settings.minView === 'months') {
                                 dom.setDataset(col, {
                                     action: this._settings.multiDate ?
@@ -1456,7 +1461,7 @@
                     dom.append(tbody, tr);
 
                     const td = dom.create('td', {
-                        class: 'p-0',
+                        class: this.constructor.classes.rowContainer,
                         attributes: {
                             colspan: 7
                         }
@@ -1464,21 +1469,21 @@
                     dom.append(tr, td);
 
                     const row = dom.create('div', {
-                        class: 'row g-0'
+                        class: this.constructor.classes.row
                     });
                     dom.append(td, row);
 
                     while (current.isSameOrBefore(last, 'second')) {
                         const col = dom.create('span', {
                             text: current.format('ss'),
-                            class: 'col-3 px-1 py-2'
+                            class: this.constructor.classes.timeColumn
                         });
                         dom.append(row, col);
 
                         if (!this._isValid(current, 'second')) {
-                            dom.addClass(col, 'dtp-disabled');
+                            dom.addClass(col, this.constructor.classes.disabled);
                         } else {
-                            dom.addClass(col, 'dtp-action');
+                            dom.addClass(col, this.constructor.classes.action);
                             dom.setDataset(col, {
                                 action: 'setSeconds',
                                 second: current.getSeconds()
@@ -1529,7 +1534,7 @@
                                     unit: 'hour'
                                 },
                                 attr: {
-                                    title: this._settings.tooltips.incrementHour
+                                    title: this._settings.lang.incrementHour
                                 }
                             };
                         }
@@ -1542,7 +1547,7 @@
                                     unit: 'hour'
                                 },
                                 attr: {
-                                    title: this._settings.tooltips.decrementHour
+                                    title: this._settings.lang.decrementHour
                                 }
                             };
                         }
@@ -1557,7 +1562,7 @@
                                     timeView: 'hours'
                                 },
                                 attr: {
-                                    title: this._settings.tooltips.selectHour
+                                    title: this._settings.lang.selectHour
                                 }
                             },
                             decrement,
@@ -1585,7 +1590,7 @@
                                     unit: 'minute'
                                 },
                                 attr: {
-                                    title: this._settings.tooltips.incrementMinute
+                                    title: this._settings.lang.incrementMinute
                                 }
                             };
                         }
@@ -1598,7 +1603,7 @@
                                     unit: 'minute'
                                 },
                                 attr: {
-                                    title: this._settings.tooltips.decrementMinute
+                                    title: this._settings.lang.decrementMinute
                                 }
                             };
                         }
@@ -1613,7 +1618,7 @@
                                     timeView: 'minutes'
                                 },
                                 attr: {
-                                    title: this._settings.tooltips.selectMinute
+                                    title: this._settings.lang.selectMinute
                                 }
                             },
                             decrement,
@@ -1639,7 +1644,7 @@
                                     unit: 'second'
                                 },
                                 attr: {
-                                    title: this._settings.tooltips.incrementSecond
+                                    title: this._settings.lang.incrementSecond
                                 }
                             };
                         }
@@ -1652,7 +1657,7 @@
                                     unit: 'second'
                                 },
                                 attr: {
-                                    title: this._settings.tooltips.decrementSecond
+                                    title: this._settings.lang.decrementSecond
                                 }
                             };
                         }
@@ -1667,7 +1672,7 @@
                                     timeView: 'seconds'
                                 },
                                 attr: {
-                                    title: this._settings.tooltips.selectSecond
+                                    title: this._settings.lang.selectSecond
                                 }
                             },
                             decrement,
@@ -1691,7 +1696,7 @@
 
                         const periodButton = dom.create('span', {
                             text: initialDate.format('aa').toUpperCase(),
-                            class: 'btn btn-primary d-block'
+                            class: this.constructor.classes.periodButton
                         });
 
                         const currentHours = initialDate.getHours();
@@ -1699,12 +1704,12 @@
                             currentHours + (currentHours < 12 ? 12 : -12)
                         );
                         if (!this._isValid(otherPeriod, 'second')) {
-                            dom.addClass(periodButton, 'dtp-disabled');
+                            dom.addClass(periodButton, this.constructor.classes.disabled);
                         } else {
                             dom.setDataset(periodButton, {
                                 action: 'togglePeriod'
                             });
-                            dom.setAttribute(periodButton, 'title', this._settings.tooltips.togglePeriod);
+                            dom.setAttribute(periodButton, 'title', this._settings.lang.togglePeriod);
                         }
 
                         dom.append(periodTd, periodButton);
@@ -1746,7 +1751,7 @@
                         amount: 10
                     },
                     attr: {
-                        title: this._settings.tooltips.prevDecade
+                        title: this._settings.lang.prevDecade
                     }
                 };
             }
@@ -1759,7 +1764,7 @@
                         amount: 10
                     },
                     attr: {
-                        title: this._settings.tooltips.nextDecade
+                        title: this._settings.lang.nextDecade
                     }
                 };
             }
@@ -1777,7 +1782,7 @@
                     dom.append(tbody, tr);
 
                     const td = dom.create('td', {
-                        class: 'p-0',
+                        class: this.constructor.classes.rowContainer,
                         attributes: {
                             colspan: 7
                         }
@@ -1785,7 +1790,7 @@
                     dom.append(tr, td);
 
                     const row = dom.create('div', {
-                        class: 'row g-0'
+                        class: this.constructor.classes.row
                     });
                     dom.append(td, row);
 
@@ -1794,20 +1799,20 @@
 
                         const col = dom.create('div', {
                             text: current.format('yyyy'),
-                            class: 'col-4 px-1 py-2'
+                            class: this.constructor.classes.dateColumn
                         });
                         dom.append(row, col);
 
                         if (this._isCurrent(current, 'year')) {
-                            dom.addClass(col, 'dtp-active');
+                            dom.addClass(col, this.constructor.classes.active);
                         } else if (thisYear < startYear || thisYear > endYear) {
-                            dom.addClass(col, 'text-secondary');
+                            dom.addClass(col, this.constructor.classes.secondary);
                         }
 
                         if (!this._isValid(current, 'year')) {
-                            dom.addClass(col, 'dtp-disabled');
+                            dom.addClass(col, this.constructor.classes.disabled);
                         } else {
-                            dom.addClass(col, 'dtp-action');
+                            dom.addClass(col, this.constructor.classes.action);
                             if (this._settings.minView === 'years') {
                                 dom.setDataset(col, {
                                     action: this._settings.multiDate ?
@@ -2087,11 +2092,11 @@
          */
         _createTable(options) {
             const table = dom.create('table', {
-                class: 'table table-sm text-center mx-0 my-auto'
+                class: this.classes.table
             });
 
             if (options.borderless) {
-                dom.addClass(table, 'table-borderless');
+                dom.addClass(table, this.classes.borderless);
             }
 
             if (options.header) {
@@ -2103,13 +2108,13 @@
 
                 const prevTd = dom.create('td', {
                     html: `<span class="${options.icons.left}"></span>`,
-                    class: 'action text-primary fw-bold'
+                    class: this.classes.navigation
                 });
 
                 if (!options.header.prev) {
-                    dom.addClass(prevTd, 'dtp-disabled');
+                    dom.addClass(prevTd, this.classes.disabled);
                 } else {
-                    dom.addClass(prevTd, 'dtp-action');
+                    dom.addClass(prevTd, this.classes.action);
                     dom.setDataset(prevTd, options.header.prev.data);
                     dom.setAttribute(prevTd, options.header.prev.attr);
                 }
@@ -2117,7 +2122,7 @@
                 dom.append(tr, prevTd);
 
                 const titleTd = dom.create('td', {
-                    class: 'fw-bold',
+                    class: this.classes.title,
                     text: options.header.title,
                     attributes: {
                         colspan: 5,
@@ -2128,22 +2133,22 @@
                 dom.append(tr, titleTd);
 
                 if (options.header.data) {
-                    dom.addClass(titleTd, 'dtp-action');
+                    dom.addClass(titleTd, this.classes.action);
                 }
 
                 if (options.header.wide) {
-                    dom.addClass(titleTd, 'w-100');
+                    dom.addClass(titleTd, this.classes.titleWide);
                 }
 
                 const nextTd = dom.create('td', {
                     html: `<span class="${options.icons.right}"></span>`,
-                    class: 'action text-primary fw-bold'
+                    class: this.classes.navigation
                 });
 
                 if (!options.header.next) {
-                    dom.addClass(nextTd, 'dtp-disabled');
+                    dom.addClass(nextTd, this.classes.disabled);
                 } else {
-                    dom.addClass(nextTd, 'dtp-action');
+                    dom.addClass(nextTd, this.classes.action);
                     dom.setDataset(nextTd, options.header.next.data);
                     dom.setAttribute(nextTd, options.header.next.attr);
                 }
@@ -2170,16 +2175,20 @@
         _renderTimeColumn(options) {
             const upTd = dom.create('td', {
                 html: `<span class="${options.icons.up}"></span>`,
-                class: 'text-primary bw-bold py-4 px-0',
+                class: [
+                    this.classes.navigation,
+                    this.classes.time,
+                    this.classes.spacingTimeNav
+                ],
                 style: {
                     width: `${options.cellWidth}%`
                 }
             });
 
             if (!options.increment) {
-                dom.addClass(upTd, 'dtp-disabled');
+                dom.addClass(upTd, this.classes.disabled);
             } else {
-                dom.addClass(upTd, 'dtp-action');
+                dom.addClass(upTd, this.classes.action);
                 dom.setDataset(upTd, options.increment.data);
                 dom.setAttribute(upTd, options.increment.attr);
             }
@@ -2188,7 +2197,11 @@
 
             const selectTd = dom.create('td', {
                 text: options.select.text,
-                class: 'dtp-action dtp-time py-2 px-0',
+                class: [
+                    this.classes.action,
+                    this.classes.time,
+                    this.classes.spacingTime
+                ],
                 dataset: options.select.data,
                 attributes: options.select.attr
             });
@@ -2196,13 +2209,17 @@
 
             const downTd = dom.create('td', {
                 html: `<span class="${options.icons.down}"></span>`,
-                class: 'text-primary bw-bold py-4 px-0'
+                class: [
+                    this.classes.navigation,
+                    this.classes.time,
+                    this.classes.spacingTimeNav
+                ]
             });
 
             if (!options.decrement) {
-                dom.addClass(downTd, 'dtp-disabled');
+                dom.addClass(downTd, this.classes.disabled);
             } else {
-                dom.addClass(downTd, 'dtp-action');
+                dom.addClass(downTd, this.classes.action);
                 dom.setDataset(downTd, options.decrement.data);
                 dom.setAttribute(downTd, options.decrement.attr);
             }
@@ -2224,7 +2241,10 @@
 
             const separatorTd = dom.create('td', {
                 text: ':',
-                class: 'time py-2'
+                class: [
+                    this.classes.time,
+                    this.classes.spacingSeparator
+                ]
             });
             dom.append(options.timeTr, separatorTd);
 
@@ -2258,9 +2278,11 @@
             up: 'icon-arrow-up',
             right: 'icon-arrow-right',
             down: 'icon-arrow-down',
-            left: 'icon-arrow-left'
+            left: 'icon-arrow-left',
+            time: 'icon-clock',
+            date: 'icon-calendar'
         },
-        tooltips: {
+        lang: {
             decrementHour: 'Decrement Hour',
             decrementMinute: 'Decrement Minute',
             decrementSecond: 'Decrement Second',
@@ -2363,6 +2385,37 @@
         minContact: false
     };
 
+    // Default classes
+    DateTimePicker.classes = {
+        action: 'dtp-action',
+        active: 'dtp-active',
+        borderless: 'table-borderless',
+        column: 'col d-flex flex-column',
+        container: 'row row-cols-1 gy-0 gx-2',
+        containerColumns: 'row-cols-md-2',
+        dateColumn: 'col-4 px-1 py-2',
+        disabled: 'dtp-disabled',
+        menu: 'datetimepicker',
+        menuInline: 'dtp-inline',
+        menuShadow: 'shadow-sm',
+        menuWide: 'dtp-wide',
+        navigation: 'text-primary',
+        periodButton: 'btn btn-primary d-block',
+        row: 'row g-0',
+        rowContainer: 'p-0',
+        secondary: 'text-secondary',
+        spacingNav: 'py-2',
+        spacingSeparator: 'py-2',
+        spacingTime: 'py-2 px-0',
+        spacingTimeNav: 'py-4 px-0',
+        table: 'table table-sm text-center mx-0 my-auto',
+        time: 'dtp-time',
+        timeColumn: 'col-3 px-1 py-2',
+        title: 'fw-bold',
+        titleWide: 'w-100',
+        today: 'dtp-today'
+    };
+
     // Format token RegExp
     DateTimePicker._formatTokenRegExp = /([a-z])\1*|'[^']*'/ig;
 
@@ -2373,7 +2426,7 @@
 
     // DateTimePicker QuerySet method
     if (QuerySet) {
-        QuerySet.prototype.dateTimePicker = function(a, ...args) {
+        QuerySet.prototype.datetimepicker = function(a, ...args) {
             let settings, method;
 
             if (Core.isObject(a)) {
