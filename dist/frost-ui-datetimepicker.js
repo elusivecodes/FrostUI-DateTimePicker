@@ -284,8 +284,10 @@
         switch (e.key) {
             case 'Tab':
                 DateTimePicker.autoHide(e.target);
+                break;
             case 'Escape':
                 DateTimePicker.autoHide();
+                break;
         }
     });
 
