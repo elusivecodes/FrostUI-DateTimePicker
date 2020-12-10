@@ -22,7 +22,7 @@ class DateTimePicker {
      * @param {DateTimePicker~renderCallback} [settings.renderMonth] The render month callback
      * @param {DateTimePicker~renderCallback} [settings.renderYear] The render year callback
      * @param {object} [settings.icons] Class names to use for icons.
-     * @param {object} [settings.lang] lang to use for actions.
+     * @param {object} [settings.lang] Language to use for actions.
      * @param {function} [settings.keyDown] The keydown callback.
      * @param {Boolean} [settings.multiDate=false] Whether to allow selecting multiple dates.
      * @param {string} [settings.multiDateSeparator=,] The multiple date separator.
@@ -35,11 +35,11 @@ class DateTimePicker {
      * @param {string} [settings.minView] The minimum date view to display.
      * @param {number} [settings.stepping=1] The minute stepping interval.
      * @param {number} [settings.duration=100] The duration of the animation.
-     * @param {string} [settings.placement=bottom] The placement of the datetimepicker relative to the toggle.
-     * @param {string} [settings.position=start] The position of the datetimepicker relative to the toggle.
-     * @param {Boolean} [settings.fixed=false] Whether the datetimepicker position is fixed.
-     * @param {number} [settings.spacing=2] The spacing between the datetimepicker and the toggle.
-     * @param {number} [settings.minContact=false] The minimum amount of contact the datetimepicker must make with the toggle.
+     * @param {string} [settings.placement=bottom] The placement of the DateTimePicker relative to the toggle.
+     * @param {string} [settings.position=start] The position of the DateTimePicker relative to the toggle.
+     * @param {Boolean} [settings.fixed=false] Whether the DateTimePicker position is fixed.
+     * @param {number} [settings.spacing=2] The spacing between the DateTimePicker and the toggle.
+     * @param {number} [settings.minContact=false] The minimum amount of contact the DateTimePicker must make with the toggle.
      * @param {Boolean} [autoInit=false] Whether the date picker was initialized from a toggle event.
      * @returns {DateTimePicker} A new DateTimePicker object.
      */
@@ -148,7 +148,7 @@ class DateTimePicker {
 
         this._animating = true;
         dom.append(document.body, this._menuNode);
-        this._popper.update();
+        this.update();
 
         dom.fadeIn(this._menuNode, {
             duration: this._settings.duration
@@ -170,6 +170,17 @@ class DateTimePicker {
         dom.hasClass(this._menuNode, 'show') ?
             this.hide() :
             this.show();
+    }
+
+    /**
+     * Update the DateTimePicker position.
+     */
+    update() {
+        if (this._settings.inline) {
+            return;
+        }
+
+        this._popper.update();
     }
 
     /**
@@ -210,7 +221,7 @@ class DateTimePicker {
      * @param {DateTimePicker~renderCallback} [settings.renderMonth] The render month callback
      * @param {DateTimePicker~renderCallback} [settings.renderYear] The render year callback
      * @param {object} [settings.icons] Class names to use for icons.
-     * @param {object} [settings.lang] lang to use for actions.
+     * @param {object} [settings.lang] Language to use for actions.
      * @param {function} [settings.keyDown] The keydown callback.
      * @param {Boolean} [settings.multiDate=false] Whether to allow selecting multiple dates.
      * @param {string} [settings.multiDateSeparator=,] The multiple date separator.
@@ -223,11 +234,11 @@ class DateTimePicker {
      * @param {string} [settings.minView] The minimum date view to display.
      * @param {number} [settings.stepping=1] The minute stepping interval.
      * @param {number} [settings.duration=100] The duration of the animation.
-     * @param {string} [settings.placement=bottom] The placement of the datetimepicker relative to the toggle.
-     * @param {string} [settings.position=start] The position of the datetimepicker relative to the toggle.
-     * @param {Boolean} [settings.fixed=false] Whether the datetimepicker position is fixed.
-     * @param {number} [settings.spacing=2] The spacing between the datetimepicker and the toggle.
-     * @param {number} [settings.minContact=false] The minimum amount of contact the datetimepicker must make with the toggle.
+     * @param {string} [settings.placement=bottom] The placement of the DateTimePicker relative to the toggle.
+     * @param {string} [settings.position=start] The position of the DateTimePicker relative to the toggle.
+     * @param {Boolean} [settings.fixed=false] Whether the DateTimePicker position is fixed.
+     * @param {number} [settings.spacing=2] The spacing between the DateTimePicker and the toggle.
+     * @param {number} [settings.minContact=false] The minimum amount of contact the DateTimePicker must make with the toggle.
      * @param {Boolean} [autoInit=false] Whether the date picker was initialized from a toggle event.
      * @returns {DateTimePicker} A new DateTimePicker object.
      */

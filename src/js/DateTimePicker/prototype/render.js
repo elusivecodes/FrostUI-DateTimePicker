@@ -49,9 +49,7 @@ Object.assign(DateTimePicker.prototype, {
             dom.append(this._dateContainer, table);
         }
 
-        if (!this._settings.inline && this._popper) {
-            this._popper.update();
-        }
+        this.update();
     },
 
     /**
@@ -102,9 +100,7 @@ Object.assign(DateTimePicker.prototype, {
                 break;
         }
 
-        if (!this._settings.inline && this._popper) {
-            this._popper.update();
-        }
+        this.update();
     },
 
     /**
