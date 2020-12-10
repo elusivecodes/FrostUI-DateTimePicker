@@ -27,7 +27,7 @@
   border: solid transparent;
   border-width: 0 0 7px 7px;
   border-bottom-color: royalblue;
-  border-top-color: rgba(0, 0, 0, 0.2);
+  border-top-color: rgba(0, 0, 0, 0.15);
   content: '';
 }
 .datetimepicker .dtp-today.dtp-active::before {
@@ -35,17 +35,17 @@
 }
 .datetimepicker .dtp-action {
   cursor: pointer;
-  border-radius: 0.25em;
+  border-radius: 0.2rem;
 }
 .datetimepicker .dtp-action:hover {
-  background: #eee;
+  background: rgba(0, 0, 0, 0.1);
 }
 .datetimepicker .dtp-action.dtp-active {
   background: royalblue;
   color: white;
 }
 .datetimepicker .dtp-action.dtp-active:hover {
-  background: #3454b4;
+  background: #3b5fcb;
 }
 .datetimepicker .dtp-disabled {
   opacity: 0.5;
