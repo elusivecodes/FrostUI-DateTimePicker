@@ -39,7 +39,7 @@ Object.assign(DateTimePicker.prototype, {
                             title: this._settings.lang.selectTime
                         },
                         dataset: {
-                            action: 'showTime'
+                            uiAction: 'showTime'
                         }
                     });
                     dom.append(tr, td);
@@ -75,7 +75,7 @@ Object.assign(DateTimePicker.prototype, {
                             title: this._settings.lang.selectDate
                         },
                         dataset: {
-                            action: 'showDate'
+                            uiAction: 'showDate'
                         }
                     });
                     dom.append(row, td);
@@ -110,7 +110,7 @@ Object.assign(DateTimePicker.prototype, {
         this._menuNode = dom.create('div', {
             class: this.constructor.classes.menu,
             dataset: {
-                trigger: '#' + dom.getAttribute(this._node, 'id')
+                uiTrigger: '#' + dom.getAttribute(this._node, 'id')
             }
         });
 
@@ -124,8 +124,6 @@ Object.assign(DateTimePicker.prototype, {
                 class: this.constructor.classes.column
             });
             dom.append(this._container, this._dateContainer);
-
-            this._refreshDate();
         }
 
         if (this._hasTime) {
@@ -133,8 +131,6 @@ Object.assign(DateTimePicker.prototype, {
                 class: this.constructor.classes.column
             });
             dom.append(this._container, this._timeContainer);
-
-            this._refreshTime();
         }
 
         if (this._hasDate && this._hasTime) {
@@ -166,6 +162,14 @@ Object.assign(DateTimePicker.prototype, {
                 }
             );
         }
+
+        if (this._hasDate) {
+            this._refreshDate();
+        }
+
+        if (this._hasTime) {
+            this._refreshTime();
+        }
     },
 
     /**
@@ -186,8 +190,8 @@ Object.assign(DateTimePicker.prototype, {
         if (this._isAfterMin(start)) {
             prev = {
                 data: {
-                    action: 'prev',
-                    unit: 'month'
+                    uiAction: 'prev',
+                    uiUnit: 'month'
                 },
                 attr: {
                     title: this._settings.lang.prevMonth
@@ -198,8 +202,8 @@ Object.assign(DateTimePicker.prototype, {
         if (this._isBeforeMax(end)) {
             next = {
                 data: {
-                    action: 'next',
-                    unit: 'month'
+                    uiAction: 'next',
+                    uiUnit: 'month'
                 },
                 attr: {
                     title: this._settings.lang.nextMonth
@@ -212,8 +216,8 @@ Object.assign(DateTimePicker.prototype, {
             header: {
                 title: this._viewDate.format('MMMM yyyy'),
                 data: {
-                    action: 'changeView',
-                    view: 'months'
+                    uiAction: 'changeView',
+                    uiView: 'months'
                 },
                 attr: {
                     title: this._settings.lang.selectMonth
@@ -260,12 +264,12 @@ Object.assign(DateTimePicker.prototype, {
                     } else {
                         dom.addClass(td, this.constructor.classes.action);
                         dom.setDataset(td, {
-                            action: this._settings.multiDate ?
+                            uiAction: this._settings.multiDate ?
                                 'setDateMulti' :
                                 'setDate',
-                            year: current.getYear(),
-                            month: current.getMonth(),
-                            date: current.getDate()
+                            uiYear: current.getYear(),
+                            uiMonth: current.getMonth(),
+                            uiDate: current.getDate()
                         });
                     }
 
@@ -327,8 +331,8 @@ Object.assign(DateTimePicker.prototype, {
                     } else {
                         dom.addClass(col, this.constructor.classes.action);
                         dom.setDataset(col, {
-                            action: 'setHours',
-                            hour: current.getHours()
+                            uiAction: 'setHours',
+                            uiHour: current.getHours()
                         });
                     }
 
@@ -386,8 +390,8 @@ Object.assign(DateTimePicker.prototype, {
                     } else {
                         dom.addClass(col, this.constructor.classes.action);
                         dom.setDataset(col, {
-                            action: 'setMinutes',
-                            minute: current.getMinutes()
+                            uiAction: 'setMinutes',
+                            uiMinute: current.getMinutes()
                         });
                     }
 
@@ -417,8 +421,8 @@ Object.assign(DateTimePicker.prototype, {
         if (this._isAfterMin(start)) {
             prev = {
                 data: {
-                    action: 'prev',
-                    unit: 'year'
+                    uiAction: 'prev',
+                    uiUnit: 'year'
                 },
                 attr: {
                     title: this._settings.lang.prevYear
@@ -429,8 +433,8 @@ Object.assign(DateTimePicker.prototype, {
         if (this._isBeforeMax(end)) {
             next = {
                 data: {
-                    action: 'next',
-                    unit: 'year'
+                    uiAction: 'next',
+                    uiUnit: 'year'
                 },
                 attr: {
                     title: this._settings.lang.nextYear
@@ -444,8 +448,8 @@ Object.assign(DateTimePicker.prototype, {
                 title: this._viewDate.format('yyyy'),
                 wide: true,
                 data: {
-                    action: 'changeView',
-                    view: 'years'
+                    uiAction: 'changeView',
+                    uiView: 'years'
                 },
                 attr: {
                     title: this._settings.lang.selectYear
@@ -487,18 +491,18 @@ Object.assign(DateTimePicker.prototype, {
                         dom.addClass(col, this.constructor.classes.action);
                         if (this._settings.minView === 'months') {
                             dom.setDataset(col, {
-                                action: this._settings.multiDate ?
+                                uiAction: this._settings.multiDate ?
                                     'setDateMulti' :
                                     'setDate',
-                                year: current.getYear(),
-                                month: current.getMonth()
+                                uiYear: current.getYear(),
+                                uiMonth: current.getMonth()
                             });
                         } else {
                             dom.setDataset(col, {
-                                action: 'changeView',
-                                view: 'days',
-                                year: current.getYear(),
-                                month: current.getMonth()
+                                uiAction: 'changeView',
+                                uiView: 'days',
+                                uiYear: current.getYear(),
+                                uiMonth: current.getMonth()
                             });
                         }
                     }
@@ -557,8 +561,8 @@ Object.assign(DateTimePicker.prototype, {
                     } else {
                         dom.addClass(col, this.constructor.classes.action);
                         dom.setDataset(col, {
-                            action: 'setSeconds',
-                            second: current.getSeconds()
+                            uiAction: 'setSeconds',
+                            uiSecond: current.getSeconds()
                         });
                     }
 
@@ -602,8 +606,8 @@ Object.assign(DateTimePicker.prototype, {
                     if (this._isValid(nextHour, 'hour')) {
                         increment = {
                             data: {
-                                action: 'nextTime',
-                                unit: 'hour'
+                                uiAction: 'nextTime',
+                                uiUnit: 'hour'
                             },
                             attr: {
                                 title: this._settings.lang.incrementHour
@@ -615,8 +619,8 @@ Object.assign(DateTimePicker.prototype, {
                     if (this._isValid(prevHour, 'hour')) {
                         decrement = {
                             data: {
-                                action: 'prevTime',
-                                unit: 'hour'
+                                uiAction: 'prevTime',
+                                uiUnit: 'hour'
                             },
                             attr: {
                                 title: this._settings.lang.decrementHour
@@ -630,8 +634,8 @@ Object.assign(DateTimePicker.prototype, {
                         select: {
                             text: initialDate.format(this._useDayPeriod ? 'hh' : 'HH'),
                             data: {
-                                action: 'changeTimeView',
-                                timeView: 'hours'
+                                uiAction: 'changeTimeView',
+                                uiTimeView: 'hours'
                             },
                             attr: {
                                 title: this._settings.lang.selectHour
@@ -658,8 +662,8 @@ Object.assign(DateTimePicker.prototype, {
                     if (this._isValid(nextMinute, 'minute')) {
                         increment = {
                             data: {
-                                action: 'nextTime',
-                                unit: 'minute'
+                                uiAction: 'nextTime',
+                                uiUnit: 'minute'
                             },
                             attr: {
                                 title: this._settings.lang.incrementMinute
@@ -671,8 +675,8 @@ Object.assign(DateTimePicker.prototype, {
                     if (this._isValid(prevMinute, 'minute')) {
                         decrement = {
                             data: {
-                                action: 'prevTime',
-                                unit: 'minute'
+                                uiAction: 'prevTime',
+                                uiUnit: 'minute'
                             },
                             attr: {
                                 title: this._settings.lang.decrementMinute
@@ -686,8 +690,8 @@ Object.assign(DateTimePicker.prototype, {
                         select: {
                             text: initialDate.format('mm'),
                             data: {
-                                action: 'changeTimeView',
-                                timeView: 'minutes'
+                                uiAction: 'changeTimeView',
+                                uiTimeView: 'minutes'
                             },
                             attr: {
                                 title: this._settings.lang.selectMinute
@@ -712,8 +716,8 @@ Object.assign(DateTimePicker.prototype, {
                     if (this._isValid(nextSecond, 'second')) {
                         increment = {
                             data: {
-                                action: 'nextTime',
-                                unit: 'second'
+                                uiAction: 'nextTime',
+                                uiUnit: 'second'
                             },
                             attr: {
                                 title: this._settings.lang.incrementSecond
@@ -725,8 +729,8 @@ Object.assign(DateTimePicker.prototype, {
                     if (this._isValid(prevSecond, 'second')) {
                         decrement = {
                             data: {
-                                action: 'prevTime',
-                                unit: 'second'
+                                uiAction: 'prevTime',
+                                uiUnit: 'second'
                             },
                             attr: {
                                 title: this._settings.lang.decrementSecond
@@ -740,8 +744,8 @@ Object.assign(DateTimePicker.prototype, {
                         select: {
                             text: initialDate.format('ss'),
                             data: {
-                                action: 'changeTimeView',
-                                timeView: 'seconds'
+                                uiAction: 'changeTimeView',
+                                uiTimeView: 'seconds'
                             },
                             attr: {
                                 title: this._settings.lang.selectSecond
@@ -779,7 +783,7 @@ Object.assign(DateTimePicker.prototype, {
                         dom.addClass(periodButton, this.constructor.classes.disabled);
                     } else {
                         dom.setDataset(periodButton, {
-                            action: 'togglePeriod'
+                            uiAction: 'togglePeriod'
                         });
                         dom.setAttribute(periodButton, 'title', this._settings.lang.togglePeriod);
                     }
@@ -818,9 +822,9 @@ Object.assign(DateTimePicker.prototype, {
         if (this._isAfterMin(start)) {
             prev = {
                 data: {
-                    action: 'prev',
-                    unit: 'years',
-                    amount: 10
+                    uiAction: 'prev',
+                    uiUnit: 'years',
+                    uiAmount: 10
                 },
                 attr: {
                     title: this._settings.lang.prevDecade
@@ -831,9 +835,9 @@ Object.assign(DateTimePicker.prototype, {
         if (this._isBeforeMax(end)) {
             next = {
                 data: {
-                    action: 'next',
-                    unit: 'years',
-                    amount: 10
+                    uiAction: 'next',
+                    uiUnit: 'years',
+                    uiAmount: 10
                 },
                 attr: {
                     title: this._settings.lang.nextDecade
@@ -887,16 +891,16 @@ Object.assign(DateTimePicker.prototype, {
                         dom.addClass(col, this.constructor.classes.action);
                         if (this._settings.minView === 'years') {
                             dom.setDataset(col, {
-                                action: this._settings.multiDate ?
+                                uiAction: this._settings.multiDate ?
                                     'setDateMulti' :
                                     'setDate',
-                                year: thisYear
+                                uiYear: thisYear
                             });
                         } else {
                             dom.setDataset(col, {
-                                action: 'changeView',
-                                view: 'months',
-                                year: thisYear
+                                uiAction: 'changeView',
+                                uiView: 'months',
+                                uiYear: thisYear
                             });
                         }
                     }

@@ -37,56 +37,17 @@
      * DateTimePicker Class
      * @class
      */
-    class DateTimePicker {
+    class DateTimePicker extends UI.BaseComponent {
 
         /**
          * New DateTimePicker constructor.
          * @param {HTMLElement} node The input node.
          * @param {object} [settings] The options to create the DateTimePicker with.
-         * @param {string} [settings.format] The format string.
-         * @param {string} [settings.locale] The locale to use.
-         * @param {string} [setting.timeZone] The timeZone to use.
-         * @param {string|number|array|Date|DateTime} [settings.defaultDate] The default date to use.
-         * @param {string|number|array|Date|DateTime} [settings.minDate] The minimum allowed date.
-         * @param {string|number|array|Date|DateTime} [settings.maxDate] The maximum allowed date.
-         * @param {DateTimePicker~validCallback} [settings.isValidDay] The valid day callback.
-         * @param {DateTimePicker~validCallback} [settings.isValidMonth] The valid month callback.
-         * @param {DateTimePicker~validCallback} [settings.isValidTime] The valid time callback.
-         * @param {DateTimePicker~validCallback} [settings.isValidYear] The valid year callback.
-         * @param {DateTimePicker~renderCallback} [settings.renderDay] The render day callback
-         * @param {DateTimePicker~renderCallback} [settings.renderMonth] The render month callback
-         * @param {DateTimePicker~renderCallback} [settings.renderYear] The render year callback
-         * @param {object} [settings.icons] Class names to use for icons.
-         * @param {object} [settings.lang] Language to use for actions.
-         * @param {function} [settings.keyDown] The keydown callback.
-         * @param {Boolean} [settings.multiDate=false] Whether to allow selecting multiple dates.
-         * @param {string} [settings.multiDateSeparator=,] The multiple date separator.
-         * @param {Boolean} [settings.useCurrent=false] Whether to use the current time as the default date.
-         * @param {Boolean} [settings.keepOpen=false] Whether to keep the date picker open after selecting a date.
-         * @param {Boolean} [settings.focusOnShow=true] Whether to focus the input when the date picker is shown.
-         * @param {Boolean} [settings.inline=false] Whether to render the date picker inline.
-         * @param {Boolean} [settings.sideBySide=false] Whether to render the date and time pickers side by side.
-         * @param {Boolean} [settings.keepInvalid=false] Whether to keep invalid date inputs.
-         * @param {string} [settings.minView] The minimum date view to display.
-         * @param {number} [settings.stepping=1] The minute stepping interval.
-         * @param {number} [settings.duration=100] The duration of the animation.
-         * @param {string} [settings.placement=bottom] The placement of the DateTimePicker relative to the toggle.
-         * @param {string} [settings.position=start] The position of the DateTimePicker relative to the toggle.
-         * @param {Boolean} [settings.fixed=false] Whether the DateTimePicker position is fixed.
-         * @param {number} [settings.spacing=2] The spacing between the DateTimePicker and the toggle.
-         * @param {number} [settings.minContact=false] The minimum amount of contact the DateTimePicker must make with the toggle.
          * @param {Boolean} [autoInit=false] Whether the date picker was initialized from a toggle event.
          * @returns {DateTimePicker} A new DateTimePicker object.
          */
         constructor(node, settings, autoInit = false) {
-            this._node = node;
-
-            this._settings = Core.extend(
-                {},
-                this.constructor.defaults,
-                dom.getDataset(this._node),
-                settings
-            );
+            super(node, settings);
 
             this._autoInit = autoInit;
             this._date = null;
@@ -115,11 +76,9 @@
 
             this._checkFormat();
             this._parseSettings();
-            this._update();
+            this._updateValue();
             this._render();
             this._events();
-
-            dom.setData(this._node, 'datetimepicker', this);
         }
 
         /**
@@ -137,9 +96,13 @@
                 this._popper.destroy();
             }
 
-            dom.removeEvent(this._node, 'focus.frost.datetimepicker blur.frost.datetimepicker input.frost.datetimepicker keydown.frost.datetimepicker');
+            dom.removeEvent(this._node, 'focus.ui.datetimepicker');
+            dom.removeEvent(this._node, 'blur.ui.datetimepicker');
+            dom.removeEvent(this._node, 'input.ui.datetimepicker')
+            dom.removeEvent(this._node, 'keydown.ui.datetimepicker')
             dom.remove(this._menuNode);
-            dom.removeData(this._node, 'datetimepicker');
+
+            super.destroy();
         }
 
         /**
@@ -150,7 +113,7 @@
                 this._settings.inline ||
                 this._animating ||
                 !dom.isConnected(this._menuNode) ||
-                !dom.triggerOne(this._node, 'hide.frost.datetimepicker')
+                !dom.triggerOne(this._node, 'hide.ui.datetimepicker')
             ) {
                 return;
             }
@@ -161,10 +124,23 @@
                 duration: this._settings.duration
             }).then(_ => {
                 dom.detach(this._menuNode);
-                dom.triggerEvent(this._node, 'hidden.frost.datetimepicker');
+                dom.triggerEvent(this._node, 'hidden.ui.datetimepicker');
             }).catch(_ => { }).finally(_ => {
                 this._animating = false;
             });
+        }
+
+        /**
+         * Refresh the views.
+         */
+        refresh() {
+            if (this._hasDate) {
+                this._refreshDate();
+            }
+
+            if (this._hasTime) {
+                this._refreshTime();
+            }
         }
 
         /**
@@ -176,7 +152,7 @@
                 this._animating ||
                 dom.isConnected(this._menuNode) ||
                 dom.is(this._node, ':disabled') ||
-                !dom.triggerOne(this._node, 'show.frost.datetimepicker')
+                !dom.triggerOne(this._node, 'show.ui.datetimepicker')
             ) {
                 return;
             }
@@ -188,7 +164,7 @@
             dom.fadeIn(this._menuNode, {
                 duration: this._settings.duration
             }).then(_ => {
-                dom.triggerEvent(this._node, 'shown.frost.datetimepicker');
+                dom.triggerEvent(this._node, 'shown.ui.datetimepicker');
 
                 if (this._settings.focusOnShow) {
                     dom.focus(this._node);
@@ -226,7 +202,7 @@
             const menus = dom.find('.datetimepicker:not(.dtp-inline)');
 
             for (const menu of menus) {
-                const selector = dom.getDataset(menu, 'trigger');
+                const selector = dom.getDataset(menu, 'uiTrigger');
                 const trigger = dom.findOne(selector);
 
                 if (trigger === target) {
@@ -238,60 +214,15 @@
             }
         }
 
-        /**
-         * Initialize a DateTimePicker.
-         * @param {HTMLElement} node The input node.
-         * @param {object} [settings] The options to create the DateTimePicker with.
-         * @param {string} [settings.format] The format string.
-         * @param {string} [settings.locale] The locale to use.
-         * @param {string} [setting.timeZone] The timeZone to use.
-         * @param {string|number|array|Date|DateTime} [settings.defaultDate] The default date to use.
-         * @param {string|number|array|Date|DateTime} [settings.minDate] The minimum allowed date.
-         * @param {string|number|array|Date|DateTime} [settings.maxDate] The maximum allowed date.
-         * @param {DateTimePicker~validCallback} [settings.isValidDay] The valid day callback.
-         * @param {DateTimePicker~validCallback} [settings.isValidMonth] The valid month callback.
-         * @param {DateTimePicker~validCallback} [settings.isValidTime] The valid time callback.
-         * @param {DateTimePicker~validCallback} [settings.isValidYear] The valid year callback.
-         * @param {DateTimePicker~renderCallback} [settings.renderDay] The render day callback
-         * @param {DateTimePicker~renderCallback} [settings.renderMonth] The render month callback
-         * @param {DateTimePicker~renderCallback} [settings.renderYear] The render year callback
-         * @param {object} [settings.icons] Class names to use for icons.
-         * @param {object} [settings.lang] Language to use for actions.
-         * @param {function} [settings.keyDown] The keydown callback.
-         * @param {Boolean} [settings.multiDate=false] Whether to allow selecting multiple dates.
-         * @param {string} [settings.multiDateSeparator=,] The multiple date separator.
-         * @param {Boolean} [settings.useCurrent=false] Whether to use the current time as the default date.
-         * @param {Boolean} [settings.keepOpen=false] Whether to keep the date picker open after selecting a date.
-         * @param {Boolean} [settings.focusOnShow=true] Whether to focus the input when the date picker is shown.
-         * @param {Boolean} [settings.inline=false] Whether to render the date picker inline.
-         * @param {Boolean} [settings.sideBySide=false] Whether to render the date and time pickers side by side.
-         * @param {Boolean} [settings.keepInvalid=false] Whether to keep invalid date inputs.
-         * @param {string} [settings.minView] The minimum date view to display.
-         * @param {number} [settings.stepping=1] The minute stepping interval.
-         * @param {number} [settings.duration=100] The duration of the animation.
-         * @param {string} [settings.placement=bottom] The placement of the DateTimePicker relative to the toggle.
-         * @param {string} [settings.position=start] The position of the DateTimePicker relative to the toggle.
-         * @param {Boolean} [settings.fixed=false] Whether the DateTimePicker position is fixed.
-         * @param {number} [settings.spacing=2] The spacing between the DateTimePicker and the toggle.
-         * @param {number} [settings.minContact=false] The minimum amount of contact the DateTimePicker must make with the toggle.
-         * @param {Boolean} [autoInit=false] Whether the date picker was initialized from a toggle event.
-         * @returns {DateTimePicker} A new DateTimePicker object.
-         */
-        static init(node, settings, autoInit = false) {
-            return dom.hasData(node, 'datetimepicker') ?
-                dom.getData(node, 'datetimepicker') :
-                new this(node, settings, autoInit);
-        }
-
     }
 
 
     // DateTimePicker events
-    dom.addEvent(document, 'click.frost.datetimepicker', e => {
+    dom.addEvent(document, 'click.ui.datetimepicker', e => {
         DateTimePicker.autoHide(e.target);
     });
 
-    dom.addEvent(document, 'keyup.frost.datetimepicker', e => {
+    dom.addEvent(document, 'keyup.ui.datetimepicker', e => {
         switch (e.key) {
             case 'Tab':
                 DateTimePicker.autoHide(e.target);
@@ -302,7 +233,7 @@
         }
     });
 
-    dom.addEventDelegate(document, 'click.frost.datetimepicker', '[data-toggle="datetimepicker"]', e => {
+    dom.addEventDelegate(document, 'click.ui.datetimepicker', '[data-ui-toggle="datetimepicker"]', e => {
         e.preventDefault();
 
         const target = UI.getTarget(e.currentTarget);
@@ -322,12 +253,12 @@
          */
         _events() {
             if (!this._autoInit) {
-                dom.addEvent(this._node, 'focus.frost.datetimepicker', _ => {
+                dom.addEvent(this._node, 'focus.ui.datetimepicker', _ => {
                     this.show();
                 });
             }
 
-            dom.addEvent(this._node, 'blur.frost.datetimepicker', _ => {
+            dom.addEvent(this._node, 'blur.ui.datetimepicker', _ => {
                 const value = dom.getValue(this._node);
                 if (this._settings.multiDate) {
                     const values = value.split(this._settings.multiDateSeparator);
@@ -371,19 +302,19 @@
             });
 
             if (this._settings.keyDown && !this._settings.inline && !this._settings.multiDate) {
-                dom.addEvent(this._node, 'keydown.frost.datetimepicker', e => {
+                dom.addEvent(this._node, 'keydown.ui.datetimepicker', e => {
                     this._settings.keyDown(e, this);
                 });
             }
 
-            dom.addEvent(this._container, 'click.frost.datetimepicker mousedown.frost.datetimepicker', e => {
+            dom.addEvent(this._container, 'click.ui.datetimepicker mousedown.ui.datetimepicker', e => {
                 e.preventDefault();
                 e.stopPropagation();
             });
 
-            dom.addEventDelegate(this._container, 'click.frost.datetimepicker', '[data-action]', e => {
+            dom.addEventDelegate(this._container, 'click.ui.datetimepicker', '[data-ui-action]', e => {
                 const element = e.currentTarget;
-                const action = dom.getDataset(element, 'action');
+                const action = dom.getDataset(element, 'uiAction');
                 const tempDate = this._date ?
                     this._date.clone() :
                     this._now();
@@ -391,9 +322,9 @@
                 switch (action) {
                     case 'setDate':
                         tempDate.setYear(
-                            dom.getDataset(element, 'year'),
-                            dom.getDataset(element, 'month'),
-                            dom.getDataset(element, 'date')
+                            dom.getDataset(element, 'uiYear'),
+                            dom.getDataset(element, 'uiMonth'),
+                            dom.getDataset(element, 'uiDate')
                         );
 
                         this._setDate(tempDate);
@@ -405,9 +336,9 @@
                         break;
                     case 'setDateMulti':
                         tempDate.setYear(
-                            dom.getDataset(element, 'year'),
-                            dom.getDataset(element, 'month'),
-                            dom.getDataset(element, 'date')
+                            dom.getDataset(element, 'uiYear'),
+                            dom.getDataset(element, 'uiMonth'),
+                            dom.getDataset(element, 'uiDate')
                         );
 
                         if (this._isCurrent(tempDate)) {
@@ -426,7 +357,7 @@
                         const timeMethod = action === 'prevTime' ?
                             'sub' :
                             'add';
-                        const unit = dom.getDataset(element, 'unit');
+                        const unit = dom.getDataset(element, 'uiUnit');
                         tempDate[timeMethod](
                             unit === 'minute' ?
                                 this._settings.stepping :
@@ -448,7 +379,7 @@
                         break;
                     case 'setHours':
                         tempDate.setHours(
-                            dom.getDataset(element, 'hour')
+                            dom.getDataset(element, 'uiHour')
                         );
 
                         this._timeViewMode = null;
@@ -458,7 +389,7 @@
                         break;
                     case 'setMinutes':
                         tempDate.setMinutes(
-                            dom.getDataset(element, 'minute')
+                            dom.getDataset(element, 'uiMinute')
                         );
 
                         this._timeViewMode = null;
@@ -468,7 +399,7 @@
                         break;
                     case 'setSeconds':
                         tempDate.setSeconds(
-                            dom.getDataset(element, 'second')
+                            dom.getDataset(element, 'uiSecond')
                         );
 
                         this._timeViewMode = null;
@@ -477,13 +408,13 @@
 
                         break;
                     case 'changeView':
-                        this._viewMode = dom.getDataset(element, 'view');
+                        this._viewMode = dom.getDataset(element, 'uiView');
 
-                        if (dom.hasDataset(element, 'year')) {
+                        if (dom.hasDataset(element, 'uiYear')) {
                             this._viewDate.setYear(
-                                dom.getDataset(element, 'year'),
-                                dom.getDataset(element, 'month') || 1,
-                                dom.getDataset(element, 'date') || 1
+                                dom.getDataset(element, 'uiYear'),
+                                dom.getDataset(element, 'uiMonth') || 1,
+                                dom.getDataset(element, 'uiDate') || 1
                             );
                         }
 
@@ -491,7 +422,7 @@
 
                         break;
                     case 'changeTimeView':
-                        this._timeViewMode = dom.getDataset(element, 'timeView');
+                        this._timeViewMode = dom.getDataset(element, 'uiTimeView');
 
                         this._refreshTime();
 
@@ -524,8 +455,8 @@
                             'sub' :
                             'add';
                         this._viewDate[dateMethod](
-                            dom.getDataset(element, 'amount') || 1,
-                            dom.getDataset(element, 'unit')
+                            dom.getDataset(element, 'uiAmount') || 1,
+                            dom.getDataset(element, 'uiUnit')
                         );
 
                         this._refreshDate();
@@ -591,10 +522,6 @@
 
             if (this._settings.multiDate && this._hasTime) {
                 throw new Error('Time components cannot be used with multiDate option.');
-            }
-
-            if (this._settings.multiDate && !this._hasDate) {
-                throw new Error('Date components must be used with multiDate option.');
             }
         },
 
@@ -863,13 +790,17 @@
          * @param {DateTime} date The input date.
          */
         _setDate(date) {
+            if (dom.is(this._node, ':disabled')) {
+                return;
+            }
+
             if (date) {
                 this._clampStepping(date);
 
                 this._viewDate = date.clone();
             }
 
-            dom.triggerEvent(this._node, 'change.frost.datetimepicker', {
+            dom.triggerEvent(this._node, 'change.ui.datetimepicker', {
                 old: this._date ?
                     this._date.clone() :
                     null,
@@ -880,7 +811,7 @@
 
             this._date = date;
 
-            this._update();
+            this._updateValue();
             this.refresh();
         },
 
@@ -889,27 +820,31 @@
          * @param {array} date The input dates.
          */
         _setDates(dates) {
+            if (dom.is(this._node, ':disabled')) {
+                return;
+            }
+
             for (const date of dates) {
                 this._clampStepping(date);
             }
 
             dates = dates.sort((a, b) => a.isBefore(b) ? -1 : 1);
 
-            dom.triggerEvent(this._node, 'change.frost.datetimepicker', {
+            dom.triggerEvent(this._node, 'change.ui.datetimepicker', {
                 old: this._dates.map(date => date.clone()),
                 new: dates.map(date => date.clone())
             });
 
             this._dates = dates;
 
-            this._update();
+            this._updateValue();
             this.refresh();
         },
 
         /**
          * Update the input value to the current date.
          */
-        _update() {
+        _updateValue() {
             let value = '';
             if (this._settings.multiDate) {
                 if (!this._settings.keepInvalid) {
@@ -976,7 +911,7 @@
                                 title: this._settings.lang.selectTime
                             },
                             dataset: {
-                                action: 'showTime'
+                                uiAction: 'showTime'
                             }
                         });
                         dom.append(tr, td);
@@ -1012,7 +947,7 @@
                                 title: this._settings.lang.selectDate
                             },
                             dataset: {
-                                action: 'showDate'
+                                uiAction: 'showDate'
                             }
                         });
                         dom.append(row, td);
@@ -1047,7 +982,7 @@
             this._menuNode = dom.create('div', {
                 class: this.constructor.classes.menu,
                 dataset: {
-                    trigger: '#' + dom.getAttribute(this._node, 'id')
+                    uiTrigger: '#' + dom.getAttribute(this._node, 'id')
                 }
             });
 
@@ -1061,8 +996,6 @@
                     class: this.constructor.classes.column
                 });
                 dom.append(this._container, this._dateContainer);
-
-                this._refreshDate();
             }
 
             if (this._hasTime) {
@@ -1070,8 +1003,6 @@
                     class: this.constructor.classes.column
                 });
                 dom.append(this._container, this._timeContainer);
-
-                this._refreshTime();
             }
 
             if (this._hasDate && this._hasTime) {
@@ -1103,6 +1034,14 @@
                     }
                 );
             }
+
+            if (this._hasDate) {
+                this._refreshDate();
+            }
+
+            if (this._hasTime) {
+                this._refreshTime();
+            }
         },
 
         /**
@@ -1123,8 +1062,8 @@
             if (this._isAfterMin(start)) {
                 prev = {
                     data: {
-                        action: 'prev',
-                        unit: 'month'
+                        uiAction: 'prev',
+                        uiUnit: 'month'
                     },
                     attr: {
                         title: this._settings.lang.prevMonth
@@ -1135,8 +1074,8 @@
             if (this._isBeforeMax(end)) {
                 next = {
                     data: {
-                        action: 'next',
-                        unit: 'month'
+                        uiAction: 'next',
+                        uiUnit: 'month'
                     },
                     attr: {
                         title: this._settings.lang.nextMonth
@@ -1149,8 +1088,8 @@
                 header: {
                     title: this._viewDate.format('MMMM yyyy'),
                     data: {
-                        action: 'changeView',
-                        view: 'months'
+                        uiAction: 'changeView',
+                        uiView: 'months'
                     },
                     attr: {
                         title: this._settings.lang.selectMonth
@@ -1197,12 +1136,12 @@
                         } else {
                             dom.addClass(td, this.constructor.classes.action);
                             dom.setDataset(td, {
-                                action: this._settings.multiDate ?
+                                uiAction: this._settings.multiDate ?
                                     'setDateMulti' :
                                     'setDate',
-                                year: current.getYear(),
-                                month: current.getMonth(),
-                                date: current.getDate()
+                                uiYear: current.getYear(),
+                                uiMonth: current.getMonth(),
+                                uiDate: current.getDate()
                             });
                         }
 
@@ -1264,8 +1203,8 @@
                         } else {
                             dom.addClass(col, this.constructor.classes.action);
                             dom.setDataset(col, {
-                                action: 'setHours',
-                                hour: current.getHours()
+                                uiAction: 'setHours',
+                                uiHour: current.getHours()
                             });
                         }
 
@@ -1323,8 +1262,8 @@
                         } else {
                             dom.addClass(col, this.constructor.classes.action);
                             dom.setDataset(col, {
-                                action: 'setMinutes',
-                                minute: current.getMinutes()
+                                uiAction: 'setMinutes',
+                                uiMinute: current.getMinutes()
                             });
                         }
 
@@ -1354,8 +1293,8 @@
             if (this._isAfterMin(start)) {
                 prev = {
                     data: {
-                        action: 'prev',
-                        unit: 'year'
+                        uiAction: 'prev',
+                        uiUnit: 'year'
                     },
                     attr: {
                         title: this._settings.lang.prevYear
@@ -1366,8 +1305,8 @@
             if (this._isBeforeMax(end)) {
                 next = {
                     data: {
-                        action: 'next',
-                        unit: 'year'
+                        uiAction: 'next',
+                        uiUnit: 'year'
                     },
                     attr: {
                         title: this._settings.lang.nextYear
@@ -1381,8 +1320,8 @@
                     title: this._viewDate.format('yyyy'),
                     wide: true,
                     data: {
-                        action: 'changeView',
-                        view: 'years'
+                        uiAction: 'changeView',
+                        uiView: 'years'
                     },
                     attr: {
                         title: this._settings.lang.selectYear
@@ -1424,18 +1363,18 @@
                             dom.addClass(col, this.constructor.classes.action);
                             if (this._settings.minView === 'months') {
                                 dom.setDataset(col, {
-                                    action: this._settings.multiDate ?
+                                    uiAction: this._settings.multiDate ?
                                         'setDateMulti' :
                                         'setDate',
-                                    year: current.getYear(),
-                                    month: current.getMonth()
+                                    uiYear: current.getYear(),
+                                    uiMonth: current.getMonth()
                                 });
                             } else {
                                 dom.setDataset(col, {
-                                    action: 'changeView',
-                                    view: 'days',
-                                    year: current.getYear(),
-                                    month: current.getMonth()
+                                    uiAction: 'changeView',
+                                    uiView: 'days',
+                                    uiYear: current.getYear(),
+                                    uiMonth: current.getMonth()
                                 });
                             }
                         }
@@ -1494,8 +1433,8 @@
                         } else {
                             dom.addClass(col, this.constructor.classes.action);
                             dom.setDataset(col, {
-                                action: 'setSeconds',
-                                second: current.getSeconds()
+                                uiAction: 'setSeconds',
+                                uiSecond: current.getSeconds()
                             });
                         }
 
@@ -1539,8 +1478,8 @@
                         if (this._isValid(nextHour, 'hour')) {
                             increment = {
                                 data: {
-                                    action: 'nextTime',
-                                    unit: 'hour'
+                                    uiAction: 'nextTime',
+                                    uiUnit: 'hour'
                                 },
                                 attr: {
                                     title: this._settings.lang.incrementHour
@@ -1552,8 +1491,8 @@
                         if (this._isValid(prevHour, 'hour')) {
                             decrement = {
                                 data: {
-                                    action: 'prevTime',
-                                    unit: 'hour'
+                                    uiAction: 'prevTime',
+                                    uiUnit: 'hour'
                                 },
                                 attr: {
                                     title: this._settings.lang.decrementHour
@@ -1567,8 +1506,8 @@
                             select: {
                                 text: initialDate.format(this._useDayPeriod ? 'hh' : 'HH'),
                                 data: {
-                                    action: 'changeTimeView',
-                                    timeView: 'hours'
+                                    uiAction: 'changeTimeView',
+                                    uiTimeView: 'hours'
                                 },
                                 attr: {
                                     title: this._settings.lang.selectHour
@@ -1595,8 +1534,8 @@
                         if (this._isValid(nextMinute, 'minute')) {
                             increment = {
                                 data: {
-                                    action: 'nextTime',
-                                    unit: 'minute'
+                                    uiAction: 'nextTime',
+                                    uiUnit: 'minute'
                                 },
                                 attr: {
                                     title: this._settings.lang.incrementMinute
@@ -1608,8 +1547,8 @@
                         if (this._isValid(prevMinute, 'minute')) {
                             decrement = {
                                 data: {
-                                    action: 'prevTime',
-                                    unit: 'minute'
+                                    uiAction: 'prevTime',
+                                    uiUnit: 'minute'
                                 },
                                 attr: {
                                     title: this._settings.lang.decrementMinute
@@ -1623,8 +1562,8 @@
                             select: {
                                 text: initialDate.format('mm'),
                                 data: {
-                                    action: 'changeTimeView',
-                                    timeView: 'minutes'
+                                    uiAction: 'changeTimeView',
+                                    uiTimeView: 'minutes'
                                 },
                                 attr: {
                                     title: this._settings.lang.selectMinute
@@ -1649,8 +1588,8 @@
                         if (this._isValid(nextSecond, 'second')) {
                             increment = {
                                 data: {
-                                    action: 'nextTime',
-                                    unit: 'second'
+                                    uiAction: 'nextTime',
+                                    uiUnit: 'second'
                                 },
                                 attr: {
                                     title: this._settings.lang.incrementSecond
@@ -1662,8 +1601,8 @@
                         if (this._isValid(prevSecond, 'second')) {
                             decrement = {
                                 data: {
-                                    action: 'prevTime',
-                                    unit: 'second'
+                                    uiAction: 'prevTime',
+                                    uiUnit: 'second'
                                 },
                                 attr: {
                                     title: this._settings.lang.decrementSecond
@@ -1677,8 +1616,8 @@
                             select: {
                                 text: initialDate.format('ss'),
                                 data: {
-                                    action: 'changeTimeView',
-                                    timeView: 'seconds'
+                                    uiAction: 'changeTimeView',
+                                    uiTimeView: 'seconds'
                                 },
                                 attr: {
                                     title: this._settings.lang.selectSecond
@@ -1716,7 +1655,7 @@
                             dom.addClass(periodButton, this.constructor.classes.disabled);
                         } else {
                             dom.setDataset(periodButton, {
-                                action: 'togglePeriod'
+                                uiAction: 'togglePeriod'
                             });
                             dom.setAttribute(periodButton, 'title', this._settings.lang.togglePeriod);
                         }
@@ -1755,9 +1694,9 @@
             if (this._isAfterMin(start)) {
                 prev = {
                     data: {
-                        action: 'prev',
-                        unit: 'years',
-                        amount: 10
+                        uiAction: 'prev',
+                        uiUnit: 'years',
+                        uiAmount: 10
                     },
                     attr: {
                         title: this._settings.lang.prevDecade
@@ -1768,9 +1707,9 @@
             if (this._isBeforeMax(end)) {
                 next = {
                     data: {
-                        action: 'next',
-                        unit: 'years',
-                        amount: 10
+                        uiAction: 'next',
+                        uiUnit: 'years',
+                        uiAmount: 10
                     },
                     attr: {
                         title: this._settings.lang.nextDecade
@@ -1824,16 +1763,16 @@
                             dom.addClass(col, this.constructor.classes.action);
                             if (this._settings.minView === 'years') {
                                 dom.setDataset(col, {
-                                    action: this._settings.multiDate ?
+                                    uiAction: this._settings.multiDate ?
                                         'setDateMulti' :
                                         'setDate',
-                                    year: thisYear
+                                    uiYear: thisYear
                                 });
                             } else {
                                 dom.setDataset(col, {
-                                    action: 'changeView',
-                                    view: 'months',
-                                    year: thisYear
+                                    uiAction: 'changeView',
+                                    uiView: 'months',
+                                    uiYear: thisYear
                                 });
                             }
                         }
@@ -1908,19 +1847,6 @@
         },
 
         /**
-         * Refresh the views.
-         */
-        refresh() {
-            if (this._hasDate) {
-                this._refreshDate();
-            }
-
-            if (this._hasTime) {
-                this._refreshTime();
-            }
-        },
-
-        /**
          * Set the current date(s).
          * @param {string|number|array|Date|DateTime} date The input date(s).
          * @returns {DateTimePicker} The DateTimePicker object.
@@ -1945,7 +1871,7 @@
         setMaxDate(maxDate) {
             this._maxDate = this._parseDate(maxDate);
 
-            this._update();
+            this._updateValue();
             this.refresh();
 
             return this;
@@ -1959,7 +1885,7 @@
         setMinDate(minDate) {
             this._minDate = this._parseDate(minDate);
 
-            this._update();
+            this._updateValue();
             this.refresh();
 
             return this;
@@ -2433,32 +2359,7 @@
     DateTimePicker._defaultDateFormats = {};
     DateTimePicker._defaultFormats = {};
 
-    // DateTimePicker QuerySet method
-    if (QuerySet) {
-        QuerySet.prototype.datetimepicker = function(a, ...args) {
-            let settings, method;
-
-            if (Core.isObject(a)) {
-                settings = a;
-            } else if (Core.isString(a)) {
-                method = a;
-            }
-
-            for (const node of this) {
-                if (!Core.isElement(node)) {
-                    continue;
-                }
-
-                const dateTimePicker = DateTimePicker.init(node, settings);
-
-                if (method) {
-                    dateTimePicker[method](...args);
-                }
-            }
-
-            return this;
-        };
-    }
+    UI.initComponent('datetimepicker', DateTimePicker);
 
     UI.DateTimePicker = DateTimePicker;
 

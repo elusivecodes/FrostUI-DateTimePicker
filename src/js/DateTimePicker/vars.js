@@ -167,31 +167,6 @@ DateTimePicker._dayPeriods = {};
 DateTimePicker._defaultDateFormats = {};
 DateTimePicker._defaultFormats = {};
 
-// DateTimePicker QuerySet method
-if (QuerySet) {
-    QuerySet.prototype.datetimepicker = function(a, ...args) {
-        let settings, method;
-
-        if (Core.isObject(a)) {
-            settings = a;
-        } else if (Core.isString(a)) {
-            method = a;
-        }
-
-        for (const node of this) {
-            if (!Core.isElement(node)) {
-                continue;
-            }
-
-            const dateTimePicker = DateTimePicker.init(node, settings);
-
-            if (method) {
-                dateTimePicker[method](...args);
-            }
-        }
-
-        return this;
-    };
-}
+UI.initComponent('datetimepicker', DateTimePicker);
 
 UI.DateTimePicker = DateTimePicker;

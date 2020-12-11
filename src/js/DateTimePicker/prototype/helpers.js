@@ -52,10 +52,6 @@ Object.assign(DateTimePicker.prototype, {
         if (this._settings.multiDate && this._hasTime) {
             throw new Error('Time components cannot be used with multiDate option.');
         }
-
-        if (this._settings.multiDate && !this._hasDate) {
-            throw new Error('Date components must be used with multiDate option.');
-        }
     },
 
     /**
@@ -323,13 +319,17 @@ Object.assign(DateTimePicker.prototype, {
      * @param {DateTime} date The input date.
      */
     _setDate(date) {
+        if (dom.is(this._node, ':disabled')) {
+            return;
+        }
+
         if (date) {
             this._clampStepping(date);
 
             this._viewDate = date.clone();
         }
 
-        dom.triggerEvent(this._node, 'change.frost.datetimepicker', {
+        dom.triggerEvent(this._node, 'change.ui.datetimepicker', {
             old: this._date ?
                 this._date.clone() :
                 null,
@@ -340,7 +340,7 @@ Object.assign(DateTimePicker.prototype, {
 
         this._date = date;
 
-        this._update();
+        this._updateValue();
         this.refresh();
     },
 
@@ -349,27 +349,31 @@ Object.assign(DateTimePicker.prototype, {
      * @param {array} date The input dates.
      */
     _setDates(dates) {
+        if (dom.is(this._node, ':disabled')) {
+            return;
+        }
+
         for (const date of dates) {
             this._clampStepping(date);
         }
 
         dates = dates.sort((a, b) => a.isBefore(b) ? -1 : 1);
 
-        dom.triggerEvent(this._node, 'change.frost.datetimepicker', {
+        dom.triggerEvent(this._node, 'change.ui.datetimepicker', {
             old: this._dates.map(date => date.clone()),
             new: dates.map(date => date.clone())
         });
 
         this._dates = dates;
 
-        this._update();
+        this._updateValue();
         this.refresh();
     },
 
     /**
      * Update the input value to the current date.
      */
-    _update() {
+    _updateValue() {
         let value = '';
         if (this._settings.multiDate) {
             if (!this._settings.keepInvalid) {

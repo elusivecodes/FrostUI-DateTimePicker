@@ -9,12 +9,12 @@ Object.assign(DateTimePicker.prototype, {
      */
     _events() {
         if (!this._autoInit) {
-            dom.addEvent(this._node, 'focus.frost.datetimepicker', _ => {
+            dom.addEvent(this._node, 'focus.ui.datetimepicker', _ => {
                 this.show();
             });
         }
 
-        dom.addEvent(this._node, 'blur.frost.datetimepicker', _ => {
+        dom.addEvent(this._node, 'blur.ui.datetimepicker', _ => {
             const value = dom.getValue(this._node);
             if (this._settings.multiDate) {
                 const values = value.split(this._settings.multiDateSeparator);
@@ -58,19 +58,19 @@ Object.assign(DateTimePicker.prototype, {
         });
 
         if (this._settings.keyDown && !this._settings.inline && !this._settings.multiDate) {
-            dom.addEvent(this._node, 'keydown.frost.datetimepicker', e => {
+            dom.addEvent(this._node, 'keydown.ui.datetimepicker', e => {
                 this._settings.keyDown(e, this);
             });
         }
 
-        dom.addEvent(this._container, 'click.frost.datetimepicker mousedown.frost.datetimepicker', e => {
+        dom.addEvent(this._container, 'click.ui.datetimepicker mousedown.ui.datetimepicker', e => {
             e.preventDefault();
             e.stopPropagation();
         });
 
-        dom.addEventDelegate(this._container, 'click.frost.datetimepicker', '[data-action]', e => {
+        dom.addEventDelegate(this._container, 'click.ui.datetimepicker', '[data-ui-action]', e => {
             const element = e.currentTarget;
-            const action = dom.getDataset(element, 'action');
+            const action = dom.getDataset(element, 'uiAction');
             const tempDate = this._date ?
                 this._date.clone() :
                 this._now();
@@ -78,9 +78,9 @@ Object.assign(DateTimePicker.prototype, {
             switch (action) {
                 case 'setDate':
                     tempDate.setYear(
-                        dom.getDataset(element, 'year'),
-                        dom.getDataset(element, 'month'),
-                        dom.getDataset(element, 'date')
+                        dom.getDataset(element, 'uiYear'),
+                        dom.getDataset(element, 'uiMonth'),
+                        dom.getDataset(element, 'uiDate')
                     );
 
                     this._setDate(tempDate);
@@ -92,9 +92,9 @@ Object.assign(DateTimePicker.prototype, {
                     break;
                 case 'setDateMulti':
                     tempDate.setYear(
-                        dom.getDataset(element, 'year'),
-                        dom.getDataset(element, 'month'),
-                        dom.getDataset(element, 'date')
+                        dom.getDataset(element, 'uiYear'),
+                        dom.getDataset(element, 'uiMonth'),
+                        dom.getDataset(element, 'uiDate')
                     );
 
                     if (this._isCurrent(tempDate)) {
@@ -113,7 +113,7 @@ Object.assign(DateTimePicker.prototype, {
                     const timeMethod = action === 'prevTime' ?
                         'sub' :
                         'add';
-                    const unit = dom.getDataset(element, 'unit');
+                    const unit = dom.getDataset(element, 'uiUnit');
                     tempDate[timeMethod](
                         unit === 'minute' ?
                             this._settings.stepping :
@@ -135,7 +135,7 @@ Object.assign(DateTimePicker.prototype, {
                     break;
                 case 'setHours':
                     tempDate.setHours(
-                        dom.getDataset(element, 'hour')
+                        dom.getDataset(element, 'uiHour')
                     );
 
                     this._timeViewMode = null;
@@ -145,7 +145,7 @@ Object.assign(DateTimePicker.prototype, {
                     break;
                 case 'setMinutes':
                     tempDate.setMinutes(
-                        dom.getDataset(element, 'minute')
+                        dom.getDataset(element, 'uiMinute')
                     );
 
                     this._timeViewMode = null;
@@ -155,7 +155,7 @@ Object.assign(DateTimePicker.prototype, {
                     break;
                 case 'setSeconds':
                     tempDate.setSeconds(
-                        dom.getDataset(element, 'second')
+                        dom.getDataset(element, 'uiSecond')
                     );
 
                     this._timeViewMode = null;
@@ -164,13 +164,13 @@ Object.assign(DateTimePicker.prototype, {
 
                     break;
                 case 'changeView':
-                    this._viewMode = dom.getDataset(element, 'view');
+                    this._viewMode = dom.getDataset(element, 'uiView');
 
-                    if (dom.hasDataset(element, 'year')) {
+                    if (dom.hasDataset(element, 'uiYear')) {
                         this._viewDate.setYear(
-                            dom.getDataset(element, 'year'),
-                            dom.getDataset(element, 'month') || 1,
-                            dom.getDataset(element, 'date') || 1
+                            dom.getDataset(element, 'uiYear'),
+                            dom.getDataset(element, 'uiMonth') || 1,
+                            dom.getDataset(element, 'uiDate') || 1
                         );
                     }
 
@@ -178,7 +178,7 @@ Object.assign(DateTimePicker.prototype, {
 
                     break;
                 case 'changeTimeView':
-                    this._timeViewMode = dom.getDataset(element, 'timeView');
+                    this._timeViewMode = dom.getDataset(element, 'uiTimeView');
 
                     this._refreshTime();
 
@@ -211,8 +211,8 @@ Object.assign(DateTimePicker.prototype, {
                         'sub' :
                         'add';
                     this._viewDate[dateMethod](
-                        dom.getDataset(element, 'amount') || 1,
-                        dom.getDataset(element, 'unit')
+                        dom.getDataset(element, 'uiAmount') || 1,
+                        dom.getDataset(element, 'uiUnit')
                     );
 
                     this._refreshDate();

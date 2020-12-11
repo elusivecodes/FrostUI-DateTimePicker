@@ -53,19 +53,6 @@ Object.assign(DateTimePicker.prototype, {
     },
 
     /**
-     * Refresh the views.
-     */
-    refresh() {
-        if (this._hasDate) {
-            this._refreshDate();
-        }
-
-        if (this._hasTime) {
-            this._refreshTime();
-        }
-    },
-
-    /**
      * Set the current date(s).
      * @param {string|number|array|Date|DateTime} date The input date(s).
      * @returns {DateTimePicker} The DateTimePicker object.
@@ -90,7 +77,7 @@ Object.assign(DateTimePicker.prototype, {
     setMaxDate(maxDate) {
         this._maxDate = this._parseDate(maxDate);
 
-        this._update();
+        this._updateValue();
         this.refresh();
 
         return this;
@@ -104,7 +91,7 @@ Object.assign(DateTimePicker.prototype, {
     setMinDate(minDate) {
         this._minDate = this._parseDate(minDate);
 
-        this._update();
+        this._updateValue();
         this.refresh();
 
         return this;
