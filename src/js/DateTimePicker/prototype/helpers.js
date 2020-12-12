@@ -131,6 +131,14 @@ Object.assign(DateTimePicker.prototype, {
     },
 
     /**
+     * Determine whether the input is editable.
+     * @returns {Boolean} TRUE if the input is editable, otherwise FALSE.
+     */
+    _isEditable() {
+        return !dom.is(this._node, ':disabled') && (this._settings.ignoreReadonly || !dom.is(this._node, ':read-only'));
+    },
+
+    /**
      * Determine whether a date is valid.
      * @param {DateTime} date The date to test.
      * @param {string} [granularity=second] The level of granularity to use for comparison.
@@ -319,7 +327,7 @@ Object.assign(DateTimePicker.prototype, {
      * @param {DateTime} date The input date.
      */
     _setDate(date) {
-        if (dom.is(this._node, ':disabled')) {
+        if (!this._isEditable()) {
             return;
         }
 
@@ -349,7 +357,7 @@ Object.assign(DateTimePicker.prototype, {
      * @param {array} date The input dates.
      */
     _setDates(dates) {
-        if (dom.is(this._node, ':disabled')) {
+        if (!this._isEditable()) {
             return;
         }
 

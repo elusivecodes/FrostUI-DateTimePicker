@@ -100,11 +100,18 @@ DateTimePicker.defaults = {
             case 'Delete':
                 date = null;
                 break;
+            case 'Enter':
+                return dtp.toggle();
+            case 'Escape':
+            case 'Tab':
+                return dtp.hide();
             default:
                 return;
         }
 
         e.preventDefault();
+
+        dtp.show();
 
         if (!date || dtp._isValid(date, 'second')) {
             dtp._setDate(date);
@@ -118,9 +125,11 @@ DateTimePicker.defaults = {
     inline: false,
     sideBySide: false,
     keepInvalid: false,
+    ignoreReadonly: false,
     minView: null,
     stepping: 1,
     duration: 100,
+    appendTo: null,
     placement: 'bottom',
     position: 'start',
     fixed: false,

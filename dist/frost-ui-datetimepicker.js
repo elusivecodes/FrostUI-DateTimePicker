@@ -151,14 +151,20 @@
                 this._settings.inline ||
                 this._animating ||
                 dom.isConnected(this._menuNode) ||
-                dom.is(this._node, ':disabled') ||
+                !this._isEditable() ||
                 !dom.triggerOne(this._node, 'show.ui.datetimepicker')
             ) {
                 return;
             }
 
             this._animating = true;
-            dom.append(document.body, this._menuNode);
+
+            if (this._settings.appendTo) {
+                dom.append(document.body, this._menuNode);
+            } else {
+                dom.after(this._node, this._menuNode);
+            }
+
             this.update();
 
             dom.fadeIn(this._menuNode, {
@@ -178,7 +184,7 @@
          * Toggle the DateTimePicker.
          */
         toggle() {
-            dom.hasClass(this._menuNode, 'show') ?
+            dom.isConnected(this._menuNode) ?
                 this.hide() :
                 this.show();
         }
@@ -220,17 +226,6 @@
     // DateTimePicker events
     dom.addEvent(document, 'click.ui.datetimepicker', e => {
         DateTimePicker.autoHide(e.target);
-    });
-
-    dom.addEvent(document, 'keyup.ui.datetimepicker', e => {
-        switch (e.key) {
-            case 'Tab':
-                DateTimePicker.autoHide(e.target);
-                break;
-            case 'Escape':
-                DateTimePicker.autoHide();
-                break;
-        }
     });
 
     dom.addEventDelegate(document, 'click.ui.datetimepicker', '[data-ui-toggle="datetimepicker"]', e => {
@@ -602,6 +597,14 @@
         },
 
         /**
+         * Determine whether the input is editable.
+         * @returns {Boolean} TRUE if the input is editable, otherwise FALSE.
+         */
+        _isEditable() {
+            return !dom.is(this._node, ':disabled') && (this._settings.ignoreReadonly || !dom.is(this._node, ':read-only'));
+        },
+
+        /**
          * Determine whether a date is valid.
          * @param {DateTime} date The date to test.
          * @param {string} [granularity=second] The level of granularity to use for comparison.
@@ -790,7 +793,7 @@
          * @param {DateTime} date The input date.
          */
         _setDate(date) {
-            if (dom.is(this._node, ':disabled')) {
+            if (!this._isEditable()) {
                 return;
             }
 
@@ -820,7 +823,7 @@
          * @param {array} date The input dates.
          */
         _setDates(dates) {
-            if (dom.is(this._node, ':disabled')) {
+            if (!this._isEditable()) {
                 return;
             }
 
@@ -2292,11 +2295,18 @@
                 case 'Delete':
                     date = null;
                     break;
+                case 'Enter':
+                    return dtp.toggle();
+                case 'Escape':
+                case 'Tab':
+                    return dtp.hide();
                 default:
                     return;
             }
 
             e.preventDefault();
+
+            dtp.show();
 
             if (!date || dtp._isValid(date, 'second')) {
                 dtp._setDate(date);
@@ -2310,9 +2320,11 @@
         inline: false,
         sideBySide: false,
         keepInvalid: false,
+        ignoreReadonly: false,
         minView: null,
         stepping: 1,
         duration: 100,
+        appendTo: null,
         placement: 'bottom',
         position: 'start',
         fixed: false,

@@ -116,14 +116,20 @@ class DateTimePicker extends UI.BaseComponent {
             this._settings.inline ||
             this._animating ||
             dom.isConnected(this._menuNode) ||
-            dom.is(this._node, ':disabled') ||
+            !this._isEditable() ||
             !dom.triggerOne(this._node, 'show.ui.datetimepicker')
         ) {
             return;
         }
 
         this._animating = true;
-        dom.append(document.body, this._menuNode);
+
+        if (this._settings.appendTo) {
+            dom.append(document.body, this._menuNode);
+        } else {
+            dom.after(this._node, this._menuNode);
+        }
+
         this.update();
 
         dom.fadeIn(this._menuNode, {
@@ -143,7 +149,7 @@ class DateTimePicker extends UI.BaseComponent {
      * Toggle the DateTimePicker.
      */
     toggle() {
-        dom.hasClass(this._menuNode, 'show') ?
+        dom.isConnected(this._menuNode) ?
             this.hide() :
             this.show();
     }
