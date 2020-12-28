@@ -48,6 +48,7 @@ class DateTimePicker extends UI.BaseComponent {
 
     /**
      * Clear the current value.
+     * @returns {DateTimePicker} The DateTimePicker.
      */
     clear() {
         return this.setDate(null);
@@ -72,6 +73,7 @@ class DateTimePicker extends UI.BaseComponent {
 
     /**
      * Hide the DateTimePicker.
+     * @returns {DateTimePicker} The DateTimePicker.
      */
     hide() {
         if (
@@ -80,7 +82,7 @@ class DateTimePicker extends UI.BaseComponent {
             !dom.isConnected(this._menuNode) ||
             !dom.triggerOne(this._node, 'hide.ui.datetimepicker')
         ) {
-            return;
+            return this;
         }
 
         this._animating = true;
@@ -93,10 +95,13 @@ class DateTimePicker extends UI.BaseComponent {
         }).catch(_ => { }).finally(_ => {
             this._animating = false;
         });
+
+        return this;
     }
 
     /**
      * Refresh the views.
+     * @returns {DateTimePicker} The DateTimePicker.
      */
     refresh() {
         if (this._hasDate) {
@@ -106,10 +111,13 @@ class DateTimePicker extends UI.BaseComponent {
         if (this._hasTime) {
             this._refreshTime();
         }
+
+        return this;
     }
 
     /**
      * Show the DateTimePicker.
+     * @returns {DateTimePicker} The DateTimePicker.
      */
     show() {
         if (
@@ -119,7 +127,7 @@ class DateTimePicker extends UI.BaseComponent {
             !this._isEditable() ||
             !dom.triggerOne(this._node, 'show.ui.datetimepicker')
         ) {
-            return;
+            return this;
         }
 
         this._animating = true;
@@ -143,26 +151,30 @@ class DateTimePicker extends UI.BaseComponent {
         }).catch(_ => { }).finally(_ => {
             this._animating = false;
         });
+
+        return this;
     }
 
     /**
      * Toggle the DateTimePicker.
+     * @returns {DateTimePicker} The DateTimePicker.
      */
     toggle() {
-        dom.isConnected(this._menuNode) ?
+        return dom.isConnected(this._menuNode) ?
             this.hide() :
             this.show();
     }
 
     /**
      * Update the DateTimePicker position.
+     * @returns {DateTimePicker} The DateTimePicker.
      */
     update() {
-        if (this._settings.inline) {
-            return;
+        if (!this._settings.inline) {
+            this._popper.update();
         }
 
-        this._popper.update();
+        return this;
     }
 
     /**

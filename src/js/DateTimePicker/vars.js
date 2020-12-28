@@ -59,7 +59,7 @@ DateTimePicker.defaults = {
             dtp._date :
             dtp._now();
 
-        switch (e.key) {
+        switch (e.code) {
             case 'ArrowUp':
                 if (e.ctrlKey) {
                     date.sub(1, 'year');

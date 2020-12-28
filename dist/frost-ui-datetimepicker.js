@@ -83,6 +83,7 @@
 
         /**
          * Clear the current value.
+         * @returns {DateTimePicker} The DateTimePicker.
          */
         clear() {
             return this.setDate(null);
@@ -107,6 +108,7 @@
 
         /**
          * Hide the DateTimePicker.
+         * @returns {DateTimePicker} The DateTimePicker.
          */
         hide() {
             if (
@@ -115,7 +117,7 @@
                 !dom.isConnected(this._menuNode) ||
                 !dom.triggerOne(this._node, 'hide.ui.datetimepicker')
             ) {
-                return;
+                return this;
             }
 
             this._animating = true;
@@ -128,10 +130,13 @@
             }).catch(_ => { }).finally(_ => {
                 this._animating = false;
             });
+
+            return this;
         }
 
         /**
          * Refresh the views.
+         * @returns {DateTimePicker} The DateTimePicker.
          */
         refresh() {
             if (this._hasDate) {
@@ -141,10 +146,13 @@
             if (this._hasTime) {
                 this._refreshTime();
             }
+
+            return this;
         }
 
         /**
          * Show the DateTimePicker.
+         * @returns {DateTimePicker} The DateTimePicker.
          */
         show() {
             if (
@@ -154,7 +162,7 @@
                 !this._isEditable() ||
                 !dom.triggerOne(this._node, 'show.ui.datetimepicker')
             ) {
-                return;
+                return this;
             }
 
             this._animating = true;
@@ -178,26 +186,30 @@
             }).catch(_ => { }).finally(_ => {
                 this._animating = false;
             });
+
+            return this;
         }
 
         /**
          * Toggle the DateTimePicker.
+         * @returns {DateTimePicker} The DateTimePicker.
          */
         toggle() {
-            dom.isConnected(this._menuNode) ?
+            return dom.isConnected(this._menuNode) ?
                 this.hide() :
                 this.show();
         }
 
         /**
          * Update the DateTimePicker position.
+         * @returns {DateTimePicker} The DateTimePicker.
          */
         update() {
-            if (this._settings.inline) {
-                return;
+            if (!this._settings.inline) {
+                this._popper.update();
             }
 
-            this._popper.update();
+            return this;
         }
 
         /**
@@ -2254,7 +2266,7 @@
                 dtp._date :
                 dtp._now();
 
-            switch (e.key) {
+            switch (e.code) {
                 case 'ArrowUp':
                     if (e.ctrlKey) {
                         date.sub(1, 'year');
