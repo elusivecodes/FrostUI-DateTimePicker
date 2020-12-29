@@ -55,11 +55,12 @@ class DateTimePicker extends UI.BaseComponent {
     }
 
     /**
-     * Destroy the DateTimePicker.
+     * Dispose the DateTimePicker.
      */
-    destroy() {
+    dispose() {
         if (this._popper) {
             this._popper.destroy();
+            this._popper = null;
         }
 
         dom.removeEvent(this._node, 'focus.ui.datetimepicker');
@@ -68,7 +69,17 @@ class DateTimePicker extends UI.BaseComponent {
         dom.removeEvent(this._node, 'keydown.ui.datetimepicker')
         dom.remove(this._menuNode);
 
-        super.destroy();
+        this._menuNode = null;
+        this._container = null;
+        this._dateContainer = null;
+        this._timeContainer = null;
+        this._date = null;
+        this._dates = null;
+        this._minDate = null;
+        this._maxDate = null;
+        this._viewDate = null;
+
+        super.dispose();
     }
 
     /**
