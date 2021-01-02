@@ -18,12 +18,12 @@ DateTimePicker.defaults = {
     minDate: null,
     maxDate: null,
     icons: {
-        up: 'icon-arrow-up',
-        right: 'icon-arrow-right',
-        down: 'icon-arrow-down',
-        left: 'icon-arrow-left',
-        time: 'icon-clock',
-        date: 'icon-calendar'
+        up: 'icon icon-arrow-up',
+        right: 'icon icon-arrow-right',
+        down: 'icon icon-arrow-down',
+        left: 'icon icon-arrow-left',
+        time: 'icon icon-clock',
+        date: 'icon icon-calendar'
     },
     lang: {
         decrementHour: 'Decrement Hour',
