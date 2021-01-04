@@ -8,13 +8,11 @@ class DateTimePicker extends UI.BaseComponent {
      * New DateTimePicker constructor.
      * @param {HTMLElement} node The input node.
      * @param {object} [settings] The options to create the DateTimePicker with.
-     * @param {Boolean} [autoInit=false] Whether the date picker was initialized from a toggle event.
      * @returns {DateTimePicker} A new DateTimePicker object.
      */
-    constructor(node, settings, autoInit = false) {
+    constructor(node, settings) {
         super(node, settings);
 
-        this._autoInit = autoInit;
         this._date = null;
         this._dates = [];
         this._minDate = null;
