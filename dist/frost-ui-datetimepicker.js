@@ -229,10 +229,9 @@
             const menus = dom.find('.datetimepicker:not(.dtp-inline)');
 
             for (const menu of menus) {
-                const selector = dom.getDataset(menu, 'uiTrigger');
-                const trigger = dom.findOne(selector);
+                const trigger = this._triggers.get(menu);
 
-                if (trigger === target) {
+                if (dom.isSame(target, trigger)) {
                     continue;
                 }
 
@@ -1004,11 +1003,10 @@
          */
         _render() {
             this._menuNode = dom.create('div', {
-                class: this.constructor.classes.menu,
-                dataset: {
-                    uiTrigger: '#' + dom.getAttribute(this._node, 'id')
-                }
+                class: this.constructor.classes.menu
             });
+
+            this.constructor._triggers.set(this._menuNode, this._node);
 
             this._container = dom.create('div', {
                 class: this.constructor.classes.container
@@ -2391,6 +2389,8 @@
     DateTimePicker._dayPeriods = {};
     DateTimePicker._defaultDateFormats = {};
     DateTimePicker._defaultFormats = {};
+
+    DateTimePicker._triggers = new WeakMap();
 
     UI.initComponent('datetimepicker', DateTimePicker);
 

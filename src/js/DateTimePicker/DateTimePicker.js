@@ -194,10 +194,9 @@ class DateTimePicker extends UI.BaseComponent {
         const menus = dom.find('.datetimepicker:not(.dtp-inline)');
 
         for (const menu of menus) {
-            const selector = dom.getDataset(menu, 'uiTrigger');
-            const trigger = dom.findOne(selector);
+            const trigger = this._triggers.get(menu);
 
-            if (trigger === target) {
+            if (dom.isSame(target, trigger)) {
                 continue;
             }
 

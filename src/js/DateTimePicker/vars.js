@@ -176,6 +176,8 @@ DateTimePicker._dayPeriods = {};
 DateTimePicker._defaultDateFormats = {};
 DateTimePicker._defaultFormats = {};
 
+DateTimePicker._triggers = new WeakMap();
+
 UI.initComponent('datetimepicker', DateTimePicker);
 
 UI.DateTimePicker = DateTimePicker;

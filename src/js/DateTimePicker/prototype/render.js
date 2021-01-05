@@ -108,11 +108,10 @@ Object.assign(DateTimePicker.prototype, {
      */
     _render() {
         this._menuNode = dom.create('div', {
-            class: this.constructor.classes.menu,
-            dataset: {
-                uiTrigger: '#' + dom.getAttribute(this._node, 'id')
-            }
+            class: this.constructor.classes.menu
         });
+
+        this.constructor._triggers.set(this._menuNode, this._node);
 
         this._container = dom.create('div', {
             class: this.constructor.classes.container
