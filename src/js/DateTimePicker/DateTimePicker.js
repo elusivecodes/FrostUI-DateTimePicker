@@ -67,6 +67,8 @@ class DateTimePicker extends UI.BaseComponent {
         dom.removeEvent(this._node, 'keydown.ui.datetimepicker')
         dom.remove(this._menuNode);
 
+        this.constructor._triggers.delete(this._menuNode);
+
         this._menuNode = null;
         this._container = null;
         this._dateContainer = null;
