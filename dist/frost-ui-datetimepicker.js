@@ -926,7 +926,7 @@
                         dom.append(tbody, tr);
 
                         const td = dom.create('td', {
-                            html: `<span class="${this._settings.icons.time}"></>`,
+                            html: this._settings.icons.time,
                             class: [
                                 this.constructor.classes.action,
                                 this.constructor.classes.spacingNav
@@ -962,7 +962,7 @@
                         dom.append(tbody, row);
 
                         const td = dom.create('td', {
-                            html: `<span class="${this._settings.icons.date}"></span>`,
+                            html: this._settings.icons.date,
                             class: [
                                 this.constructor.classes.action,
                                 this.constructor.classes.spacingNav
@@ -2066,7 +2066,7 @@
                 dom.append(thead, tr);
 
                 const prevTd = dom.create('td', {
-                    html: `<span class="${options.icons.left}"></span>`,
+                    html: options.icons.left,
                     class: this.classes.navigation
                 });
 
@@ -2100,7 +2100,7 @@
                 }
 
                 const nextTd = dom.create('td', {
-                    html: `<span class="${options.icons.right}"></span>`,
+                    html: options.icons.right,
                     class: this.classes.navigation
                 });
 
@@ -2133,7 +2133,7 @@
          */
         _renderTimeColumn(options) {
             const upTd = dom.create('td', {
-                html: `<span class="${options.icons.up}"></span>`,
+                html: options.icons.up,
                 class: [
                     this.classes.navigation,
                     this.classes.time,
@@ -2167,7 +2167,7 @@
             dom.append(options.timeTr, selectTd);
 
             const downTd = dom.create('td', {
-                html: `<span class="${options.icons.down}"></span>`,
+                html: options.icons.down,
                 class: [
                     this.classes.navigation,
                     this.classes.time,
@@ -2234,12 +2234,12 @@
         minDate: null,
         maxDate: null,
         icons: {
-            up: 'icon icon-arrow-up',
-            right: 'icon icon-arrow-right',
-            down: 'icon icon-arrow-down',
-            left: 'icon icon-arrow-left',
-            time: 'icon icon-clock',
-            date: 'icon icon-calendar'
+            up: '⮝',
+            right: '⮞',
+            down: '⮟',
+            left: '⮜',
+            time: '🕑',
+            date: '📅'
         },
         lang: {
             decrementHour: 'Decrement Hour',

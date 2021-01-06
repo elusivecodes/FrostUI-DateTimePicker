@@ -29,7 +29,7 @@ Object.assign(DateTimePicker.prototype, {
                     dom.append(tbody, tr);
 
                     const td = dom.create('td', {
-                        html: `<span class="${this._settings.icons.time}"></>`,
+                        html: this._settings.icons.time,
                         class: [
                             this.constructor.classes.action,
                             this.constructor.classes.spacingNav
@@ -65,7 +65,7 @@ Object.assign(DateTimePicker.prototype, {
                     dom.append(tbody, row);
 
                     const td = dom.create('td', {
-                        html: `<span class="${this._settings.icons.date}"></span>`,
+                        html: this._settings.icons.date,
                         class: [
                             this.constructor.classes.action,
                             this.constructor.classes.spacingNav

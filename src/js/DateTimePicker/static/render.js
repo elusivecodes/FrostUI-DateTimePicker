@@ -26,7 +26,7 @@ Object.assign(DateTimePicker, {
             dom.append(thead, tr);
 
             const prevTd = dom.create('td', {
-                html: `<span class="${options.icons.left}"></span>`,
+                html: options.icons.left,
                 class: this.classes.navigation
             });
 
@@ -60,7 +60,7 @@ Object.assign(DateTimePicker, {
             }
 
             const nextTd = dom.create('td', {
-                html: `<span class="${options.icons.right}"></span>`,
+                html: options.icons.right,
                 class: this.classes.navigation
             });
 
@@ -93,7 +93,7 @@ Object.assign(DateTimePicker, {
      */
     _renderTimeColumn(options) {
         const upTd = dom.create('td', {
-            html: `<span class="${options.icons.up}"></span>`,
+            html: options.icons.up,
             class: [
                 this.classes.navigation,
                 this.classes.time,
@@ -127,7 +127,7 @@ Object.assign(DateTimePicker, {
         dom.append(options.timeTr, selectTd);
 
         const downTd = dom.create('td', {
-            html: `<span class="${options.icons.down}"></span>`,
+            html: options.icons.down,
             class: [
                 this.classes.navigation,
                 this.classes.time,
