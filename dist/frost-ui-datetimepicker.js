@@ -773,7 +773,11 @@
 
             const value = dom.getValue(this._node);
             if (value) {
-                this._date = this._makeDate(value);
+                if (this._settings.multiDate) {
+                    this._dates = value.split(this._settings.multiDateSeparator).map(val => this._makeDate(val));
+                } else {
+                    this._date = this._makeDate(value);
+                }
             }
 
             if (!this._date && this._settings.defaultDate) {
