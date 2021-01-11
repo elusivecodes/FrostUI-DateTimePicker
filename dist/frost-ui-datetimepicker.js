@@ -146,22 +146,6 @@
         }
 
         /**
-         * Refresh the date and time UI elements.
-         * @returns {DateTimePicker} The DateTimePicker.
-         */
-        refresh() {
-            if (this._hasDate) {
-                this._refreshDate();
-            }
-
-            if (this._hasTime) {
-                this._refreshTime();
-            }
-
-            return this;
-        }
-
-        /**
          * Show the DateTimePicker.
          * @returns {DateTimePicker} The DateTimePicker.
          */
@@ -841,7 +825,7 @@
             this._date = date;
 
             this._updateValue();
-            this.refresh();
+            this._refresh();
         },
 
         /**
@@ -867,7 +851,7 @@
             this._dates = dates;
 
             this._updateValue();
-            this.refresh();
+            this._refresh();
         },
 
         /**
@@ -904,6 +888,19 @@
      */
 
     Object.assign(DateTimePicker.prototype, {
+
+        /**
+         * Refresh the date and time UI elements.
+         */
+        _refresh() {
+            if (this._hasDate) {
+                this._refreshDate();
+            }
+
+            if (this._hasTime) {
+                this._refreshTime();
+            }
+        },
 
         /**
          * Refresh the date container.
@@ -1900,7 +1897,7 @@
             this._maxDate = this._parseDate(maxDate);
 
             this._updateValue();
-            this.refresh();
+            this._refresh();
 
             return this;
         },
@@ -1914,7 +1911,7 @@
             this._minDate = this._parseDate(minDate);
 
             this._updateValue();
-            this.refresh();
+            this._refresh();
 
             return this;
         },
@@ -1927,7 +1924,7 @@
         setViewDate(viewDate) {
             this._viewDate = this._parseDate(viewDate);
 
-            this.refresh();
+            this._refresh();
 
             return this;
         }

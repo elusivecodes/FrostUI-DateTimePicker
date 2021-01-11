@@ -78,7 +78,7 @@ Object.assign(DateTimePicker.prototype, {
         this._maxDate = this._parseDate(maxDate);
 
         this._updateValue();
-        this.refresh();
+        this._refresh();
 
         return this;
     },
@@ -92,7 +92,7 @@ Object.assign(DateTimePicker.prototype, {
         this._minDate = this._parseDate(minDate);
 
         this._updateValue();
-        this.refresh();
+        this._refresh();
 
         return this;
     },
@@ -105,7 +105,7 @@ Object.assign(DateTimePicker.prototype, {
     setViewDate(viewDate) {
         this._viewDate = this._parseDate(viewDate);
 
-        this.refresh();
+        this._refresh();
 
         return this;
     }

@@ -353,7 +353,7 @@ Object.assign(DateTimePicker.prototype, {
         this._date = date;
 
         this._updateValue();
-        this.refresh();
+        this._refresh();
     },
 
     /**
@@ -379,7 +379,7 @@ Object.assign(DateTimePicker.prototype, {
         this._dates = dates;
 
         this._updateValue();
-        this.refresh();
+        this._refresh();
     },
 
     /**

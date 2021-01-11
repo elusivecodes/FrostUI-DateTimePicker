@@ -5,6 +5,19 @@
 Object.assign(DateTimePicker.prototype, {
 
     /**
+     * Refresh the date and time UI elements.
+     */
+    _refresh() {
+        if (this._hasDate) {
+            this._refreshDate();
+        }
+
+        if (this._hasTime) {
+            this._refreshTime();
+        }
+    },
+
+    /**
      * Refresh the date container.
      */
     _refreshDate() {
