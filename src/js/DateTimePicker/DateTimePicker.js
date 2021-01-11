@@ -111,7 +111,7 @@ class DateTimePicker extends UI.BaseComponent {
     }
 
     /**
-     * Refresh the views.
+     * Refresh the date and time UI elements.
      * @returns {DateTimePicker} The DateTimePicker.
      */
     refresh() {
