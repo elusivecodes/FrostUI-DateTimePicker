@@ -177,7 +177,7 @@ class DateTimePicker extends UI.BaseComponent {
      * @param {HTMLElement} [target] The target node.
      */
     static autoHide(target) {
-        const menus = dom.find('.datetimepicker:not(.dtp-inline)');
+        const menus = dom.find('.datetimepicker:not(.datetimepicker-inline)');
 
         for (const menu of menus) {
             const trigger = this._triggers.get(menu);

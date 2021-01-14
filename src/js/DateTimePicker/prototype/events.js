@@ -8,7 +8,7 @@ Object.assign(DateTimePicker.prototype, {
      * Attach events for the DateTimePicker.
      */
     _events() {
-        if (!this._autoInit) {
+        if (this._settings.showOnFocus) {
             dom.addEvent(this._node, 'focus.ui.datetimepicker', _ => {
                 this.show();
             });
@@ -85,7 +85,10 @@ Object.assign(DateTimePicker.prototype, {
 
                     this._setDate(tempDate);
 
-                    if (!this._hasTime && !this._settings.keepOpen) {
+                    if (this._hasTime) {
+                        const showTime = dom.findOne('[data-ui-action="showTime"]', this._dateContainer);
+                        dom.click(showTime);
+                    } else if (!this._settings.keepOpen) {
                         this.hide();
                     }
 

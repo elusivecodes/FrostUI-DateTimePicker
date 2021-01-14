@@ -54,10 +54,10 @@ DateTimePicker.defaults = {
     renderDay: null,
     renderMonth: null,
     renderYear: null,
-    keyDown: (e, dtp) => {
-        let date = dtp._date ?
-            dtp._date :
-            dtp._now();
+    keyDown: (e, datetimepicker) => {
+        let date = datetimepicker._date ?
+            datetimepicker._date.clone() :
+            datetimepicker._now();
 
         switch (e.code) {
             case 'ArrowUp':
@@ -95,32 +95,34 @@ DateTimePicker.defaults = {
                 date.sub(1, 'hour');
                 break;
             case 'Home':
-                date = dtp._now()
+                date = datetimepicker._now()
                 break;
             case 'Delete':
                 date = null;
                 break;
             case 'Enter':
-                return dtp.toggle();
+                e.preventDefault();
+                return datetimepicker.toggle();
             case 'Escape':
             case 'Tab':
-                return dtp.hide();
+                return datetimepicker.hide();
             default:
                 return;
         }
 
         e.preventDefault();
 
-        dtp.show();
+        datetimepicker.show();
 
-        if (!date || dtp._isValid(date, 'second')) {
-            dtp._setDate(date);
+        if (!date || datetimepicker._isValid(date, 'second')) {
+            datetimepicker._setDate(date);
         }
     },
     multiDate: false,
     multiDateSeparator: ',',
     useCurrent: false,
     keepOpen: false,
+    showOnFocus: true,
     focusOnShow: true,
     inline: false,
     sideBySide: false,
@@ -139,18 +141,18 @@ DateTimePicker.defaults = {
 
 // Default classes
 DateTimePicker.classes = {
-    action: 'dtp-action',
-    active: 'dtp-active',
+    action: 'datetimepicker-action',
+    active: 'datetimepicker-active',
     borderless: 'table-borderless',
     column: 'col d-flex flex-column',
     container: 'row row-cols-1 gy-0 gx-2',
     containerColumns: 'row-cols-md-2',
     dateColumn: 'col-4 px-1 py-2',
-    disabled: 'dtp-disabled',
+    disabled: 'datetimepicker-disabled',
     menu: 'datetimepicker',
-    menuInline: 'dtp-inline',
+    menuInline: 'datetimepicker-inline',
     menuShadow: 'shadow-sm',
-    menuWide: 'dtp-wide',
+    menuWide: 'datetimepicker-wide',
     navigation: 'text-primary',
     periodButton: 'btn btn-primary d-block',
     row: 'row g-0',
@@ -161,11 +163,11 @@ DateTimePicker.classes = {
     spacingTime: 'py-2 px-0',
     spacingTimeNav: 'py-4 px-0',
     table: 'table table-sm text-center mx-0 my-auto',
-    time: 'dtp-time',
+    time: 'datetimepicker-time',
     timeColumn: 'col-3 px-1 py-2',
     title: 'fw-bold',
     titleWide: 'w-100',
-    today: 'dtp-today'
+    today: 'datetimepicker-today'
 };
 
 // Format token RegExp

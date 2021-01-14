@@ -16,10 +16,14 @@
 .datetimepicker .table > tbody > tr:last-child > td {
   border-bottom: 0;
 }
-.datetimepicker .dtp-today {
+.datetimepicker-inline {
+  display: block;
+  border: 0;
+}
+.datetimepicker-today {
   position: relative;
 }
-.datetimepicker .dtp-today::before {
+.datetimepicker-today::before {
   display: inline-block;
   position: absolute;
   bottom: 4px;
@@ -30,36 +34,32 @@
   border-top-color: rgba(0, 0, 0, 0.15);
   content: '';
 }
-.datetimepicker .dtp-today.dtp-active::before {
+.datetimepicker-today.datetimepicker-active::before {
   border-bottom-color: white;
 }
-.datetimepicker .dtp-action {
+.datetimepicker-action {
   cursor: pointer;
   border-radius: 0.2rem;
 }
-.datetimepicker .dtp-action:hover {
+.datetimepicker-action:hover {
   background: rgba(0, 0, 0, 0.1);
 }
-.datetimepicker .dtp-action.dtp-active {
+.datetimepicker-action.datetimepicker-active {
   background: royalblue;
   color: white;
 }
-.datetimepicker .dtp-action.dtp-active:hover {
+.datetimepicker-action.datetimepicker-active:hover {
   background: #3b5fcb;
 }
-.datetimepicker .dtp-disabled {
+.datetimepicker-disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
-.datetimepicker .dtp-time {
+.datetimepicker-time {
   font-size: 1.25rem;
 }
-.dtp-inline {
-  display: block;
-  border: 0;
-}
 @media (min-width: 768px) {
-  .dtp-wide {
+  .datetimepicker-wide {
     width: 600px;
   }
 }
