@@ -1,0 +1,49 @@
+$spacing: 1rem !default;
+
+$disabled-opacity: .5 !default;
+
+// border
+$border-size: 1px !default;
+$border-style: solid !default;
+
+// color
+$white: white !default;
+$black: black !default;
+
+$color-variants: (
+    primary: #2b55d4
+) !default;
+
+$text-color: #121212 !default;
+
+$border-color: fade($black, .15) !default;
+
+// text
+$font-size-md: 1rem !default;
+$font-size-lg: 1.25rem !default;
+
+// z index
+$dropdown-z-index: 1000 !default;
+
+// datetimepicker
+$datetimepicker-width: 300px !default;
+$datetimepicker-wide-width: 600px !default;
+$datetimepicker-font-size: $font-size-md !default;
+$datetimepicker-color: $text-color !default;
+$datetimepicker-background-color: $white !default;
+$datetimepicker-border-size: $border-size !default;
+$datetimepicker-border-color: $border-color !default;
+
+$datetimepicker-focus-color: $datetimepicker-color !default;
+$datetimepicker-focus-background-color: fade($black, .1) !default;
+$datetimepicker-active-background-color: map-get($color-variants, primary) !default;
+$datetimepicker-active-color: text-color($datetimepicker-active-background-color) !default;
+$datetimepicker-disabled-opacity: $disabled-opacity !default;
+$datetimepicker-time-font-size: $font-size-lg !default;
+
+$datetimepicker-today-size: 7px !default;
+$datetimepicker-today-right: 4px !default;
+$datetimepicker-today-bottom: 4px !default;
+$datetimepicker-today-border-top-color: $datetimepicker-border-color !default;
+$datetimepicker-today-border-bottom-color: $datetimepicker-active-background-color !default;
+$datetimepicker-today-active-border-bottom-color: $datetimepicker-active-color !default;

@@ -313,7 +313,11 @@
                 e.stopPropagation();
             });
 
-            dom.addEventDelegate(this._container, 'click.ui.datetimepicker', '[data-ui-action]', e => {
+            dom.addEventDelegate(this._container, 'mouseup.ui.datetimepicker', '[data-ui-action]', e => {
+                if (e.button) {
+                    return;
+                }
+
                 const element = e.currentTarget;
                 const action = dom.getDataset(element, 'uiAction');
                 const tempDate = this._date ?
@@ -332,7 +336,7 @@
 
                         if (this._hasTime) {
                             const showTime = dom.findOne('[data-ui-action="showTime"]', this._dateContainer);
-                            dom.click(showTime);
+                            dom.triggerEvent(showTime, 'mouseup.ui.datetimepicker');
                         } else if (!this._settings.keepOpen) {
                             this.hide();
                         }
@@ -2355,7 +2359,7 @@
         placement: 'bottom',
         position: 'start',
         fixed: false,
-        spacing: 3,
+        spacing: 0,
         minContact: false
     };
 

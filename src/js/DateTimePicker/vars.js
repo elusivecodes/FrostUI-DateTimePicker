@@ -135,7 +135,7 @@ DateTimePicker.defaults = {
     placement: 'bottom',
     position: 'start',
     fixed: false,
-    spacing: 3,
+    spacing: 0,
     minContact: false
 };
 

@@ -1,0 +1,78 @@
+@import 'functions';
+@import 'vars';
+
+.datetimepicker {
+    z-index: $dropdown-z-index;
+    display: block;
+    width: $datetimepicker-width;
+    padding: 0;
+    margin: 0;
+    font-size: $datetimepicker-font-size;
+    color: $datetimepicker-color;
+    text-align: left;
+    list-style: none;
+    background-color: $datetimepicker-background-color;
+    border: $datetimepicker-border-size $border-style $datetimepicker-border-color;
+    user-select: none;
+
+    .table > tbody > tr:last-child > td {
+        border-bottom: 0;
+    }
+}
+
+.datetimepicker-inline {
+    display: block;
+    border: 0;
+}
+
+.datetimepicker-action {
+    cursor: pointer;
+
+    &:hover {
+        color: $datetimepicker-focus-color;
+        background-color: $datetimepicker-focus-background-color;
+    }
+
+    &.datetimepicker-active {
+        &,
+        &:hover {
+            color: $datetimepicker-active-color;
+            background-color: $datetimepicker-active-background-color;
+        }
+    }
+}
+
+.datetimepicker-disabled {
+    opacity: $datetimepicker-disabled-opacity;
+    cursor: not-allowed;
+}
+
+.datetimepicker-time {
+    font-size: $datetimepicker-time-font-size;
+}
+
+.datetimepicker-today {
+    position: relative;
+
+    &::before {
+        display: inline-block;
+        position: absolute;
+        right: $datetimepicker-today-right;
+        bottom: $datetimepicker-today-bottom;
+        border: solid transparent;
+        border-width: 0 0 $datetimepicker-today-size $datetimepicker-today-size;
+        border-top-color: $datetimepicker-today-border-top-color;
+        border-bottom-color: $datetimepicker-today-border-bottom-color;
+        content: '';
+    }
+
+    &.datetimepicker-active::before {
+        border-bottom-color: $datetimepicker-today-active-border-bottom-color;
+    }
+}
+
+@media (min-width: 768px) {
+    .datetimepicker-wide {
+        width: $datetimepicker-wide-width;
+    }
+}
