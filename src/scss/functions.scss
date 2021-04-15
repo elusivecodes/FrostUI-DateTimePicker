@@ -35,6 +35,13 @@
     @return (map-get($rgb, "r") * .2126) + (map-get($rgb, "g") * .7152) + (map-get($rgb, "b") * .0722);
 }
 
+// Shade a color by a specified amount (1-100).
+// @param $color
+// @param $amount
+@function shade($color, $amount) {
+    @return mix($color, #000, 100 - $amount);
+}
+
 // Choose the best text color for a background.
 // @param $background
 // @param $foreground1: #fff

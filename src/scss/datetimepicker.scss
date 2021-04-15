@@ -1,5 +1,5 @@
-@import 'functions';
-@import 'vars';
+@import "functions";
+@import "vars";
 
 .datetimepicker {
     z-index: $dropdown-z-index;
@@ -7,15 +7,14 @@
     width: $datetimepicker-width;
     padding: 0;
     margin: 0;
-    font-size: $datetimepicker-font-size;
     color: $datetimepicker-color;
     text-align: left;
     list-style: none;
+    user-select: none;
     background-color: $datetimepicker-background-color;
     border: $datetimepicker-border-size $border-style $datetimepicker-border-color;
-    user-select: none;
 
-    .table > tbody > tr:last-child > td {
+    tr:last-child > td {
         border-bottom: 0;
     }
 }
@@ -26,25 +25,27 @@
 }
 
 .datetimepicker-action {
+    border-radius: $datetimepicker-action-border-radius;
     cursor: pointer;
 
     &:hover {
-        color: $datetimepicker-focus-color;
-        background-color: $datetimepicker-focus-background-color;
+        color: $datetimepicker-action-hover-color;
+        background-color: $datetimepicker-action-hover-background-color;
     }
 
     &.datetimepicker-active {
-        &,
+        color: $datetimepicker-action-active-color;
+        background-color: $datetimepicker-action-active-background-color;
+
         &:hover {
-            color: $datetimepicker-active-color;
-            background-color: $datetimepicker-active-background-color;
+            background-color: $datetimepicker-action-active-hover-background-color;
         }
     }
 }
 
 .datetimepicker-disabled {
+    cursor: $datetimepicker-disabled-cursor;
     opacity: $datetimepicker-disabled-opacity;
-    cursor: not-allowed;
 }
 
 .datetimepicker-time {
@@ -55,15 +56,15 @@
     position: relative;
 
     &::before {
-        display: inline-block;
         position: absolute;
         right: $datetimepicker-today-right;
         bottom: $datetimepicker-today-bottom;
+        display: inline-block;
+        content: "";
         border: solid transparent;
         border-width: 0 0 $datetimepicker-today-size $datetimepicker-today-size;
         border-top-color: $datetimepicker-today-border-top-color;
         border-bottom-color: $datetimepicker-today-border-bottom-color;
-        content: '';
     }
 
     &.datetimepicker-active::before {
