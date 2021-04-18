@@ -26,9 +26,12 @@ Object.assign(DateTimePicker, {
             dom.append(thead, tr);
 
             const prevTd = dom.create('td', {
-                html: options.icons.left,
                 class: this.classes.navigation
             });
+            const prevIcon = dom.create('span', {
+                class: options.icons.left
+            });
+            dom.append(prevTd, prevIcon);
 
             if (!options.header.prev) {
                 dom.addClass(prevTd, this.classes.disabled);
@@ -60,9 +63,12 @@ Object.assign(DateTimePicker, {
             }
 
             const nextTd = dom.create('td', {
-                html: options.icons.right,
                 class: this.classes.navigation
             });
+            const nextIcon = dom.create('span', {
+                class: options.icons.right
+            });
+            dom.append(nextTd, nextIcon);
 
             if (!options.header.next) {
                 dom.addClass(nextTd, this.classes.disabled);
@@ -93,7 +99,6 @@ Object.assign(DateTimePicker, {
      */
     _renderTimeColumn(options) {
         const upTd = dom.create('td', {
-            html: options.icons.up,
             class: [
                 this.classes.navigation,
                 this.classes.time,
@@ -103,6 +108,10 @@ Object.assign(DateTimePicker, {
                 width: `${options.cellWidth}%`
             }
         });
+        const upIcon = dom.create('span', {
+            class: options.icons.up
+        });
+        dom.append(upTd, upIcon);
 
         if (!options.increment) {
             dom.addClass(upTd, this.classes.disabled);
@@ -127,13 +136,16 @@ Object.assign(DateTimePicker, {
         dom.append(options.timeTr, selectTd);
 
         const downTd = dom.create('td', {
-            html: options.icons.down,
             class: [
                 this.classes.navigation,
                 this.classes.time,
                 this.classes.spacingTimeNav
             ]
         });
+        const downIcon = dom.create('span', {
+            class: options.icons.down
+        });
+        dom.append(downTd, downIcon);
 
         if (!options.decrement) {
             dom.addClass(downTd, this.classes.disabled);

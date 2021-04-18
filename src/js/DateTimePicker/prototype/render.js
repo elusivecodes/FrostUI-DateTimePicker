@@ -42,9 +42,9 @@ Object.assign(DateTimePicker.prototype, {
                     dom.append(tbody, tr);
 
                     const td = dom.create('td', {
-                        html: this._settings.icons.time,
                         class: [
                             this.constructor.classes.action,
+                            this.constructor.classes.navigation,
                             this.constructor.classes.spacingNav
                         ],
                         attributes: {
@@ -55,6 +55,12 @@ Object.assign(DateTimePicker.prototype, {
                             uiAction: 'showTime'
                         }
                     });
+
+                    const timeIcon = dom.create('span', {
+                        class: this._settings.icons.time
+                    });
+                    dom.append(td, timeIcon);
+
                     dom.append(tr, td);
                 }
             });
@@ -78,9 +84,9 @@ Object.assign(DateTimePicker.prototype, {
                     dom.append(tbody, row);
 
                     const td = dom.create('td', {
-                        html: this._settings.icons.date,
                         class: [
                             this.constructor.classes.action,
+                            this.constructor.classes.navigation,
                             this.constructor.classes.spacingNav
                         ],
                         attributes: {
@@ -91,6 +97,12 @@ Object.assign(DateTimePicker.prototype, {
                             uiAction: 'showDate'
                         }
                     });
+
+                    const dateIcon = dom.create('span', {
+                        class: this._settings.icons.date
+                    });
+                    dom.append(td, dateIcon);
+
                     dom.append(row, td);
                 }
             });
@@ -334,7 +346,7 @@ Object.assign(DateTimePicker.prototype, {
                 while (current.isSameOrBefore(last, 'hour')) {
                     const col = dom.create('div', {
                         text: current.format('HH'),
-                        class: this.constructor.classes.timeColumn
+                        class: this.constructor.classes.hourColumn
                     });
                     dom.append(row, col);
 

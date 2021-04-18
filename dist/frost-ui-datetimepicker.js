@@ -934,9 +934,9 @@
                         dom.append(tbody, tr);
 
                         const td = dom.create('td', {
-                            html: this._settings.icons.time,
                             class: [
                                 this.constructor.classes.action,
+                                this.constructor.classes.navigation,
                                 this.constructor.classes.spacingNav
                             ],
                             attributes: {
@@ -947,6 +947,12 @@
                                 uiAction: 'showTime'
                             }
                         });
+
+                        const timeIcon = dom.create('span', {
+                            class: this._settings.icons.time
+                        });
+                        dom.append(td, timeIcon);
+
                         dom.append(tr, td);
                     }
                 });
@@ -970,9 +976,9 @@
                         dom.append(tbody, row);
 
                         const td = dom.create('td', {
-                            html: this._settings.icons.date,
                             class: [
                                 this.constructor.classes.action,
+                                this.constructor.classes.navigation,
                                 this.constructor.classes.spacingNav
                             ],
                             attributes: {
@@ -983,6 +989,12 @@
                                 uiAction: 'showDate'
                             }
                         });
+
+                        const dateIcon = dom.create('span', {
+                            class: this._settings.icons.date
+                        });
+                        dom.append(td, dateIcon);
+
                         dom.append(row, td);
                     }
                 });
@@ -1226,7 +1238,7 @@
                     while (current.isSameOrBefore(last, 'hour')) {
                         const col = dom.create('div', {
                             text: current.format('HH'),
-                            class: this.constructor.classes.timeColumn
+                            class: this.constructor.classes.hourColumn
                         });
                         dom.append(row, col);
 
@@ -2074,9 +2086,12 @@
                 dom.append(thead, tr);
 
                 const prevTd = dom.create('td', {
-                    html: options.icons.left,
                     class: this.classes.navigation
                 });
+                const prevIcon = dom.create('span', {
+                    class: options.icons.left
+                });
+                dom.append(prevTd, prevIcon);
 
                 if (!options.header.prev) {
                     dom.addClass(prevTd, this.classes.disabled);
@@ -2108,9 +2123,12 @@
                 }
 
                 const nextTd = dom.create('td', {
-                    html: options.icons.right,
                     class: this.classes.navigation
                 });
+                const nextIcon = dom.create('span', {
+                    class: options.icons.right
+                });
+                dom.append(nextTd, nextIcon);
 
                 if (!options.header.next) {
                     dom.addClass(nextTd, this.classes.disabled);
@@ -2141,7 +2159,6 @@
          */
         _renderTimeColumn(options) {
             const upTd = dom.create('td', {
-                html: options.icons.up,
                 class: [
                     this.classes.navigation,
                     this.classes.time,
@@ -2151,6 +2168,10 @@
                     width: `${options.cellWidth}%`
                 }
             });
+            const upIcon = dom.create('span', {
+                class: options.icons.up
+            });
+            dom.append(upTd, upIcon);
 
             if (!options.increment) {
                 dom.addClass(upTd, this.classes.disabled);
@@ -2175,13 +2196,16 @@
             dom.append(options.timeTr, selectTd);
 
             const downTd = dom.create('td', {
-                html: options.icons.down,
                 class: [
                     this.classes.navigation,
                     this.classes.time,
                     this.classes.spacingTimeNav
                 ]
             });
+            const downIcon = dom.create('span', {
+                class: options.icons.down
+            });
+            dom.append(downTd, downIcon);
 
             if (!options.decrement) {
                 dom.addClass(downTd, this.classes.disabled);
@@ -2242,12 +2266,12 @@
         minDate: null,
         maxDate: null,
         icons: {
-            up: '⮝',
-            right: '⮞',
-            down: '⮟',
-            left: '⮜',
-            time: '🕑',
-            date: '📅'
+            up: 'fas fa-chevron-up',
+            right: 'fas fa-chevron-right',
+            down: 'fas fa-chevron-down',
+            left: 'fas fa-chevron-left',
+            time: 'fas fa-clock',
+            date: 'fas fa-calendar-alt'
         },
         lang: {
             decrementHour: 'Decrement Hour',
@@ -2373,6 +2397,7 @@
         containerColumns: 'row-cols-md-2',
         dateColumn: 'col-4 px-1 py-2',
         disabled: 'datetimepicker-disabled',
+        hourColumn: 'col-3 p-1',
         menu: 'datetimepicker',
         menuInline: 'datetimepicker-inline',
         menuShadow: 'shadow-sm',

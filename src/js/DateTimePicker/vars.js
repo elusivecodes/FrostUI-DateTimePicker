@@ -18,12 +18,12 @@ DateTimePicker.defaults = {
     minDate: null,
     maxDate: null,
     icons: {
-        up: '⮝',
-        right: '⮞',
-        down: '⮟',
-        left: '⮜',
-        time: '🕑',
-        date: '📅'
+        up: 'fas fa-chevron-up',
+        right: 'fas fa-chevron-right',
+        down: 'fas fa-chevron-down',
+        left: 'fas fa-chevron-left',
+        time: 'fas fa-clock',
+        date: 'fas fa-calendar-alt'
     },
     lang: {
         decrementHour: 'Decrement Hour',
@@ -149,6 +149,7 @@ DateTimePicker.classes = {
     containerColumns: 'row-cols-md-2',
     dateColumn: 'col-4 px-1 py-2',
     disabled: 'datetimepicker-disabled',
+    hourColumn: 'col-3 p-1',
     menu: 'datetimepicker',
     menuInline: 'datetimepicker-inline',
     menuShadow: 'shadow-sm',
