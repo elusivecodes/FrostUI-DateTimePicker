@@ -444,6 +444,7 @@
                             duration: 100
                         }).then(_ => {
                             dom.setStyle(this._dateContainer, 'display', 'none', true);
+                            this.update();
                         });
                         break;
                     case 'showDate':
@@ -455,6 +456,7 @@
                             duration: 100
                         }).then(_ => {
                             dom.setStyle(this._timeContainer, 'display', 'none', true);
+                            this.update();
                         });
                         break;
                     case 'next':
