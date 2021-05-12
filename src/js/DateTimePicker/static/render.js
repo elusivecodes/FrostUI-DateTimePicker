@@ -28,10 +28,7 @@ Object.assign(DateTimePicker, {
             const prevTd = dom.create('td', {
                 class: this.classes.navigation
             });
-            const prevIcon = dom.create('span', {
-                class: options.icons.left
-            });
-            dom.append(prevTd, prevIcon);
+            dom.setHTML(prevTd, this.icons.left);
 
             if (!options.header.prev) {
                 dom.addClass(prevTd, this.classes.disabled);
@@ -65,10 +62,7 @@ Object.assign(DateTimePicker, {
             const nextTd = dom.create('td', {
                 class: this.classes.navigation
             });
-            const nextIcon = dom.create('span', {
-                class: options.icons.right
-            });
-            dom.append(nextTd, nextIcon);
+            dom.setHTML(nextTd, this.icons.right);
 
             if (!options.header.next) {
                 dom.addClass(nextTd, this.classes.disabled);
@@ -108,10 +102,7 @@ Object.assign(DateTimePicker, {
                 width: `${options.cellWidth}%`
             }
         });
-        const upIcon = dom.create('span', {
-            class: options.icons.up
-        });
-        dom.append(upTd, upIcon);
+        dom.setHTML(upTd, this.icons.up);
 
         if (!options.increment) {
             dom.addClass(upTd, this.classes.disabled);
@@ -142,10 +133,7 @@ Object.assign(DateTimePicker, {
                 this.classes.spacingTimeNav
             ]
         });
-        const downIcon = dom.create('span', {
-            class: options.icons.down
-        });
-        dom.append(downTd, downIcon);
+        dom.setHTML(downTd, this.icons.down);
 
         if (!options.decrement) {
             dom.addClass(downTd, this.classes.disabled);

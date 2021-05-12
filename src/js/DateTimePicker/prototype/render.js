@@ -56,10 +56,7 @@ Object.assign(DateTimePicker.prototype, {
                         }
                     });
 
-                    const timeIcon = dom.create('span', {
-                        class: this._settings.icons.time
-                    });
-                    dom.append(td, timeIcon);
+                    dom.setHTML(td, this.constructor.icons.time);
 
                     dom.append(tr, td);
                 }
@@ -98,10 +95,7 @@ Object.assign(DateTimePicker.prototype, {
                         }
                     });
 
-                    const dateIcon = dom.create('span', {
-                        class: this._settings.icons.date
-                    });
-                    dom.append(td, dateIcon);
+                    dom.setHTML(td, this.constructor.icons.date);
 
                     dom.append(row, td);
                 }
@@ -236,7 +230,6 @@ Object.assign(DateTimePicker.prototype, {
         }
 
         const table = this.constructor._createTable({
-            icons: this._settings.icons,
             header: {
                 title: this._viewDate.format('MMMM yyyy'),
                 data: {
@@ -467,7 +460,6 @@ Object.assign(DateTimePicker.prototype, {
         }
 
         const table = this.constructor._createTable({
-            icons: this._settings.icons,
             header: {
                 title: this._viewDate.format('yyyy'),
                 wide: true,
@@ -653,7 +645,6 @@ Object.assign(DateTimePicker.prototype, {
                     }
 
                     this.constructor._renderTimeColumn({
-                        icons: this._settings.icons,
                         increment,
                         select: {
                             text: initialDate.format(this._useDayPeriod ? 'hh' : 'HH'),
@@ -709,7 +700,6 @@ Object.assign(DateTimePicker.prototype, {
                     }
 
                     this.constructor._renderTimeColumn({
-                        icons: this._settings.icons,
                         increment,
                         select: {
                             text: initialDate.format('mm'),
@@ -763,7 +753,6 @@ Object.assign(DateTimePicker.prototype, {
                     }
 
                     this.constructor._renderTimeColumn({
-                        icons: this._settings.icons,
                         increment,
                         select: {
                             text: initialDate.format('ss'),
@@ -870,7 +859,6 @@ Object.assign(DateTimePicker.prototype, {
         }
 
         const table = this.constructor._createTable({
-            icons: this._settings.icons,
             header: {
                 title: `${start.format('yyyy')} - ${end.format('yyyy')}`,
                 wide: true,
