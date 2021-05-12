@@ -146,7 +146,7 @@ DateTimePicker.classes = {
     menuInline: 'datetimepicker-inline',
     menuShadow: 'shadow-sm',
     menuWide: 'datetimepicker-wide',
-    navigation: 'text-primary',
+    navigation: 'text-primary lh-1',
     periodButton: 'btn btn-primary d-block',
     row: 'row g-0',
     rowContainer: 'p-0',

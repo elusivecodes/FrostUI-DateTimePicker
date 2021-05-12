@@ -42,6 +42,7 @@ Object.assign(DateTimePicker.prototype, {
                     dom.append(tbody, tr);
 
                     const td = dom.create('td', {
+                        html: this.constructor.icons.time,
                         class: [
                             this.constructor.classes.action,
                             this.constructor.classes.navigation,
@@ -55,8 +56,6 @@ Object.assign(DateTimePicker.prototype, {
                             uiAction: 'showTime'
                         }
                     });
-
-                    dom.setHTML(td, this.constructor.icons.time);
 
                     dom.append(tr, td);
                 }
@@ -81,6 +80,7 @@ Object.assign(DateTimePicker.prototype, {
                     dom.append(tbody, row);
 
                     const td = dom.create('td', {
+                        html: this.constructor.icons.date,
                         class: [
                             this.constructor.classes.action,
                             this.constructor.classes.navigation,
@@ -94,8 +94,6 @@ Object.assign(DateTimePicker.prototype, {
                             uiAction: 'showDate'
                         }
                     });
-
-                    dom.setHTML(td, this.constructor.icons.date);
 
                     dom.append(row, td);
                 }

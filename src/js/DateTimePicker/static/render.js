@@ -26,9 +26,9 @@ Object.assign(DateTimePicker, {
             dom.append(thead, tr);
 
             const prevTd = dom.create('td', {
+                html: this.icons.left,
                 class: this.classes.navigation
             });
-            dom.setHTML(prevTd, this.icons.left);
 
             if (!options.header.prev) {
                 dom.addClass(prevTd, this.classes.disabled);
@@ -60,9 +60,9 @@ Object.assign(DateTimePicker, {
             }
 
             const nextTd = dom.create('td', {
+                html: this.icons.right,
                 class: this.classes.navigation
             });
-            dom.setHTML(nextTd, this.icons.right);
 
             if (!options.header.next) {
                 dom.addClass(nextTd, this.classes.disabled);
@@ -93,6 +93,7 @@ Object.assign(DateTimePicker, {
      */
     _renderTimeColumn(options) {
         const upTd = dom.create('td', {
+            html: this.icons.up,
             class: [
                 this.classes.navigation,
                 this.classes.time,
@@ -102,7 +103,6 @@ Object.assign(DateTimePicker, {
                 width: `${options.cellWidth}%`
             }
         });
-        dom.setHTML(upTd, this.icons.up);
 
         if (!options.increment) {
             dom.addClass(upTd, this.classes.disabled);
@@ -127,13 +127,13 @@ Object.assign(DateTimePicker, {
         dom.append(options.timeTr, selectTd);
 
         const downTd = dom.create('td', {
+            html: this.icons.down,
             class: [
                 this.classes.navigation,
                 this.classes.time,
                 this.classes.spacingTimeNav
             ]
         });
-        dom.setHTML(downTd, this.icons.down);
 
         if (!options.decrement) {
             dom.addClass(downTd, this.classes.disabled);

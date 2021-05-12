@@ -936,6 +936,7 @@
                         dom.append(tbody, tr);
 
                         const td = dom.create('td', {
+                            html: this.constructor.icons.time,
                             class: [
                                 this.constructor.classes.action,
                                 this.constructor.classes.navigation,
@@ -949,8 +950,6 @@
                                 uiAction: 'showTime'
                             }
                         });
-
-                        dom.setHTML(td, this.constructor.icons.time);
 
                         dom.append(tr, td);
                     }
@@ -975,6 +974,7 @@
                         dom.append(tbody, row);
 
                         const td = dom.create('td', {
+                            html: this.constructor.icons.date,
                             class: [
                                 this.constructor.classes.action,
                                 this.constructor.classes.navigation,
@@ -988,8 +988,6 @@
                                 uiAction: 'showDate'
                             }
                         });
-
-                        dom.setHTML(td, this.constructor.icons.date);
 
                         dom.append(row, td);
                     }
@@ -2076,9 +2074,9 @@
                 dom.append(thead, tr);
 
                 const prevTd = dom.create('td', {
+                    html: this.icons.left,
                     class: this.classes.navigation
                 });
-                dom.setHTML(prevTd, this.icons.left);
 
                 if (!options.header.prev) {
                     dom.addClass(prevTd, this.classes.disabled);
@@ -2110,9 +2108,9 @@
                 }
 
                 const nextTd = dom.create('td', {
+                    html: this.icons.right,
                     class: this.classes.navigation
                 });
-                dom.setHTML(nextTd, this.icons.right);
 
                 if (!options.header.next) {
                     dom.addClass(nextTd, this.classes.disabled);
@@ -2143,6 +2141,7 @@
          */
         _renderTimeColumn(options) {
             const upTd = dom.create('td', {
+                html: this.icons.up,
                 class: [
                     this.classes.navigation,
                     this.classes.time,
@@ -2152,7 +2151,6 @@
                     width: `${options.cellWidth}%`
                 }
             });
-            dom.setHTML(upTd, this.icons.up);
 
             if (!options.increment) {
                 dom.addClass(upTd, this.classes.disabled);
@@ -2177,13 +2175,13 @@
             dom.append(options.timeTr, selectTd);
 
             const downTd = dom.create('td', {
+                html: this.icons.down,
                 class: [
                     this.classes.navigation,
                     this.classes.time,
                     this.classes.spacingTimeNav
                 ]
             });
-            dom.setHTML(downTd, this.icons.down);
 
             if (!options.decrement) {
                 dom.addClass(downTd, this.classes.disabled);
@@ -2372,7 +2370,7 @@
         menuInline: 'datetimepicker-inline',
         menuShadow: 'shadow-sm',
         menuWide: 'datetimepicker-wide',
-        navigation: 'text-primary',
+        navigation: 'text-primary lh-1',
         periodButton: 'btn btn-primary d-block',
         row: 'row g-0',
         rowContainer: 'p-0',
