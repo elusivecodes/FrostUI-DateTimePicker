@@ -2357,7 +2357,7 @@
 
     // Default classes
     DateTimePicker.classes = {
-        action: 'datetimepicker-action fs-6',
+        action: 'datetimepicker-action',
         active: 'datetimepicker-active',
         borderless: 'table-borderless',
         column: 'col d-flex flex-column',
@@ -2370,7 +2370,7 @@
         menuInline: 'datetimepicker-inline',
         menuShadow: 'shadow-sm',
         menuWide: 'datetimepicker-wide',
-        navigation: 'text-primary lh-1',
+        navigation: 'text-primary fs-5 lh-1',
         periodButton: 'btn btn-primary d-block',
         row: 'row g-0',
         rowContainer: 'p-0',
