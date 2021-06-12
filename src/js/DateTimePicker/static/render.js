@@ -25,7 +25,7 @@ Object.assign(DateTimePicker, {
             const tr = dom.create('tr');
             dom.append(thead, tr);
 
-            const prevTd = dom.create('td', {
+            const prevTd = dom.create('th', {
                 html: this.icons.left,
                 class: this.classes.navigation
             });
@@ -40,7 +40,7 @@ Object.assign(DateTimePicker, {
 
             dom.append(tr, prevTd);
 
-            const titleTd = dom.create('td', {
+            const titleTd = dom.create('th', {
                 class: this.classes.title,
                 text: options.header.title,
                 attributes: {
@@ -59,7 +59,7 @@ Object.assign(DateTimePicker, {
                 dom.addClass(titleTd, this.classes.titleWide);
             }
 
-            const nextTd = dom.create('td', {
+            const nextTd = dom.create('th', {
                 html: this.icons.right,
                 class: this.classes.navigation
             });

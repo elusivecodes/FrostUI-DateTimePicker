@@ -11,6 +11,9 @@
   background-color: #fff;
   border: 1px solid rgba(0, 0, 0, 0.15);
 }
+.datetimepicker th {
+  border-bottom: 0;
+}
 .datetimepicker tr:last-child > td {
   border-bottom: 0;
 }
@@ -21,7 +24,6 @@
 }
 
 .datetimepicker-action {
-  border-radius: 0.2rem;
   cursor: pointer;
 }
 .datetimepicker-action:hover {

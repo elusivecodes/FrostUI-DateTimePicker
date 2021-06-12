@@ -1142,7 +1142,7 @@
                     for (let i = 1; i <= 7; i++) {
                         currentDay.setWeekDay(i);
                         const th = dom.create('th', {
-                            class: this.constructor.classes.title,
+                            class: this.constructor.classes.days,
                             text: currentDay.dayName('narrow')
                         });
                         dom.append(tr, th);
@@ -2073,7 +2073,7 @@
                 const tr = dom.create('tr');
                 dom.append(thead, tr);
 
-                const prevTd = dom.create('td', {
+                const prevTd = dom.create('th', {
                     html: this.icons.left,
                     class: this.classes.navigation
                 });
@@ -2088,7 +2088,7 @@
 
                 dom.append(tr, prevTd);
 
-                const titleTd = dom.create('td', {
+                const titleTd = dom.create('th', {
                     class: this.classes.title,
                     text: options.header.title,
                     attributes: {
@@ -2107,7 +2107,7 @@
                     dom.addClass(titleTd, this.classes.titleWide);
                 }
 
-                const nextTd = dom.create('td', {
+                const nextTd = dom.create('th', {
                     html: this.icons.right,
                     class: this.classes.navigation
                 });
@@ -2236,7 +2236,7 @@
     // DateTimePicker default options
     DateTimePicker.defaults = {
         format: null,
-        locale: DateFormatter.defaultLocale,
+        locale: DateTime.defaultLocale,
         timeZone: DateTime.defaultTimeZone,
         defaultDate: null,
         minDate: null,
@@ -2364,6 +2364,7 @@
         container: 'row row-cols-1 gy-0 gx-2',
         containerColumns: 'row-cols-md-2',
         dateColumn: 'col-4 px-1 py-2',
+        days: 'text-secondary fw-light',
         disabled: 'datetimepicker-disabled',
         hourColumn: 'col-3 p-1',
         menu: 'datetimepicker',
@@ -2379,7 +2380,7 @@
         spacingSeparator: 'py-2',
         spacingTime: 'py-2 px-0',
         spacingTimeNav: 'py-4 px-0',
-        table: 'table table-sm text-center mx-0 my-auto',
+        table: 'table table-borderless table-sm text-center mx-0 my-auto',
         time: 'datetimepicker-time',
         timeColumn: 'col-3 px-1 py-2',
         title: 'fw-bold',

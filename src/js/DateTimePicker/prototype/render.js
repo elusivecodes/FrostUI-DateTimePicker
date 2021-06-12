@@ -248,7 +248,7 @@ Object.assign(DateTimePicker.prototype, {
                 for (let i = 1; i <= 7; i++) {
                     currentDay.setWeekDay(i);
                     const th = dom.create('th', {
-                        class: this.constructor.classes.title,
+                        class: this.constructor.classes.days,
                         text: currentDay.dayName('narrow')
                     });
                     dom.append(tr, th);

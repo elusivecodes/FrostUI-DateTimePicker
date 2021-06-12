@@ -50,3 +50,10 @@
 @function text-color($background, $foreground1: #fff, $foreground2: #000, $threshold: 4.5) {
     @return if(contrast-ratio($background, $foreground1) > $threshold, $foreground1, $foreground2);
 }
+
+// Tint a color by a specified amount (1-100).
+// @param $color
+// @param $amount
+@function tint($color, $amount) {
+    @return mix($color, #fff, 100 - $amount);
+}
