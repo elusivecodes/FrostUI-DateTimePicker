@@ -822,7 +822,7 @@
                 this._viewDate = date.clone();
             }
 
-            dom.triggerEvent(this._node, 'change.ui.datetimepicker', {
+            dom.triggerEvent(this._node, 'change', {
                 old: this._date ?
                     this._date.clone() :
                     null,
@@ -852,7 +852,7 @@
 
             dates = dates.sort((a, b) => a.isBefore(b) ? -1 : 1);
 
-            dom.triggerEvent(this._node, 'change.ui.datetimepicker', {
+            dom.triggerEvent(this._node, 'change', {
                 old: this._dates.map(date => date.clone()),
                 new: dates.map(date => date.clone())
             });
