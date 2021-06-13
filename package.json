@@ -1,15 +1,41 @@
 {
     "name": "frostui-datetimepicker",
     "version": "1.0.0",
-    "description": "",
-    "main": "index.js",
+    "description": "FrostUI-DateTimePicker is a free, open-source DateTimePicker component for Javascript.",
+    "keywords": [
+        "ui",
+        "component",
+        "datetime",
+        "date",
+        "time",
+        "front-end",
+        "web"
+    ],
+    "homepage": "https://github.com/elusivecodes/FrostUI-DateTimePicker",
+    "bugs": {
+        "url": "https://github.com/elusivecodes/FrostUI-DateTimePicker/issues",
+        "email": "elusivecodes@gmail.com"
+    },
+    "main": "./dist/frost-ui-datetimepicker.js",
+    "files": [
+        "/dist/frost-ui-datetimepicker.css",
+        "/dist/frost-ui-datetimepicker.js",
+        "/src/scss",
+        "/LICENSE",
+        "/README.md"
+    ],
     "scripts": {
         "build": "node build.js",
         "test": "echo \"Error: no test specified\" && exit 1",
         "lint": "stylelint \"src/scss/**/*.scss\" --fix"
     },
-    "author": "",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/elusivecodes/FrostUI-DateTimePicker.git"
+    },
+    "author": "Elusive",
     "license": "MIT",
+    "private": false,
     "devDependencies": {
         "cssnano": "^5.0.6",
         "filepath": "^1.1.0",
