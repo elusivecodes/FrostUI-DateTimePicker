@@ -405,6 +405,10 @@ Object.assign(DateTimePicker.prototype, {
 
         dom.setValue(this._node, value);
 
+        if (this._native && this._date) {
+            this._updateNativeDate();
+        }
+
         return this;
     }
 

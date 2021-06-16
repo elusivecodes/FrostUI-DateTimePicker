@@ -37,11 +37,28 @@ class DateTimePicker extends UI.BaseComponent {
                 this.constructor._getDefaultFormat(this._settings.locale, this._useDayPeriod);
         }
 
+        this._native = this._settings.mobileNative &&
+            !this._settings.multiDate &&
+            !this._settings.isValidDay &&
+            !this._settings.isValidMonth &&
+            !this._settings.isValidTime &&
+            !this._settings.isValidYear &&
+            !this._settings.inline &&
+            !this._settings.minView &&
+            /Android|webOS|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
         this._checkFormat();
         this._parseSettings();
         this._updateValue();
-        this._render();
-        this._events();
+
+        if (this._native) {
+            this._parseNativeType();
+            this._renderNative();
+            this._eventsNative();
+        } else {
+            this._render();
+            this._events();
+        }
     }
 
     /**
@@ -56,6 +73,10 @@ class DateTimePicker extends UI.BaseComponent {
      * Dispose the DateTimePicker.
      */
     dispose() {
+        if (this._native) {
+            return this._disposeNative();
+        }
+
         if (this._popper) {
             this._popper.destroy();
             this._popper = null;
@@ -88,6 +109,7 @@ class DateTimePicker extends UI.BaseComponent {
      */
     hide() {
         if (
+            this._native ||
             this._settings.inline ||
             this._animating ||
             !dom.isConnected(this._menuNode) ||
@@ -116,6 +138,7 @@ class DateTimePicker extends UI.BaseComponent {
      */
     show() {
         if (
+            this._native ||
             this._settings.inline ||
             this._animating ||
             dom.isConnected(this._menuNode) ||
@@ -165,7 +188,7 @@ class DateTimePicker extends UI.BaseComponent {
      * @returns {DateTimePicker} The DateTimePicker.
      */
     update() {
-        if (!this._settings.inline) {
+        if (!this._native && !this._settings.inline) {
             this._popper.update();
         }
 

@@ -120,6 +120,7 @@ DateTimePicker.defaults = {
     sideBySide: false,
     keepInvalid: false,
     ignoreReadonly: false,
+    mobileNative: true,
     minView: null,
     stepping: 1,
     duration: 100,

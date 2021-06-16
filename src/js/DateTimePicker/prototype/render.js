@@ -8,6 +8,10 @@ Object.assign(DateTimePicker.prototype, {
      * Refresh the date and time UI elements.
      */
     _refresh() {
+        if (this._native) {
+            return;
+        }
+
         if (this._hasDate) {
             this._refreshDate();
         }

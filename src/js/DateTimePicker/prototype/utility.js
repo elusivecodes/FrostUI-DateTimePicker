@@ -66,6 +66,10 @@ Object.assign(DateTimePicker.prototype, {
             this._setDate(date);
         }
 
+        if (this._native && this._date) {
+            this._updateNativeDate();
+        }
+
         return this;
     },
 
