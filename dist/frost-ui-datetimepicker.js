@@ -1,5 +1,5 @@
 /**
- * FrostUI-DateTimePicker v1.0.2
+ * FrostUI-DateTimePicker v1.0.3
  * https://github.com/elusivecodes/FrostUI-DateTimePicker
  */
 (function(global, factory) {
@@ -319,7 +319,7 @@
 
             if (this._settings.keyDown && !this._settings.inline && !this._settings.multiDate) {
                 dom.addEvent(this._node, 'keydown.ui.datetimepicker', e => {
-                    this._settings.keyDown(e, this);
+                    this._settings.keyDown.bind(this)(e);
                 });
             }
 
@@ -2392,10 +2392,10 @@
         renderDay: null,
         renderMonth: null,
         renderYear: null,
-        keyDown: (e, datetimepicker) => {
-            let date = datetimepicker._date ?
-                datetimepicker._date.clone() :
-                datetimepicker._now();
+        keyDown(e) {
+            let date = this._date ?
+                this._date.clone() :
+                this._now();
 
             switch (e.code) {
                 case 'ArrowUp':
@@ -2433,27 +2433,27 @@
                     date.sub(1, 'hour');
                     break;
                 case 'Home':
-                    date = datetimepicker._now()
+                    date = this._now()
                     break;
                 case 'Delete':
                     date = null;
                     break;
                 case 'Enter':
                     e.preventDefault();
-                    return datetimepicker.toggle();
+                    return this.toggle();
                 case 'Escape':
                 case 'Tab':
-                    return datetimepicker.hide();
+                    return this.hide();
                 default:
                     return;
             }
 
             e.preventDefault();
 
-            datetimepicker.show();
+            this.show();
 
-            if (!date || datetimepicker._isValid(date, 'second')) {
-                datetimepicker._setDate(date);
+            if (!date || this._isValid(date, 'second')) {
+                this._setDate(date);
             }
         },
         multiDate: false,

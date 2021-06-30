@@ -46,10 +46,10 @@ DateTimePicker.defaults = {
     renderDay: null,
     renderMonth: null,
     renderYear: null,
-    keyDown: (e, datetimepicker) => {
-        let date = datetimepicker._date ?
-            datetimepicker._date.clone() :
-            datetimepicker._now();
+    keyDown(e) {
+        let date = this._date ?
+            this._date.clone() :
+            this._now();
 
         switch (e.code) {
             case 'ArrowUp':
@@ -87,27 +87,27 @@ DateTimePicker.defaults = {
                 date.sub(1, 'hour');
                 break;
             case 'Home':
-                date = datetimepicker._now()
+                date = this._now()
                 break;
             case 'Delete':
                 date = null;
                 break;
             case 'Enter':
                 e.preventDefault();
-                return datetimepicker.toggle();
+                return this.toggle();
             case 'Escape':
             case 'Tab':
-                return datetimepicker.hide();
+                return this.hide();
             default:
                 return;
         }
 
         e.preventDefault();
 
-        datetimepicker.show();
+        this.show();
 
-        if (!date || datetimepicker._isValid(date, 'second')) {
-            datetimepicker._setDate(date);
+        if (!date || this._isValid(date, 'second')) {
+            this._setDate(date);
         }
     },
     multiDate: false,

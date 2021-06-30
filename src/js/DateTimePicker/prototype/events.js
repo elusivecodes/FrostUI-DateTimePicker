@@ -59,7 +59,7 @@ Object.assign(DateTimePicker.prototype, {
 
         if (this._settings.keyDown && !this._settings.inline && !this._settings.multiDate) {
             dom.addEvent(this._node, 'keydown.ui.datetimepicker', e => {
-                this._settings.keyDown(e, this);
+                this._settings.keyDown.bind(this)(e);
             });
         }
 
