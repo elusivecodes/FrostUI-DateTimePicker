@@ -1,5 +1,5 @@
 /**
- * FrostUI-DateTimePicker v1.0.3
+ * FrostUI-DateTimePicker v1.0.4
  * https://github.com/elusivecodes/FrostUI-DateTimePicker
  */
 (function(global, factory) {
@@ -28,7 +28,6 @@
 
     const Core = window.Core;
     const dom = window.dom;
-    const QuerySet = window.QuerySet;
     const UI = window.UI;
     const DateTime = window.DateTime;
     const document = window.document;
