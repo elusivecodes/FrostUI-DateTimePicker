@@ -1,5 +1,5 @@
 /**
- * DateTimePicker Utility
+ * DateTimePicker API
  */
 
 Object.assign(DateTimePicker.prototype, {
