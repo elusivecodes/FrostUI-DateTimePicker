@@ -1,5 +1,5 @@
 /**
- * FrostUI-DateTimePicker v1.0.6
+ * FrostUI-DateTimePicker v1.0.7
  * https://github.com/elusivecodes/FrostUI-DateTimePicker
  */
 (function(global, factory) {
@@ -948,7 +948,7 @@
                 this._viewDate = date.clone();
             }
 
-            dom.triggerEvent(this._node, 'change', {
+            dom.triggerEvent(this._node, 'change.ui.datetimepicker', {
                 old: this._date ?
                     this._date.clone() :
                     null,
@@ -978,7 +978,7 @@
 
             dates = dates.sort((a, b) => a.isBefore(b) ? -1 : 1);
 
-            dom.triggerEvent(this._node, 'change', {
+            dom.triggerEvent(this._node, 'change.ui.datetimepicker', {
                 old: this._dates.map(date => date.clone()),
                 new: dates.map(date => date.clone())
             });

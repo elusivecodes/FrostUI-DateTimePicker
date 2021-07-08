@@ -46,7 +46,7 @@
 
         UI.DateTimePicker.init(dtpEvents);
 
-        dom.addEvent(dtpEvents, 'change show.ui.datetimepicker shown.ui.datetimepicker hide.ui.datetimepicker hidden.ui.datetimepicker', e => {
+        dom.addEvent(dtpEvents, 'change.ui.datetimepicker show.ui.datetimepicker shown.ui.datetimepicker hide.ui.datetimepicker hidden.ui.datetimepicker', e => {
             const div = dom.create('div', {
                 html: `<small>"${e.type}" event triggered</small>`
             });

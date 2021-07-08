@@ -341,7 +341,7 @@ Object.assign(DateTimePicker.prototype, {
             this._viewDate = date.clone();
         }
 
-        dom.triggerEvent(this._node, 'change', {
+        dom.triggerEvent(this._node, 'change.ui.datetimepicker', {
             old: this._date ?
                 this._date.clone() :
                 null,
@@ -371,7 +371,7 @@ Object.assign(DateTimePicker.prototype, {
 
         dates = dates.sort((a, b) => a.isBefore(b) ? -1 : 1);
 
-        dom.triggerEvent(this._node, 'change', {
+        dom.triggerEvent(this._node, 'change.ui.datetimepicker', {
             old: this._dates.map(date => date.clone()),
             new: dates.map(date => date.clone())
         });
