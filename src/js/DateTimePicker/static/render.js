@@ -14,10 +14,6 @@ Object.assign(DateTimePicker, {
             class: this.classes.table
         });
 
-        if (options.borderless) {
-            dom.addClass(table, this.classes.borderless);
-        }
-
         if (options.header) {
             const thead = dom.create('thead');
             dom.append(table, thead);

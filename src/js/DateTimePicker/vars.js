@@ -67,24 +67,16 @@ DateTimePicker.defaults = {
                 }
                 break;
             case 'ArrowRight':
-                if (e.ctrlKey) {
-                    date.add(1, 'month');
-                } else {
-                    date.add(1, 'day');
-                }
+                date.add(1, 'day');
                 break;
             case 'ArrowLeft':
-                if (e.ctrlKey) {
-                    date.sub(1, 'month');
-                } else {
-                    date.sub(1, 'day');
-                }
+                date.sub(1, 'day');
                 break;
             case 'PageUp':
-                date.add(1, 'hour');
+                date.add(1, 'month');
                 break;
             case 'PageDown':
-                date.sub(1, 'hour');
+                date.sub(1, 'month');
                 break;
             case 'Home':
                 date = this._now()
@@ -136,12 +128,11 @@ DateTimePicker.defaults = {
 DateTimePicker.classes = {
     action: 'datetimepicker-action',
     active: 'datetimepicker-active',
-    borderless: 'table-borderless',
     column: 'col d-flex flex-column',
     container: 'row row-cols-1 gy-0 gx-2',
     containerColumns: 'row-cols-md-2',
     dateColumn: 'col-4 px-1 py-2',
-    days: 'text-secondary fw-light',
+    days: 'text-primary fw-light',
     disabled: 'datetimepicker-disabled',
     hourColumn: 'col-3 p-1',
     menu: 'datetimepicker',
