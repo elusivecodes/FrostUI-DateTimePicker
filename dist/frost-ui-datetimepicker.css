@@ -17,6 +17,9 @@
 .datetimepicker tr:last-child > td {
   border-bottom: 0;
 }
+.datetimepicker.datetimepicker-disabled {
+  pointer-events: none;
+}
 
 .datetimepicker-inline {
   display: block;

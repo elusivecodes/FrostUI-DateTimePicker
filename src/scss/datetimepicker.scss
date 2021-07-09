@@ -21,6 +21,10 @@
     tr:last-child > td {
         border-bottom: 0;
     }
+
+    &.datetimepicker-disabled {
+        pointer-events: none;
+    }
 }
 
 .datetimepicker-inline {

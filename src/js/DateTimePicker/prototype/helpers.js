@@ -252,6 +252,22 @@ Object.assign(DateTimePicker.prototype, {
         return null;
     },
 
+
+    /**
+     * Refresh the toggle disabled.
+     */
+    _refreshDisabled() {
+        if (this._native) {
+            return;
+        }
+
+        if (dom.is(this._node, ':disabled')) {
+            dom.addClass(this._menuNode, this.constructor.classes.disabled);
+        } else {
+            dom.removeClass(this._menuNode, this.constructor.classes.disabled);
+        }
+    },
+
     /**
      * Parse DateTime objects from an array of values.
      * @param {array} dates The dates to parse.

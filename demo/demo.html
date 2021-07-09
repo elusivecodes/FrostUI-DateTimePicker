@@ -157,9 +157,17 @@
                 <div class="ripple-line"></div>
             </div>
         </div>
+        <div class="mb-4">
+            <label for="dtpInlineDisabled">Inline Disabled</label>
+            <div class="form-input">
+                <input type="text" class="input-filled" id="dtpInlineDisabled" data-ui-inline="true" data-ui-side-by-side="true" disabled />
+                <div class="ripple-line"></div>
+            </div>
+        </div>
     </div>
     <script>
         UI.DateTimePicker.defaults.locale = 'en';
+
         const dtpDefault = dom.findOne('#dtpDefault');
         const dtpLocale = dom.findOne('#dtpLocale');
         const dtpTime = dom.findOne('#dtpTime');
@@ -170,12 +178,14 @@
         const dtpMinMax = dom.findOne('#dtpMinMax');
         const dtpMinView = dom.findOne('#dtpMinView');
         const dtpInline = dom.findOne('#dtpInline');
+        const dtpInlineDisabled = dom.findOne('#dtpInlineDisabled');
 
         UI.DateTimePicker.init(dtpDefault);
         UI.DateTimePicker.init(dtpLocale);
         UI.DateTimePicker.init(dtpTime);
         UI.DateTimePicker.init(dtpDate);
         UI.DateTimePicker.init(dtpMulti);
+
         UI.DateTimePicker.init(dtpDisabledDates, {
             isValidDay: date => {
                 for (const amount of [3, 5, 9]) {
@@ -189,6 +199,7 @@
                 return true;
             }
         });
+
         UI.DateTimePicker.init(dtpDisabledDays, {
             isValidDay: date => {
                 if ([0, 6].includes(date.getDay())) {
@@ -198,12 +209,15 @@
                 return true;
             }
         });
+
         UI.DateTimePicker.init(dtpMinMax, {
             minDate: DateTime.now().sub(5, 'days'),
             maxDate: DateTime.now().add(1, 'month')
         });
+
         UI.DateTimePicker.init(dtpMinView);
         UI.DateTimePicker.init(dtpInline);
+        UI.DateTimePicker.init(dtpInlineDisabled);
     </script>
 </body>
 

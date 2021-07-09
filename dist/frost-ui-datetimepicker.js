@@ -1,5 +1,5 @@
 /**
- * FrostUI-DateTimePicker v1.0.7
+ * FrostUI-DateTimePicker v1.0.8
  * https://github.com/elusivecodes/FrostUI-DateTimePicker
  */
 (function(global, factory) {
@@ -27,6 +27,7 @@
     }
 
     const Core = window.Core;
+    const DOM = window.DOM;
     const dom = window.dom;
     const UI = window.UI;
     const DateTime = window.DateTime;
@@ -93,6 +94,19 @@
                 this._render();
                 this._events();
             }
+
+            this._refreshDisabled();
+        }
+
+        /**
+         * Disable the DateTimePicker.
+         * @returns {DateTimePicker} The DateTimePicker.
+         */
+        disable() {
+            dom.setAttribute(this._node, 'disabled', true);
+            this._refreshDisabled();
+
+            return this;
         }
 
         /**
@@ -135,6 +149,17 @@
             this._viewDate = null;
 
             super.dispose();
+        }
+
+        /**
+         * Enable the DateTimePicker.
+         * @returns {DateTimePicker} The DateTimePicker.
+         */
+        enable() {
+            dom.removeAttribute(this._node, 'disabled');
+            this._refreshDisabled();
+
+            return this;
         }
 
         /**
@@ -857,6 +882,22 @@
             }
 
             return null;
+        },
+
+
+        /**
+         * Refresh the toggle disabled.
+         */
+        _refreshDisabled() {
+            if (this._native) {
+                return;
+            }
+
+            if (dom.is(this._node, ':disabled')) {
+                dom.addClass(this._menuNode, this.constructor.classes.disabled);
+            } else {
+                dom.removeClass(this._menuNode, this.constructor.classes.disabled);
+            }
         },
 
         /**

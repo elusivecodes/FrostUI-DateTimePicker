@@ -59,6 +59,19 @@ class DateTimePicker extends UI.BaseComponent {
             this._render();
             this._events();
         }
+
+        this._refreshDisabled();
+    }
+
+    /**
+     * Disable the DateTimePicker.
+     * @returns {DateTimePicker} The DateTimePicker.
+     */
+    disable() {
+        dom.setAttribute(this._node, 'disabled', true);
+        this._refreshDisabled();
+
+        return this;
     }
 
     /**
@@ -101,6 +114,17 @@ class DateTimePicker extends UI.BaseComponent {
         this._viewDate = null;
 
         super.dispose();
+    }
+
+    /**
+     * Enable the DateTimePicker.
+     * @returns {DateTimePicker} The DateTimePicker.
+     */
+    enable() {
+        dom.removeAttribute(this._node, 'disabled');
+        this._refreshDisabled();
+
+        return this;
     }
 
     /**
