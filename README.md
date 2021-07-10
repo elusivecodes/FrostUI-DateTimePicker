@@ -2,7 +2,7 @@
 
 **FrostUI DateTimePicker** is a free, open-source DateTimePicker component for *JavaScript*.
 
-It is built on top of the [FrostUI](https://github.com/elusivecodes/FrostUI) library.
+It is built on top of the [FrostUI](https://github.com/elusivecodes/FrostUI) and [FrostDateTime](https://github.com/elusivecodes/FrostDateTime) libraries.
 
 
 ## Table Of Contents
@@ -18,6 +18,7 @@ It is built on top of the [FrostUI](https://github.com/elusivecodes/FrostUI) lib
 - [FrostCore](https://github.com/elusivecodes/FrostCore)
 - [FrostDOM](https://github.com/elusivecodes/FrostDOM)
 - [FrostUI](https://github.com/elusivecodes/FrostUI)
+- [FrostDateTime](https://github.com/elusivecodes/FrostDateTime)
 
 **CSS**
 
@@ -30,6 +31,7 @@ It is built on top of the [FrostUI](https://github.com/elusivecodes/FrostUI) lib
 
 ```html
 <script type="text/javascript" src="/path/to/frost-ui-bundle.min.js"></script>
+<script type="text/javascript" src="/path/to/frost-datetime.min.js"></script>
 <script type="text/javascript" src="/path/to/frost-ui-datetimepicker.min.js"></script>
 ```
 
