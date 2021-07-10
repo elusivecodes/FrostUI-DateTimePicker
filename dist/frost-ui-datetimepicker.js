@@ -1,5 +1,5 @@
 /**
- * FrostUI-DateTimePicker v1.0.9
+ * FrostUI-DateTimePicker v1.0.10
  * https://github.com/elusivecodes/FrostUI-DateTimePicker
  */
 (function(global, factory) {
@@ -27,7 +27,6 @@
     }
 
     const Core = window.Core;
-    const DOM = window.DOM;
     const dom = window.dom;
     const UI = window.UI;
     const DateTime = window.DateTime;
@@ -121,6 +120,12 @@
          * Dispose the DateTimePicker.
          */
         dispose() {
+            this._date = null;
+            this._dates = null;
+            this._minDate = null;
+            this._maxDate = null;
+            this._viewDate = null;
+
             if (this._native) {
                 return this._disposeNative();
             }
@@ -142,11 +147,6 @@
             this._container = null;
             this._dateContainer = null;
             this._timeContainer = null;
-            this._date = null;
-            this._dates = null;
-            this._minDate = null;
-            this._maxDate = null;
-            this._viewDate = null;
 
             super.dispose();
         }
@@ -341,10 +341,6 @@
             } else {
                 date = this._parseDate(date);
                 this._setDate(date);
-            }
-
-            if (this._native && this._date) {
-                this._updateNativeDate();
             }
 
             return this;

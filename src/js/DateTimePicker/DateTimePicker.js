@@ -86,6 +86,12 @@ class DateTimePicker extends UI.BaseComponent {
      * Dispose the DateTimePicker.
      */
     dispose() {
+        this._date = null;
+        this._dates = null;
+        this._minDate = null;
+        this._maxDate = null;
+        this._viewDate = null;
+
         if (this._native) {
             return this._disposeNative();
         }
@@ -107,11 +113,6 @@ class DateTimePicker extends UI.BaseComponent {
         this._container = null;
         this._dateContainer = null;
         this._timeContainer = null;
-        this._date = null;
-        this._dates = null;
-        this._minDate = null;
-        this._maxDate = null;
-        this._viewDate = null;
 
         super.dispose();
     }
