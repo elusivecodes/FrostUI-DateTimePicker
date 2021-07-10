@@ -1,5 +1,5 @@
 /**
- * FrostUI-DateTimePicker v1.0.8
+ * FrostUI-DateTimePicker v1.0.9
  * https://github.com/elusivecodes/FrostUI-DateTimePicker
  */
 (function(global, factory) {
@@ -886,21 +886,6 @@
 
 
         /**
-         * Refresh the toggle disabled.
-         */
-        _refreshDisabled() {
-            if (this._native) {
-                return;
-            }
-
-            if (dom.is(this._node, ':disabled')) {
-                dom.addClass(this._menuNode, this.constructor.classes.disabled);
-            } else {
-                dom.removeClass(this._menuNode, this.constructor.classes.disabled);
-            }
-        },
-
-        /**
          * Parse DateTime objects from an array of values.
          * @param {array} dates The dates to parse.
          * @return {array} An array of parsed DateTime objects.
@@ -971,6 +956,21 @@
 
             if (!this._viewDate) {
                 this._viewDate = this._now();
+            }
+        },
+
+        /**
+         * Refresh the toggle disabled.
+         */
+        _refreshDisabled() {
+            if (this._native) {
+                return;
+            }
+
+            if (dom.is(this._node, ':disabled')) {
+                dom.addClass(this._menuNode, this.constructor.classes.disabled);
+            } else {
+                dom.removeClass(this._menuNode, this.constructor.classes.disabled);
             }
         },
 
@@ -1089,7 +1089,7 @@
          * Attach events for a native DateTimePicker.
          */
         _eventsNative() {
-            dom.addEvent(this._nativeInput, 'change', _ => {
+            dom.addEvent(this._nativeInput, 'change.ui.datetimepicker', _ => {
                 const value = dom.getValue(this._nativeInput);
                 const date = value ?
                     DateTime.fromFormat(this._nativeFormat, value) :

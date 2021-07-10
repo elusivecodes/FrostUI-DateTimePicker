@@ -254,21 +254,6 @@ Object.assign(DateTimePicker.prototype, {
 
 
     /**
-     * Refresh the toggle disabled.
-     */
-    _refreshDisabled() {
-        if (this._native) {
-            return;
-        }
-
-        if (dom.is(this._node, ':disabled')) {
-            dom.addClass(this._menuNode, this.constructor.classes.disabled);
-        } else {
-            dom.removeClass(this._menuNode, this.constructor.classes.disabled);
-        }
-    },
-
-    /**
      * Parse DateTime objects from an array of values.
      * @param {array} dates The dates to parse.
      * @return {array} An array of parsed DateTime objects.
@@ -339,6 +324,21 @@ Object.assign(DateTimePicker.prototype, {
 
         if (!this._viewDate) {
             this._viewDate = this._now();
+        }
+    },
+
+    /**
+     * Refresh the toggle disabled.
+     */
+    _refreshDisabled() {
+        if (this._native) {
+            return;
+        }
+
+        if (dom.is(this._node, ':disabled')) {
+            dom.addClass(this._menuNode, this.constructor.classes.disabled);
+        } else {
+            dom.removeClass(this._menuNode, this.constructor.classes.disabled);
         }
     },
 

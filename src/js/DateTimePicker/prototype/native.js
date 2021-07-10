@@ -24,7 +24,7 @@ Object.assign(DateTimePicker.prototype, {
      * Attach events for a native DateTimePicker.
      */
     _eventsNative() {
-        dom.addEvent(this._nativeInput, 'change', _ => {
+        dom.addEvent(this._nativeInput, 'change.ui.datetimepicker', _ => {
             const value = dom.getValue(this._nativeInput);
             const date = value ?
                 DateTime.fromFormat(this._nativeFormat, value) :
