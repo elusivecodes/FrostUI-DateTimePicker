@@ -132,8 +132,6 @@ Object.assign(DateTimePicker.prototype, {
             class: this.constructor.classes.menu
         });
 
-        this.constructor._triggers.set(this._menuNode, this._node);
-
         this._container = dom.create('div', {
             class: this.constructor.classes.container
         });

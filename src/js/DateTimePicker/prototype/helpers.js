@@ -198,10 +198,14 @@ Object.assign(DateTimePicker.prototype, {
 
     /**
      * Create a new DateTime object from format.
-     * @returns {DateTime} The new DateTime.
+     * @returns {DateTime|null} The new DateTime.
      */
     _makeDate(date) {
-        return DateTime.fromFormat(this._settings.format, date, this._dateOptions);
+        try {
+            return DateTime.fromFormat(this._settings.format, date, this._dateOptions);
+        } catch (e) {
+            return null;
+        }
     },
 
     /**
@@ -353,7 +357,6 @@ Object.assign(DateTimePicker.prototype, {
 
         if (date) {
             this._clampStepping(date);
-
             this._viewDate = date.clone();
         }
 

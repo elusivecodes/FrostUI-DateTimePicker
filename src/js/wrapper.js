@@ -1,5 +1,5 @@
 /**
- * FrostUI-DateTimePicker v1.0.12
+ * FrostUI-DateTimePicker v1.0.13
  * https://github.com/elusivecodes/FrostUI-DateTimePicker
  */
 (function(global, factory) {

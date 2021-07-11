@@ -87,9 +87,6 @@ DateTimePicker.defaults = {
             case 'Enter':
                 e.preventDefault();
                 return this.toggle();
-            case 'Escape':
-            case 'Tab':
-                return this.hide();
             default:
                 return;
         }
@@ -101,6 +98,15 @@ DateTimePicker.defaults = {
         if (!date || this._isValid(date, 'second')) {
             this._setDate(date);
         }
+    },
+    keyUp(e) {
+        if (e.code !== 'Escape' || !dom.isConnected(this._menuNode)) {
+            return;
+        }
+
+        e.stopPropagation();
+
+        this.hide();
     },
     multiDate: false,
     multiDateSeparator: ',',
@@ -173,8 +179,6 @@ DateTimePicker._formatTokenRegExp = /([a-z])\1*|'[^']*'/ig;
 DateTimePicker._dayPeriods = {};
 DateTimePicker._defaultDateFormats = {};
 DateTimePicker._defaultFormats = {};
-
-DateTimePicker._triggers = new WeakMap();
 
 UI.initComponent('datetimepicker', DateTimePicker);
 
