@@ -1,5 +1,5 @@
 /**
- * FrostUI-DateTimePicker v1.0.13
+ * FrostUI-DateTimePicker v1.0.14
  * https://github.com/elusivecodes/FrostUI-DateTimePicker
  */
 (function(global, factory) {
@@ -209,8 +209,8 @@
 
             this._animating = true;
 
-            if (!this._settings.appendTo) {
-                dom.append(document.body, this._menuNode);
+            if (this._settings.appendTo) {
+                dom.append(this._settings.appendTo, this._menuNode);
             } else {
                 dom.after(this._node, this._menuNode);
             }
