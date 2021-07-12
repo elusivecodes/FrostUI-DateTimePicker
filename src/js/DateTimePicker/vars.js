@@ -12,8 +12,8 @@
 // DateTimePicker default options
 DateTimePicker.defaults = {
     format: null,
-    locale: DateTime.defaultLocale,
-    timeZone: DateTime.defaultTimeZone,
+    locale: DateTime._defaultLocale,
+    timeZone: DateTime._defaultTimeZone,
     defaultDate: null,
     minDate: null,
     maxDate: null,
@@ -86,6 +86,7 @@ DateTimePicker.defaults = {
                 break;
             case 'Enter':
                 e.preventDefault();
+
                 return this.toggle();
             default:
                 return;
@@ -112,8 +113,6 @@ DateTimePicker.defaults = {
     multiDateSeparator: ',',
     useCurrent: false,
     keepOpen: false,
-    showOnFocus: true,
-    focusOnShow: true,
     inline: false,
     sideBySide: false,
     keepInvalid: false,

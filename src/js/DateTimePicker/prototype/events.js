@@ -196,8 +196,8 @@ Object.assign(DateTimePicker.prototype, {
             }
         });
 
-        dom.addEvent(this._node, 'blur.ui.datetimepicker', _ => {
-            if (dom.isSame(this._node, document.activeElement)) {
+        dom.addEvent(this._node, 'change.ui.datetimepicker', e => {
+            if (!e.isTrusted) {
                 return;
             }
 
@@ -226,21 +226,35 @@ Object.assign(DateTimePicker.prototype, {
             } else {
                 this._setDate(null);
             }
+        });
+
+        if (this._settings.inline) {
+            return;
+        }
+
+        dom.addEvent(this._node, 'blur.ui.datetimepicker', _ => {
+            if (dom.isSame(this._node, document.activeElement)) {
+                return;
+            }
+
+            dom.stop(this._menuNode);
+            this._animating = false;
 
             this.hide();
         });
 
-        if (this._settings.showOnFocus) {
-            dom.addEvent(this._node, 'focus.ui.datetimepicker', _ => {
-                if (!dom.isSame(this._node, document.activeElement)) {
-                    return;
-                }
+        dom.addEvent(this._node, 'focus.ui.datetimepicker', _ => {
+            if (!dom.isSame(this._node, document.activeElement)) {
+                return;
+            }
 
-                this.show();
-            });
-        }
+            dom.stop(this._menuNode);
+            this._animating = false;
 
-        if (!this._settings.inline && !this._settings.multiDate) {
+            this.show();
+        });
+
+        if (!this._settings.multiDate) {
             const keyDown = this._settings.keyDown.bind(this);
             dom.addEvent(this._node, 'keydown.ui.datetimepicker', e => {
                 keyDown.bind(this)(e);

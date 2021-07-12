@@ -1,5 +1,5 @@
 /**
- * FrostUI-DateTimePicker v1.0.14
+ * FrostUI-DateTimePicker v1.1.0
  * https://github.com/elusivecodes/FrostUI-DateTimePicker
  */
 (function(global, factory) {
@@ -221,10 +221,6 @@
                 duration: this._settings.duration
             }).then(_ => {
                 dom.triggerEvent(this._node, 'shown.ui.datetimepicker');
-
-                if (this._settings.focusOnShow) {
-                    dom.focus(this._node);
-                }
             }).catch(_ => { }).finally(_ => {
                 this._animating = false;
             });
@@ -570,8 +566,8 @@
                 }
             });
 
-            dom.addEvent(this._node, 'blur.ui.datetimepicker', _ => {
-                if (dom.isSame(this._node, document.activeElement)) {
+            dom.addEvent(this._node, 'change.ui.datetimepicker', e => {
+                if (!e.isTrusted) {
                     return;
                 }
 
@@ -600,21 +596,35 @@
                 } else {
                     this._setDate(null);
                 }
+            });
+
+            if (this._settings.inline) {
+                return;
+            }
+
+            dom.addEvent(this._node, 'blur.ui.datetimepicker', _ => {
+                if (dom.isSame(this._node, document.activeElement)) {
+                    return;
+                }
+
+                dom.stop(this._menuNode);
+                this._animating = false;
 
                 this.hide();
             });
 
-            if (this._settings.showOnFocus) {
-                dom.addEvent(this._node, 'focus.ui.datetimepicker', _ => {
-                    if (!dom.isSame(this._node, document.activeElement)) {
-                        return;
-                    }
+            dom.addEvent(this._node, 'focus.ui.datetimepicker', _ => {
+                if (!dom.isSame(this._node, document.activeElement)) {
+                    return;
+                }
 
-                    this.show();
-                });
-            }
+                dom.stop(this._menuNode);
+                this._animating = false;
 
-            if (!this._settings.inline && !this._settings.multiDate) {
+                this.show();
+            });
+
+            if (!this._settings.multiDate) {
                 const keyDown = this._settings.keyDown.bind(this);
                 dom.addEvent(this._node, 'keydown.ui.datetimepicker', e => {
                     keyDown.bind(this)(e);
@@ -993,12 +1003,14 @@
             }
 
             dom.triggerEvent(this._node, 'change.ui.datetimepicker', {
-                old: this._date ?
-                    this._date.clone() :
-                    null,
-                new: date ?
-                    date.clone() :
-                    null
+                detail: {
+                    old: this._date ?
+                        this._date.clone() :
+                        null,
+                    new: date ?
+                        date.clone() :
+                        null
+                }
             });
 
             this._date = date;
@@ -2388,8 +2400,8 @@
     // DateTimePicker default options
     DateTimePicker.defaults = {
         format: null,
-        locale: DateTime.defaultLocale,
-        timeZone: DateTime.defaultTimeZone,
+        locale: DateTime._defaultLocale,
+        timeZone: DateTime._defaultTimeZone,
         defaultDate: null,
         minDate: null,
         maxDate: null,
@@ -2462,6 +2474,7 @@
                     break;
                 case 'Enter':
                     e.preventDefault();
+
                     return this.toggle();
                 default:
                     return;
@@ -2488,8 +2501,6 @@
         multiDateSeparator: ',',
         useCurrent: false,
         keepOpen: false,
-        showOnFocus: true,
-        focusOnShow: true,
         inline: false,
         sideBySide: false,
         keepInvalid: false,

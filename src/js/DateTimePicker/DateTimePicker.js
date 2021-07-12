@@ -187,10 +187,6 @@ class DateTimePicker extends UI.BaseComponent {
             duration: this._settings.duration
         }).then(_ => {
             dom.triggerEvent(this._node, 'shown.ui.datetimepicker');
-
-            if (this._settings.focusOnShow) {
-                dom.focus(this._node);
-            }
         }).catch(_ => { }).finally(_ => {
             this._animating = false;
         });

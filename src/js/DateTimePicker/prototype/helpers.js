@@ -361,12 +361,14 @@ Object.assign(DateTimePicker.prototype, {
         }
 
         dom.triggerEvent(this._node, 'change.ui.datetimepicker', {
-            old: this._date ?
-                this._date.clone() :
-                null,
-            new: date ?
-                date.clone() :
-                null
+            detail: {
+                old: this._date ?
+                    this._date.clone() :
+                    null,
+                new: date ?
+                    date.clone() :
+                    null
+            }
         });
 
         this._date = date;
