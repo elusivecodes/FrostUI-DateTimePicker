@@ -1,5 +1,5 @@
 /**
- * FrostUI-DateTimePicker v1.1.1
+ * FrostUI-DateTimePicker v1.1.2
  * https://github.com/elusivecodes/FrostUI-DateTimePicker
  */
 (function(global, factory) {
@@ -731,6 +731,30 @@
         },
 
         /**
+         * Format a date.
+         * @param {DateTime} [date] The date to format.
+         * @returns The formatted date.
+         */
+        _formatDate(date) {
+            if (!date) {
+                return '';
+            }
+
+            return date.format(this._settings.format);
+        },
+
+        /**
+         * Format multiple dates.
+         * @param {array} [dates] The dates to format.
+         * @returns The formatted dates.
+         */
+        _formatDates(dates) {
+            return dates
+                .map(date => date.format(this._settings.format))
+                .join(this._settings.multiDateSeparator);
+        },
+
+        /**
          * Determine whether a date is between min/max dates.
          * @param {DateTime} date The date to test.
          * @param {string} [granularity=second] The level of granularity to use for comparison.
@@ -997,8 +1021,15 @@
                 return;
             }
 
+            if (!this._settings.keepInvalid) {
+                this._clampDate(date);
+            }
+
+            if (this._formatDate(date) === dom.getValue(this._node)) {
+                return;
+            }
+
             if (date) {
-                this._clampStepping(date);
                 this._viewDate = date.clone();
             }
 
@@ -1028,11 +1059,26 @@
                 return;
             }
 
-            for (const date of dates) {
-                this._clampStepping(date);
-            }
+            dates = dates
+                .map(date => {
+                    this._clampDate(date);
 
-            dates = dates.sort((a, b) => a.isBefore(b) ? -1 : 1);
+                    return date;
+                })
+                .filter((date, index) => {
+                    for (const [otherIndex, other] of dates.entries()) {
+                        if (otherIndex > index && date.isSame(other)) {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                })
+                .sort((a, b) => a.isBefore(b) ? -1 : 1);
+
+            if (this._formatDates(dates) === dom.getValue(this._node)) {
+                return;
+            }
 
             dom.triggerEvent(this._node, 'change.ui.datetimepicker', {
                 old: this._dates.map(date => date.clone()),
@@ -1049,21 +1095,11 @@
          * Update the input value to the current date.
          */
         _updateValue() {
-            let value = '';
+            let value;
             if (this._settings.multiDate) {
-                if (!this._settings.keepInvalid) {
-                    for (const date of this._dates) {
-                        this._clampDate(date);
-                    }
-                }
-                value = this._dates
-                    .map(date => date.format(this._settings.format))
-                    .join(this._settings.multiDateSeparator);
-            } else if (this._date) {
-                if (!this._settings.keepInvalid) {
-                    this._clampDate(this._date);
-                }
-                value = this._date.format(this._settings.format);
+                value = this._formatDates(this._dates);
+            } else {
+                value = this._formatDate(this._date);
             }
 
             dom.setValue(this._node, value);
