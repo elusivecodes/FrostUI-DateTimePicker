@@ -148,6 +148,9 @@ class DateTimePicker extends UI.BaseComponent {
         dom.fadeOut(this._menuNode, {
             duration: this._settings.duration
         }).then(_ => {
+            this._popper.dispose();
+            this._popper = null;
+
             dom.detach(this._menuNode);
             dom.triggerEvent(this._node, 'hidden.ui.datetimepicker');
         }).catch(_ => { }).finally(_ => {
@@ -181,7 +184,17 @@ class DateTimePicker extends UI.BaseComponent {
             dom.after(this._node, this._menuNode);
         }
 
-        this.update();
+        this._popper = new UI.Popper(
+            this._menuNode,
+            {
+                reference: this._node,
+                placement: this._settings.placement,
+                position: this._settings.position,
+                fixed: this._settings.fixed,
+                spacing: this._settings.spacing,
+                minContact: this._settings.minContact
+            }
+        );
 
         dom.fadeIn(this._menuNode, {
             duration: this._settings.duration
@@ -209,7 +222,7 @@ class DateTimePicker extends UI.BaseComponent {
      * @returns {DateTimePicker} The DateTimePicker.
      */
     update() {
-        if (!this._native && !this._settings.inline) {
+        if (this._popper) {
             this._popper.update();
         }
 
