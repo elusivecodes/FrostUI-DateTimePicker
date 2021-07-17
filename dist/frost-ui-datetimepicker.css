@@ -7,7 +7,10 @@
   color: #121212;
   text-align: left;
   list-style: none;
-  user-select: none;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
   background-color: #fff;
   border: 1px solid rgba(0, 0, 0, 0.15);
 }
