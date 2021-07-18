@@ -1,5 +1,5 @@
 /**
- * FrostUI-DateTimePicker v1.1.4
+ * FrostUI-DateTimePicker v1.1.5
  * https://github.com/elusivecodes/FrostUI-DateTimePicker
  */
 (function(global, factory) {
@@ -135,13 +135,12 @@
                 this._popper = null;
             }
 
-            dom.removeEvent(this._node, 'focus.ui.datetimepicker');
+            dom.removeEvent(this._node, 'change.ui.datetimepicker')
             dom.removeEvent(this._node, 'blur.ui.datetimepicker');
-            dom.removeEvent(this._node, 'input.ui.datetimepicker')
+            dom.removeEvent(this._node, 'focus.ui.datetimepicker');
             dom.removeEvent(this._node, 'keydown.ui.datetimepicker')
+            dom.removeEvent(this._node, 'keyup.ui.datetimepicker')
             dom.remove(this._menuNode);
-
-            this.constructor._triggers.delete(this._menuNode);
 
             this._menuNode = null;
             this._container = null;

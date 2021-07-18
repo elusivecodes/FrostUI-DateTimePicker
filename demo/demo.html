@@ -28,7 +28,7 @@
             <label for="dtpDefault">Default</label>
             <div class="input-group input-group-filled">
                 <div class="form-input">
-                    <input class="input-filled" type="text" id="dtpDefault" placeholder="Placeholder" autocomplete="off" />
+                    <input class="input-filled" id="dtpDefault" type="text" placeholder="Placeholder" autocomplete="off" />
                     <div class="ripple-line"></div>
                 </div>
                 <label class="btn ripple btn-outline-dark fs-5" for="dtpDefault">
@@ -42,7 +42,7 @@
             <label for="dtpLocale">Locale</label>
             <div class="input-group input-group-filled">
                 <div class="form-input">
-                    <input class="input-filled" type="text" id="dtpLocale" placeholder="Placeholder" autocomplete="off" data-ui-locale="ru" />
+                    <input class="input-filled" id="dtpLocale" data-ui-locale="ru" type="text" placeholder="Placeholder" autocomplete="off" />
                     <div class="ripple-line"></div>
                 </div>
                 <label class="btn ripple btn-outline-dark fs-5" for="dtpLocale">
@@ -56,7 +56,7 @@
             <label for="dtpTime">Time Only</label>
             <div class="input-group input-group-filled">
                 <div class="form-input">
-                    <input class="input-filled" type="text" id="dtpTime" placeholder="Placeholder" autocomplete="off" data-ui-format="hh:mm a" />
+                    <input class="input-filled" id="dtpTime" data-ui-format="hh:mm a" type="text" placeholder="Placeholder" autocomplete="off" />
                     <div class="ripple-line"></div>
                 </div>
                 <label class="btn ripple btn-outline-dark fs-5" for="dtpTime">
@@ -70,7 +70,7 @@
             <label for="dtpDate">Date Only</label>
             <div class="input-group input-group-filled">
                 <div class="form-input">
-                    <input class="input-filled" type="text" id="dtpDate" placeholder="Placeholder" autocomplete="off" data-ui-format="dd/MM/yyyy" />
+                    <input class="input-filled" id="dtpDate" data-ui-format="dd/MM/yyyy" type="text" placeholder="Placeholder" autocomplete="off" />
                     <div class="ripple-line"></div>
                 </div>
                 <label class="btn ripple btn-outline-dark fs-5" for="dtpDate">
@@ -84,7 +84,7 @@
             <label for="dtpMulti">Multi-Date</label>
             <div class="input-group input-group-filled">
                 <div class="form-input">
-                    <input class="input-filled" type="text" id="dtpMulti" placeholder="Placeholder" autocomplete="off" data-ui-multi-date="true" />
+                    <input class="input-filled" id="dtpMulti" data-ui-multi-date="true" type="text" placeholder="Placeholder" autocomplete="off" />
                     <div class="ripple-line"></div>
                 </div>
                 <label class="btn ripple btn-outline-dark fs-5" for="dtpMulti">
@@ -98,7 +98,7 @@
             <label for="dtpDisabledDates">Disabled Dates</label>
             <div class="input-group input-group-filled">
                 <div class="form-input">
-                    <input class="input-filled" type="text" id="dtpDisabledDates" placeholder="Placeholder" autocomplete="off" />
+                    <input class="input-filled" id="dtpDisabledDates" type="text" placeholder="Placeholder" autocomplete="off" />
                     <div class="ripple-line"></div>
                 </div>
                 <label class="btn ripple btn-outline-dark fs-5" for="dtpDisabledDates">
@@ -112,7 +112,7 @@
             <label for="dtpDisabledDays">Disabled Days</label>
             <div class="input-group input-group-filled">
                 <div class="form-input">
-                    <input class="input-filled" type="text" id="dtpDisabledDays" placeholder="Placeholder" autocomplete="off" />
+                    <input class="input-filled" id="dtpDisabledDays" type="text" placeholder="Placeholder" autocomplete="off" />
                     <div class="ripple-line"></div>
                 </div>
                 <label class="btn ripple btn-outline-dark fs-5" for="dtpDisabledDays">
@@ -126,7 +126,7 @@
             <label for="dtpMinMax">Min/Max Dates</label>
             <div class="input-group input-group-filled">
                 <div class="form-input">
-                    <input class="input-filled" type="text" id="dtpMinMax" placeholder="Placeholder" autocomplete="off" />
+                    <input class="input-filled" id="dtpMinMax" type="text" placeholder="Placeholder" autocomplete="off" />
                     <div class="ripple-line"></div>
                 </div>
                 <label class="btn ripple btn-outline-dark fs-5" for="dtpMinMax">
@@ -140,7 +140,7 @@
             <label for="dtpMinView">Min View</label>
             <div class="input-group input-group-filled">
                 <div class="form-input">
-                    <input class="input-filled" type="text" id="dtpMinView" placeholder="Placeholder" autocomplete="off" data-ui-format="MM/yyyy" data-ui-min-view="months" />
+                    <input class="input-filled" id="dtpMinView" data-ui-format="MM/yyyy" data-ui-min-view="months" type="text" placeholder="Placeholder" autocomplete="off" />
                     <div class="ripple-line"></div>
                 </div>
                 <label class="btn ripple btn-outline-dark fs-5" for="dtpMinView">
@@ -153,14 +153,14 @@
         <div class="mb-4">
             <label for="dtpInline">Inline</label>
             <div class="form-input">
-                <input type="text" class="input-filled" id="dtpInline" data-ui-inline="true" data-ui-side-by-side="true" />
+                <input class="input-filled" id="dtpInline" data-ui-inline="true" data-ui-side-by-side="true" type="text" />
                 <div class="ripple-line"></div>
             </div>
         </div>
         <div class="mb-4">
             <label for="dtpInlineDisabled">Inline Disabled</label>
             <div class="form-input">
-                <input type="text" class="input-filled" id="dtpInlineDisabled" data-ui-inline="true" data-ui-side-by-side="true" disabled />
+                <input class="input-filled" id="dtpInlineDisabled" data-ui-inline="true" data-ui-side-by-side="true" type="text" disabled />
                 <div class="ripple-line"></div>
             </div>
         </div>
@@ -180,7 +180,7 @@
                         <label for="dtpModal">Default</label>
                         <div class="input-group input-group-filled">
                             <div class="form-input">
-                                <input class="input-filled" type="text" id="dtpModal" placeholder="Placeholder" autocomplete="off" />
+                                <input class="input-filled" id="dtpModal" type="text" placeholder="Placeholder" autocomplete="off" />
                                 <div class="ripple-line"></div>
                             </div>
                             <label class="btn ripple btn-outline-dark fs-5" for="dtpModal">
@@ -191,7 +191,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-success ripple mb-0" type="button">Save</button>
+                        <button class="btn btn-success ripple mb-0" data-ui-dismiss="modal" type="button">Save</button>
                         <button class="btn btn-secondary ripple mb-0" data-ui-dismiss="modal" type="button">Cancel</button>
                     </div>
                 </div>
