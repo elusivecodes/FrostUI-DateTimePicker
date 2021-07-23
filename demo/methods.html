@@ -25,38 +25,116 @@
     </svg>
     <div class="container pt-5">
         <div class="mb-4">
-            <label for="dtpDispose">Default</label>
+            <label for="dtpDefault">Default</label>
             <div class="input-group input-group-filled">
                 <div class="form-input">
-                    <input class="input-filled" id="dtpDispose" type="text" placeholder="Placeholder" autocomplete="off" />
+                    <input class="input-filled" id="dtpDefault" type="text" placeholder="Placeholder" autocomplete="off" />
                     <div class="ripple-line"></div>
                 </div>
-                <label class="btn ripple btn-outline-dark fs-5" for="dtpDispose">
+                <label class="btn ripple btn-outline-dark fs-5" for="dtpDefault">
                     <svg width="1em" height="1em">
                         <use xlink:href="#date"></use>
                     </svg>
                 </label>
             </div>
             <div class="mt-1">
-                <button class="btn btn-danger ripple mb-0" id="dtpDisposeBtn" type="button">Dispose</button>
-                <button class="btn btn-primary ripple mb-0" id="dtpInitBtn" type="button">Init</button>
+                <div class="btn-group">
+                    <button class="btn btn-primary ripple mb-0" id="dtpInit" type="button">Init</button>
+                    <button class="btn btn-danger ripple mb-0" id="dtpDispose" type="button">Dispose</button>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-success ripple mb-0" id="dtpEnable" type="button">Enable</button>
+                    <button class="btn btn-warning ripple mb-0" id="dtpDisable" type="button">Disable</button>
+                </div>
             </div>
+            <div class="mt-1">
+                <button class="btn btn-secondary ripple mb-0" id="dtpGetDate" type="button">Get Date</button>
+                <button class="btn btn-secondary ripple mb-0" id="dtpGetMaxDate" type="button">Get Max Date</button>
+                <button class="btn btn-secondary ripple mb-0" id="dtpGetMinDate" type="button">Get Min Date</button>
+                <button class="btn btn-secondary ripple mb-0" id="dtpGetViewDate" type="button">Get View Date</button>
+            </div>
+            <div class="mt-1">
+                <button class="btn btn-secondary ripple mb-0" id="dtpSetDate" type="button">Set Date (Now)</button>
+                <button class="btn btn-secondary ripple mb-0" id="dtpSetMaxDate" type="button">Set Max Date (+3 months)</button>
+                <button class="btn btn-secondary ripple mb-0" id="dtpSetMinDate" type="button">Set Min Date (-3 months)</button>
+                <button class="btn btn-secondary ripple mb-0" id="dtpSetViewDate" type="button">Set View Date (Now)</button>
+            </div>
+            <samp id="output"></samp>
         </div>
     </div>
     <script>
+        const dtpDefault = dom.findOne('#dtpDefault');
+        const dtpInit = dom.findOne('#dtpInit');
         const dtpDispose = dom.findOne('#dtpDispose');
-        const dtpDisposeBtn = dom.findOne('#dtpDisposeBtn');
-        const dtpInitBtn = dom.findOne('#dtpInitBtn');
+        const dtpEnable = dom.findOne('#dtpEnable');
+        const dtpDisable = dom.findOne('#dtpDisable');
+        const dtpGetDate = dom.findOne('#dtpGetDate');
+        const dtpGetMaxDate = dom.findOne('#dtpGetMaxDate');
+        const dtpGetMinDate = dom.findOne('#dtpGetMinDate');
+        const dtpGetViewDate = dom.findOne('#dtpGetViewDate');
+        const dtpSetDate = dom.findOne('#dtpSetDate');
+        const dtpSetMaxDate = dom.findOne('#dtpSetMaxDate');
+        const dtpSetMinDate = dom.findOne('#dtpSetMinDate');
+        const dtpSetViewDate = dom.findOne('#dtpSetViewDate');
+        const output = dom.findOne('#output');
 
-        UI.DateTimePicker.init(dtpDispose);
-
-        dom.addEvent(dtpDisposeBtn, 'click', e => {
-            UI.DateTimePicker.init(dtpDispose).dispose();
+        dom.addEvent(dtpInit, 'click', e => {
+            UI.DateTimePicker.init(dtpDefault);
         });
 
-        dom.addEvent(dtpInitBtn, 'click', e => {
-            UI.DateTimePicker.init(dtpDispose);
+        dom.addEvent(dtpDispose, 'click', e => {
+            UI.DateTimePicker.init(dtpDefault).dispose();
         });
+
+        dom.addEvent(dtpEnable, 'click', e => {
+            UI.DateTimePicker.init(dtpDefault).enable();
+        });
+
+        dom.addEvent(dtpDisable, 'click', e => {
+            UI.DateTimePicker.init(dtpDefault).disable();
+        });
+
+        dom.addEvent(dtpGetDate, 'click', e => {
+            const date = UI.DateTimePicker.init(dtpDefault).getDate();
+            dom.setText(output, `Date: ${date}`);
+        });
+
+        dom.addEvent(dtpGetMaxDate, 'click', e => {
+            const date = UI.DateTimePicker.init(dtpDefault).getMaxDate();
+            dom.setText(output, `Max Date: ${date}`);
+        });
+
+        dom.addEvent(dtpGetMinDate, 'click', e => {
+            const date = UI.DateTimePicker.init(dtpDefault).getMinDate();
+            dom.setText(output, `Min Date: ${date}`);
+        });
+
+        dom.addEvent(dtpGetViewDate, 'click', e => {
+            const date = UI.DateTimePicker.init(dtpDefault).getViewDate();
+            dom.setText(output, `View Date: ${date}`);
+        });
+
+        dom.addEvent(dtpSetDate, 'click', e => {
+            const date = DateTime.now();
+            UI.DateTimePicker.init(dtpDefault).setDate(date);
+        });
+
+        dom.addEvent(dtpSetMaxDate, 'click', e => {
+            const date = DateTime.now().add(3, 'months');
+            UI.DateTimePicker.init(dtpDefault).setMaxDate(date);
+        });
+
+        dom.addEvent(dtpSetMinDate, 'click', e => {
+            const date = DateTime.now().sub(3, 'months');
+            UI.DateTimePicker.init(dtpDefault).setMinDate(date);
+        });
+
+        dom.addEvent(dtpSetViewDate, 'click', e => {
+            const date = DateTime.now();
+            UI.DateTimePicker.init(dtpDefault).setViewDate(date);
+        });
+
+        dom.triggerEvent(dtpInit, 'click');
     </script>
 </body>
 

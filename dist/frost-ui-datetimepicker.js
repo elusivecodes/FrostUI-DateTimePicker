@@ -1,5 +1,5 @@
 /**
- * FrostUI-DateTimePicker v1.1.5
+ * FrostUI-DateTimePicker v1.2.0
  * https://github.com/elusivecodes/FrostUI-DateTimePicker
  */
 (function(global, factory) {
@@ -277,7 +277,7 @@
          */
         getDate() {
             if (this._settings.multiDate) {
-                return this._dates;
+                return this._dates.map(date => date.clone());
             }
 
             if (!this._date) {
@@ -344,8 +344,12 @@
         setMaxDate(maxDate) {
             this._maxDate = this._parseDate(maxDate);
 
-            this._updateValue();
-            this._refresh();
+            const date = this.getDate();
+            if (this._settings.multiDate) {
+                this._setDates(date);
+            } else {
+                this._setDate(date);
+            }
 
             return this;
         },
@@ -358,8 +362,12 @@
         setMinDate(minDate) {
             this._minDate = this._parseDate(minDate);
 
-            this._updateValue();
-            this._refresh();
+            const date = this.getDate();
+            if (this._settings.multiDate) {
+                this._setDates(date);
+            } else {
+                this._setDate(date);
+            }
 
             return this;
         },
@@ -393,20 +401,6 @@
             dom.addEvent(this._menuNode, 'contextmenu.ui.datetimepicker', e => {
                 // prevent menu node from showing right click menu
                 e.preventDefault();
-            });
-
-            dom.addEvent(this._menuNode, 'mousedown.ui.datetimepicker', e => {
-                if (this._settings.inline) {
-                    return;
-                }
-
-                // prevent menu node from triggering blur event
-                e.preventDefault();
-            });
-
-            dom.addEvent(this._menuNode, 'click.ui.datetimepicker', e => {
-                // prevent menu node from closing modal
-                e.stopPropagation();
             });
 
             const showTime = _ => {
@@ -461,15 +455,17 @@
                             dom.getDataset(element, 'uiDate')
                         );
 
-                        if (this._isCurrent(tempDate)) {
-                            this._dates = this._dates.filter(date => !date.isSame(tempDate, 'day'));
+                        let dates;
+                        if (this._isCurrent(tempDate, 'day')) {
+                            dates = this._dates.filter(date => !this.constructor._isSameDay(date, tempDate));
                         } else {
-                            this._dates.push(tempDate);
+                            dates = this._dates.concat([tempDate])
+                                .sort((a, b) => this.constructor._isBeforeSecond(a, b) ? -1 : 1);
                         }
 
                         this._viewDate = tempDate.clone();
 
-                        this._setDates(this._dates);
+                        this._setDates(dates);
 
                         break;
                     case 'nextTime':
@@ -578,8 +574,8 @@
                 }
             });
 
-            dom.addEvent(this._node, 'change.ui.datetimepicker', e => {
-                if (!e.isTrusted) {
+            dom.addEvent(this._node, 'change.ui.datetimepicker', _ => {
+                if (this._noChange) {
                     return;
                 }
 
@@ -614,15 +610,14 @@
                 return;
             }
 
-            dom.addEvent(this._node, 'blur.ui.datetimepicker', _ => {
-                if (dom.isSame(this._node, document.activeElement)) {
-                    return;
-                }
+            dom.addEvent(this._menuNode, 'click.ui.datetimepicker', e => {
+                // prevent menu node from closing modal
+                e.stopPropagation();
+            });
 
-                dom.stop(this._menuNode);
-                this._animating = false;
-
-                this.hide();
+            dom.addEvent(this._menuNode, 'mousedown.ui.datetimepicker', e => {
+                // prevent menu node from triggering blur event
+                e.preventDefault();
             });
 
             dom.addEvent(this._node, 'focus.ui.datetimepicker', _ => {
@@ -636,16 +631,23 @@
                 this.show();
             });
 
+            dom.addEvent(this._node, 'blur.ui.datetimepicker', _ => {
+                if (dom.isSame(this._node, document.activeElement)) {
+                    return;
+                }
+
+                dom.stop(this._menuNode);
+                this._animating = false;
+
+                this.hide();
+            });
+
             if (!this._settings.multiDate) {
                 const keyDown = this._settings.keyDown.bind(this);
-                dom.addEvent(this._node, 'keydown.ui.datetimepicker', e => {
-                    keyDown.bind(this)(e);
-                });
+                dom.addEvent(this._node, 'keydown.ui.datetimepicker', keyDown);
 
                 const keyUp = this._settings.keyUp.bind(this);
-                dom.addEvent(this._node, 'keyup.ui.datetimepicker', e => {
-                    keyUp.bind(this)(e);
-                });
+                dom.addEvent(this._node, 'keyup.ui.datetimepicker', keyUp);
             }
         }
 
@@ -713,11 +715,11 @@
          * @param {DateTime} date The input date.
          */
         _clampDate(date) {
-            if (this._minDate && this._minDate.isAfter(date)) {
+            if (!this._isAfterMin(date)) {
                 date.setTimestamp(this._minDate.getTimestamp());
             }
 
-            if (this._maxDate && this._maxDate.isBefore(date)) {
+            if (!this._isBeforeMax(date)) {
                 date.setTimestamp(this._maxDate.getTimestamp());
             }
         },
@@ -769,43 +771,84 @@
         /**
          * Determine whether a date is between min/max dates.
          * @param {DateTime} date The date to test.
-         * @param {string} [granularity=second] The level of granularity to use for comparison.
+         * @param {string} [granularity] The level of granularity to use for comparison.
+         * @param {Boolean} [allowSame=false] Whether to also allow same check.
          * @return {Boolean} TRUE if the date is between min/max, otherwise FALSE.
          */
-        _isAfterMin(date, granularity = 'second') {
-            if (this._minDate && date.isBefore(this._minDate, granularity)) {
-                return false;
+        _isAfterMin(date, granularity, allowSame = false) {
+            if (!this._minDate) {
+                return true;
             }
 
-            return true;
+            switch (granularity) {
+                case 'day':
+                    return (allowSame && this.constructor._isSameDay(date, this._minDate)) ||
+                        this.constructor._isAfterDay(date, this._minDate);
+                case 'month':
+                    return (allowSame && this.constructor._isSameMonth(date, this._minDate)) ||
+                        this.constructor._isAfterMonth(date, this._minDate);
+                case 'year':
+                    return (allowSame && this.constructor._isSameYear(date, this._minDate)) ||
+                        this.constructor._isAfterYear(date, this._minDate);
+                default:
+                    return (allowSame && this.constructor._isSameSecond(date, this._minDate)) ||
+                        this.constructor._isAfterSecond(date, this._minDate);
+            }
         },
 
         /**
          * Determine whether a date is between min/max dates.
          * @param {DateTime} date The date to test.
-         * @param {string} [granularity=second] The level of granularity to use for comparison.
+         * @param {string} [granularity] The level of granularity to use for comparison.
+         * @param {Boolean} [allowSame=false] Whether to also allow same check.
          * @return {Boolean} TRUE if the date is between min/max, otherwise FALSE.
          */
-        _isBeforeMax(date, granularity = 'second') {
-            if (this._maxDate && date.isAfter(this._maxDate, granularity)) {
-                return false;
+        _isBeforeMax(date, granularity, allowSame = false) {
+            if (!this._maxDate) {
+                return true;
             }
 
-            return true;
+            switch (granularity) {
+                case 'day':
+                    return (allowSame && this.constructor._isSameDay(date, this._maxDate)) ||
+                        this.constructor._isBeforeDay(date, this._maxDate);
+                case 'month':
+                    return (allowSame && this.constructor._isSameMonth(date, this._maxDate)) ||
+                        this.constructor._isBeforeMonth(date, this._maxDate);
+                case 'year':
+                    return (allowSame && this.constructor._isSameYear(date, this._maxDate)) ||
+                        this.constructor._isBeforeYear(date, this._maxDate);
+                default:
+                    return (allowSame && this.constructor._isSameSecond(date, this._maxDate)) ||
+                        this.constructor._isBeforeSecond(date, this._maxDate);
+            }
         },
 
         /**
          * Determine whether a date is a "current" date.
          * @param {DateTime} date The date to test.
-         * @param {string} [granularity=day] The level of granularity to use for comparison.
+         * @param {string} [granularity] The level of granularity to use for comparison.
          * @return {Boolean} TRUE if the date is a "current" date, otherwise FALSE.
          */
-        _isCurrent(date, granularity = 'day') {
-            if (this._settings.multiDate) {
-                return !!this._dates.find(currentDate => currentDate.isSame(date, granularity));
+        _isCurrent(date, granularity) {
+            let method;
+            switch (granularity) {
+                case 'month':
+                    method = '_isSameMonth';
+                    break;
+                case 'year':
+                    method = '_isSameYear';
+                    break;
+                default:
+                    method = '_isSameDay';
+                    break;
             }
 
-            return this._date && this._date.isSame(date, granularity);
+            if (this._settings.multiDate) {
+                return !!this._dates.find(currentDate => this.constructor[method](date, currentDate));
+            }
+
+            return this._date && this.constructor[method](date, this._date);
         },
 
         /**
@@ -830,16 +873,13 @@
                 case 'day':
                     minMaxGranularity = granularity;
                     break;
-                default:
-                    minMaxGranularity = 'second';
-                    break;
             }
 
-            if (!this._isAfterMin(date, minMaxGranularity)) {
+            if (!this._isAfterMin(date, minMaxGranularity, true)) {
                 return false;
             }
 
-            if (!this._isBeforeMax(date, minMaxGranularity)) {
+            if (!this._isBeforeMax(date, minMaxGranularity, true)) {
                 return false;
             }
 
@@ -1001,7 +1041,7 @@
             }
 
             if (!this._viewDate && this._date) {
-                this._viewDate = this._date.clone();
+                this._viewDate = this.getDate();
             }
 
             if (!this._viewDate) {
@@ -1026,37 +1066,40 @@
 
         /**
          * Set the current date.
-         * @param {DateTime} date The input date.
+         * @param {DateTime|null} [date] The input date.
          */
         _setDate(date) {
             if (!this._isEditable()) {
                 return;
             }
 
-            if (!this._settings.keepInvalid) {
+            if (date) {
                 this._clampDate(date);
             }
 
-            if (this._formatDate(date) === dom.getValue(this._node)) {
-                return;
+            if (!this._settings.keepInvalid && date && !this._isValid(date)) {
+                date = null;
             }
 
-            if (date) {
-                this._viewDate = date.clone();
+            if (this._formatDate(date) === dom.getValue(this._node)) {
+                return this._refresh();
             }
+
+            this._noChange = true;
 
             dom.triggerEvent(this._node, 'change.ui.datetimepicker', {
                 detail: {
-                    old: this._date ?
-                        this._date.clone() :
-                        null,
-                    new: date ?
-                        date.clone() :
-                        null
+                    old: this.getDate(),
+                    new: date ? date.clone() : null
                 }
             });
 
+            this._noChange = false;
             this._date = date;
+
+            if (this._date) {
+                this._viewDate = this.getDate();
+            }
 
             this._updateValue();
             this._refresh();
@@ -1071,32 +1114,22 @@
                 return;
             }
 
-            dates = dates
-                .map(date => {
-                    this._clampDate(date);
-
-                    return date;
-                })
-                .filter((date, index) => {
-                    for (const [otherIndex, other] of dates.entries()) {
-                        if (otherIndex > index && date.isSame(other)) {
-                            return false;
-                        }
-                    }
-
-                    return true;
-                })
-                .sort((a, b) => a.isBefore(b) ? -1 : 1);
-
-            if (this._formatDates(dates) === dom.getValue(this._node)) {
-                return;
+            if (!this._settings.keepInvalid) {
+                dates = dates.filter(date => this._isValid(date));
             }
 
+            if (this._formatDates(dates) === dom.getValue(this._node)) {
+                return this._refresh();
+            }
+
+            this._noChange = true;
+
             dom.triggerEvent(this._node, 'change.ui.datetimepicker', {
-                old: this._dates.map(date => date.clone()),
+                old: this.getDate(),
                 new: dates.map(date => date.clone())
             });
 
+            this._noChange = false;
             this._dates = dates;
 
             this._updateValue();
@@ -2138,6 +2171,135 @@
             });
 
             dom.append(this._dateContainer, table);
+        }
+
+    });
+
+
+    /**
+     * DateTimePicker (Static) Comparisons
+     */
+
+    Object.assign(DateTimePicker, {
+
+        /**
+         * Test if a date is after another date (day).
+         * @param {DateTime} a The date to test.
+         * @param {DateTime} b The date to compare against.
+         * @returns {Boolean} TRUE if the date is after the other date, otherwise FALSE.
+         */
+        _isAfterDay(a, b) {
+            return this._isAfterMonth(a, b) || (this._isSameMonth(a, b) && a.getDate() > b.getDate());
+        },
+
+        /**
+         * Test if a date is after another date (month).
+         * @param {DateTime} a The date to test.
+         * @param {DateTime} b The date to compare against.
+         * @returns {Boolean} TRUE if the date is after the other date, otherwise FALSE.
+         */
+        _isAfterMonth(a, b) {
+            return this._isAfterYear(a, b) || (this._isSameYear(a, b) && a.getMonth() > b.getMonth());
+        },
+
+        /**
+         * Test if a date is after another date (second).
+         * @param {DateTime} a The date to test.
+         * @param {DateTime} b The date to compare against.
+         * @returns {Boolean} TRUE if the date is after the other date, otherwise FALSE.
+         */
+        _isAfterSecond(a, b) {
+            return a.getTimestamp() > b.getTimestamp();
+        },
+
+        /**
+         * Test if a date is after another date (year).
+         * @param {DateTime} a The date to test.
+         * @param {DateTime} b The date to compare against.
+         * @returns {Boolean} TRUE if the date is after the other date, otherwise FALSE.
+         */
+        _isAfterYear(a, b) {
+            return a.getYear() > b.getYear();
+        },
+
+        /**
+         * Test if a date is before another date (day).
+         * @param {DateTime} a The date to test.
+         * @param {DateTime} b The date to compare against.
+         * @returns {Boolean} TRUE if the date is before the other date, otherwise FALSE.
+         */
+        _isBeforeDay(a, b) {
+            return this._isBeforeMonth(a, b) || (this._isSameMonth(a, b) && a.getDate() < b.getDate());
+        },
+
+        /**
+         * Test if a date is before another date (month).
+         * @param {DateTime} a The date to test.
+         * @param {DateTime} b The date to compare against.
+         * @returns {Boolean} TRUE if the date is before the other date, otherwise FALSE.
+         */
+        _isBeforeMonth(a, b) {
+            return this._isBeforeYear(a, b) || (this._isSameYear(a, b) && a.getMonth() < b.getMonth());
+        },
+
+        /**
+         * Test if a date is before another date (second).
+         * @param {DateTime} a The date to test.
+         * @param {DateTime} b The date to compare against.
+         * @returns {Boolean} TRUE if the date is before the other date, otherwise FALSE.
+         */
+        _isBeforeSecond(a, b) {
+            return a.getTimestamp() < b.getTimestamp();
+        },
+
+        /**
+         * Test if a date is before another date (year).
+         * @param {DateTime} a The date to test.
+         * @param {DateTime} b The date to compare against.
+         * @returns {Boolean} TRUE if the date is before the other date, otherwise FALSE.
+         */
+        _isBeforeYear(a, b) {
+            return a.getYear() < b.getYear();
+        },
+
+        /**
+         * Test if a date is equal to another date (day).
+         * @param {DateTime} a The date to test.
+         * @param {DateTime} b The date to compare against.
+         * @returns {Boolean} TRUE if the date is equal to the other date, otherwise FALSE.
+         */
+        _isSameDay(a, b) {
+            return this._isSameMonth(a, b) && a.getDate() === b.getDate();
+        },
+
+        /**
+         * Test if a date is equal to another date (month).
+         * @param {DateTime} a The date to test.
+         * @param {DateTime} b The date to compare against.
+         * @returns {Boolean} TRUE if the date is equal to the other date, otherwise FALSE.
+         */
+        _isSameMonth(a, b) {
+            return this._isSameYear(a, b) && a.getMonth() === b.getMonth();
+        },
+
+        /**
+         * Test if a date is equal to another date (second).
+         * @param {DateTime} a The date to test.
+         * @param {DateTime} b The date to compare against.
+         * @returns {Boolean} TRUE if the date is equal to the other date, otherwise FALSE.
+         */
+        _isSameSecond(a, b) {
+            return a.getTimestamp() === b.getTimestamp();
+        },
+
+        /**
+         * Test if a date is equal to another date (year).
+         * @param {DateTime} a The date to test.
+         * @param {DateTime} b The date to compare against.
+         * @returns {Boolean} TRUE if the date is equal to the other date, otherwise FALSE.
+         */
+        _isSameYear(a, b) {
+            return a.getYear() === b.getYear();
         }
 
     });

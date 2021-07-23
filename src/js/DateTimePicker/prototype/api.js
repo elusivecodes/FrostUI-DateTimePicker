@@ -10,7 +10,7 @@ Object.assign(DateTimePicker.prototype, {
      */
     getDate() {
         if (this._settings.multiDate) {
-            return this._dates;
+            return this._dates.map(date => date.clone());
         }
 
         if (!this._date) {
@@ -77,8 +77,12 @@ Object.assign(DateTimePicker.prototype, {
     setMaxDate(maxDate) {
         this._maxDate = this._parseDate(maxDate);
 
-        this._updateValue();
-        this._refresh();
+        const date = this.getDate();
+        if (this._settings.multiDate) {
+            this._setDates(date);
+        } else {
+            this._setDate(date);
+        }
 
         return this;
     },
@@ -91,8 +95,12 @@ Object.assign(DateTimePicker.prototype, {
     setMinDate(minDate) {
         this._minDate = this._parseDate(minDate);
 
-        this._updateValue();
-        this._refresh();
+        const date = this.getDate();
+        if (this._settings.multiDate) {
+            this._setDates(date);
+        } else {
+            this._setDate(date);
+        }
 
         return this;
     },

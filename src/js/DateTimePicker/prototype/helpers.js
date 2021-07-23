@@ -59,11 +59,11 @@ Object.assign(DateTimePicker.prototype, {
      * @param {DateTime} date The input date.
      */
     _clampDate(date) {
-        if (this._minDate && this._minDate.isAfter(date)) {
+        if (!this._isAfterMin(date)) {
             date.setTimestamp(this._minDate.getTimestamp());
         }
 
-        if (this._maxDate && this._maxDate.isBefore(date)) {
+        if (!this._isBeforeMax(date)) {
             date.setTimestamp(this._maxDate.getTimestamp());
         }
     },
@@ -115,43 +115,84 @@ Object.assign(DateTimePicker.prototype, {
     /**
      * Determine whether a date is between min/max dates.
      * @param {DateTime} date The date to test.
-     * @param {string} [granularity=second] The level of granularity to use for comparison.
+     * @param {string} [granularity] The level of granularity to use for comparison.
+     * @param {Boolean} [allowSame=false] Whether to also allow same check.
      * @return {Boolean} TRUE if the date is between min/max, otherwise FALSE.
      */
-    _isAfterMin(date, granularity = 'second') {
-        if (this._minDate && date.isBefore(this._minDate, granularity)) {
-            return false;
+    _isAfterMin(date, granularity, allowSame = false) {
+        if (!this._minDate) {
+            return true;
         }
 
-        return true;
+        switch (granularity) {
+            case 'day':
+                return (allowSame && this.constructor._isSameDay(date, this._minDate)) ||
+                    this.constructor._isAfterDay(date, this._minDate);
+            case 'month':
+                return (allowSame && this.constructor._isSameMonth(date, this._minDate)) ||
+                    this.constructor._isAfterMonth(date, this._minDate);
+            case 'year':
+                return (allowSame && this.constructor._isSameYear(date, this._minDate)) ||
+                    this.constructor._isAfterYear(date, this._minDate);
+            default:
+                return (allowSame && this.constructor._isSameSecond(date, this._minDate)) ||
+                    this.constructor._isAfterSecond(date, this._minDate);
+        }
     },
 
     /**
      * Determine whether a date is between min/max dates.
      * @param {DateTime} date The date to test.
-     * @param {string} [granularity=second] The level of granularity to use for comparison.
+     * @param {string} [granularity] The level of granularity to use for comparison.
+     * @param {Boolean} [allowSame=false] Whether to also allow same check.
      * @return {Boolean} TRUE if the date is between min/max, otherwise FALSE.
      */
-    _isBeforeMax(date, granularity = 'second') {
-        if (this._maxDate && date.isAfter(this._maxDate, granularity)) {
-            return false;
+    _isBeforeMax(date, granularity, allowSame = false) {
+        if (!this._maxDate) {
+            return true;
         }
 
-        return true;
+        switch (granularity) {
+            case 'day':
+                return (allowSame && this.constructor._isSameDay(date, this._maxDate)) ||
+                    this.constructor._isBeforeDay(date, this._maxDate);
+            case 'month':
+                return (allowSame && this.constructor._isSameMonth(date, this._maxDate)) ||
+                    this.constructor._isBeforeMonth(date, this._maxDate);
+            case 'year':
+                return (allowSame && this.constructor._isSameYear(date, this._maxDate)) ||
+                    this.constructor._isBeforeYear(date, this._maxDate);
+            default:
+                return (allowSame && this.constructor._isSameSecond(date, this._maxDate)) ||
+                    this.constructor._isBeforeSecond(date, this._maxDate);
+        }
     },
 
     /**
      * Determine whether a date is a "current" date.
      * @param {DateTime} date The date to test.
-     * @param {string} [granularity=day] The level of granularity to use for comparison.
+     * @param {string} [granularity] The level of granularity to use for comparison.
      * @return {Boolean} TRUE if the date is a "current" date, otherwise FALSE.
      */
-    _isCurrent(date, granularity = 'day') {
-        if (this._settings.multiDate) {
-            return !!this._dates.find(currentDate => currentDate.isSame(date, granularity));
+    _isCurrent(date, granularity) {
+        let method;
+        switch (granularity) {
+            case 'month':
+                method = '_isSameMonth';
+                break;
+            case 'year':
+                method = '_isSameYear';
+                break;
+            default:
+                method = '_isSameDay';
+                break;
         }
 
-        return this._date && this._date.isSame(date, granularity);
+        if (this._settings.multiDate) {
+            return !!this._dates.find(currentDate => this.constructor[method](date, currentDate));
+        }
+
+        return this._date && this.constructor[method](date, this._date);
     },
 
     /**
@@ -176,16 +217,13 @@ Object.assign(DateTimePicker.prototype, {
             case 'day':
                 minMaxGranularity = granularity;
                 break;
-            default:
-                minMaxGranularity = 'second';
-                break;
         }
 
-        if (!this._isAfterMin(date, minMaxGranularity)) {
+        if (!this._isAfterMin(date, minMaxGranularity, true)) {
             return false;
         }
 
-        if (!this._isBeforeMax(date, minMaxGranularity)) {
+        if (!this._isBeforeMax(date, minMaxGranularity, true)) {
             return false;
         }
 
@@ -347,7 +385,7 @@ Object.assign(DateTimePicker.prototype, {
         }
 
         if (!this._viewDate && this._date) {
-            this._viewDate = this._date.clone();
+            this._viewDate = this.getDate();
         }
 
         if (!this._viewDate) {
@@ -372,37 +410,40 @@ Object.assign(DateTimePicker.prototype, {
 
     /**
      * Set the current date.
-     * @param {DateTime} date The input date.
+     * @param {DateTime|null} [date] The input date.
      */
     _setDate(date) {
         if (!this._isEditable()) {
             return;
         }
 
-        if (!this._settings.keepInvalid) {
+        if (date) {
             this._clampDate(date);
         }
 
-        if (this._formatDate(date) === dom.getValue(this._node)) {
-            return;
+        if (!this._settings.keepInvalid && date && !this._isValid(date)) {
+            date = null;
         }
 
-        if (date) {
-            this._viewDate = date.clone();
+        if (this._formatDate(date) === dom.getValue(this._node)) {
+            return this._refresh();
         }
+
+        this._noChange = true;
 
         dom.triggerEvent(this._node, 'change.ui.datetimepicker', {
             detail: {
-                old: this._date ?
-                    this._date.clone() :
-                    null,
-                new: date ?
-                    date.clone() :
-                    null
+                old: this.getDate(),
+                new: date ? date.clone() : null
             }
         });
 
+        this._noChange = false;
         this._date = date;
+
+        if (this._date) {
+            this._viewDate = this.getDate();
+        }
 
         this._updateValue();
         this._refresh();
@@ -417,32 +458,22 @@ Object.assign(DateTimePicker.prototype, {
             return;
         }
 
-        dates = dates
-            .map(date => {
-                this._clampDate(date);
-
-                return date;
-            })
-            .filter((date, index) => {
-                for (const [otherIndex, other] of dates.entries()) {
-                    if (otherIndex > index && date.isSame(other)) {
-                        return false;
-                    }
-                }
-
-                return true;
-            })
-            .sort((a, b) => a.isBefore(b) ? -1 : 1);
-
-        if (this._formatDates(dates) === dom.getValue(this._node)) {
-            return;
+        if (!this._settings.keepInvalid) {
+            dates = dates.filter(date => this._isValid(date));
         }
 
+        if (this._formatDates(dates) === dom.getValue(this._node)) {
+            return this._refresh();
+        }
+
+        this._noChange = true;
+
         dom.triggerEvent(this._node, 'change.ui.datetimepicker', {
-            old: this._dates.map(date => date.clone()),
+            old: this.getDate(),
             new: dates.map(date => date.clone())
         });
 
+        this._noChange = false;
         this._dates = dates;
 
         this._updateValue();

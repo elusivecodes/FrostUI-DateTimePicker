@@ -13,20 +13,6 @@ Object.assign(DateTimePicker.prototype, {
             e.preventDefault();
         });
 
-        dom.addEvent(this._menuNode, 'mousedown.ui.datetimepicker', e => {
-            if (this._settings.inline) {
-                return;
-            }
-
-            // prevent menu node from triggering blur event
-            e.preventDefault();
-        });
-
-        dom.addEvent(this._menuNode, 'click.ui.datetimepicker', e => {
-            // prevent menu node from closing modal
-            e.stopPropagation();
-        });
-
         const showTime = _ => {
             dom.setStyle(this._timeContainer, 'display', '');
             dom.squeezeIn(this._timeContainer, {
@@ -79,15 +65,17 @@ Object.assign(DateTimePicker.prototype, {
                         dom.getDataset(element, 'uiDate')
                     );
 
-                    if (this._isCurrent(tempDate)) {
-                        this._dates = this._dates.filter(date => !date.isSame(tempDate, 'day'));
+                    let dates;
+                    if (this._isCurrent(tempDate, 'day')) {
+                        dates = this._dates.filter(date => !this.constructor._isSameDay(date, tempDate));
                     } else {
-                        this._dates.push(tempDate);
+                        dates = this._dates.concat([tempDate])
+                            .sort((a, b) => this.constructor._isBeforeSecond(a, b) ? -1 : 1);
                     }
 
                     this._viewDate = tempDate.clone();
 
-                    this._setDates(this._dates);
+                    this._setDates(dates);
 
                     break;
                 case 'nextTime':
@@ -196,8 +184,8 @@ Object.assign(DateTimePicker.prototype, {
             }
         });
 
-        dom.addEvent(this._node, 'change.ui.datetimepicker', e => {
-            if (!e.isTrusted) {
+        dom.addEvent(this._node, 'change.ui.datetimepicker', _ => {
+            if (this._noChange) {
                 return;
             }
 
@@ -232,15 +220,14 @@ Object.assign(DateTimePicker.prototype, {
             return;
         }
 
-        dom.addEvent(this._node, 'blur.ui.datetimepicker', _ => {
-            if (dom.isSame(this._node, document.activeElement)) {
-                return;
-            }
+        dom.addEvent(this._menuNode, 'click.ui.datetimepicker', e => {
+            // prevent menu node from closing modal
+            e.stopPropagation();
+        });
 
-            dom.stop(this._menuNode);
-            this._animating = false;
-
-            this.hide();
+        dom.addEvent(this._menuNode, 'mousedown.ui.datetimepicker', e => {
+            // prevent menu node from triggering blur event
+            e.preventDefault();
         });
 
         dom.addEvent(this._node, 'focus.ui.datetimepicker', _ => {
@@ -254,16 +241,23 @@ Object.assign(DateTimePicker.prototype, {
             this.show();
         });
 
+        dom.addEvent(this._node, 'blur.ui.datetimepicker', _ => {
+            if (dom.isSame(this._node, document.activeElement)) {
+                return;
+            }
+
+            dom.stop(this._menuNode);
+            this._animating = false;
+
+            this.hide();
+        });
+
         if (!this._settings.multiDate) {
             const keyDown = this._settings.keyDown.bind(this);
-            dom.addEvent(this._node, 'keydown.ui.datetimepicker', e => {
-                keyDown.bind(this)(e);
-            });
+            dom.addEvent(this._node, 'keydown.ui.datetimepicker', keyDown);
 
             const keyUp = this._settings.keyUp.bind(this);
-            dom.addEvent(this._node, 'keyup.ui.datetimepicker', e => {
-                keyUp.bind(this)(e);
-            });
+            dom.addEvent(this._node, 'keyup.ui.datetimepicker', keyUp);
         }
     }
 
