@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en" data-ui-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FrostUI DateTimePicker</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/elusivecodes/frostui@latest/dist/frost-ui.css">
+    <link rel="stylesheet" href="../../dist/frost-ui-datetimepicker.css">
+    <script src="https://cdn.jsdelivr.net/gh/elusivecodes/frostui@latest/dist/frost-ui-bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/elusivecodes/frostdatetime@latest/dist/frost-datetime.js"></script>
+    <script src="../../dist/frost-ui-datetimepicker.js"></script>
+</head>
+
+<body>
+    <div class="container pt-5">
+        <div class="mb-4">
+            <label for="dtpDefault">Default</label>
+            <div class="form-input">
+                <input class="input-filled" id="dtpDefault" type="text" placeholder="Placeholder" autocomplete="off" />
+                <div class="ripple-line"></div>
+            </div>
+        </div>
+        <div class="mb-4">
+            <label for="dtpUseCurrent">Use Current</label>
+            <div class="form-input">
+                <input class="input-filled" id="dtpUseCurrent" data-ui-use-current="true" type="text" placeholder="Placeholder" autocomplete="off" />
+                <div class="ripple-line"></div>
+            </div>
+        </div>
+        <div class="mb-4">
+            <label for="dtpLocale">Locale</label>
+            <div class="form-input">
+                <input class="input-filled" id="dtpLocale" data-ui-locale="ru" data-ui-use-current="true" type="text" placeholder="Placeholder" autocomplete="off" />
+                <div class="ripple-line"></div>
+            </div>
+        </div>
+        <div class="mb-4">
+            <label for="dtpToolbar">Toolbar</label>
+            <div class="form-input">
+                <input class="input-filled" id="dtpToolbar" data-ui-show-toolbar="true" type="text" placeholder="Placeholder" autocomplete="off" />
+                <div class="ripple-line"></div>
+            </div>
+        </div>
+        <div class="mb-4">
+            <label for="dtpTime">Time Only</label>
+            <div class="form-input">
+                <input class="input-filled" id="dtpTime" data-ui-format="hh:mm a" data-ui-show-close="true" value="09:00 am" type="text" placeholder="Placeholder" autocomplete="off" />
+                <div class="ripple-line"></div>
+            </div>
+        </div>
+        <div class="mb-4">
+            <label for="dtpDate">Date Only</label>
+            <div class="form-input">
+                <input class="input-filled" id="dtpDate" data-ui-format="dd/MM/yyyy" value="01/01/2024" type="text" placeholder="Placeholder" autocomplete="off" />
+                <div class="ripple-line"></div>
+            </div>
+        </div>
+        <div class="mb-4">
+            <label for="dtpMulti">Multi-Date</label>
+            <div class="form-input">
+                <input class="input-filled" id="dtpMulti" data-ui-multi-date="true" data-ui-show-close="true" value="01/01/2024,08/01/2024" type="text" placeholder="Placeholder" autocomplete="off" />
+                <div class="ripple-line"></div>
+            </div>
+        </div>
+        <div class="mb-4">
+            <label for="dtpDisabledDates">Disabled Dates</label>
+            <div class="form-input">
+                <input class="input-filled" id="dtpDisabledDates" type="text" placeholder="Placeholder" autocomplete="off" />
+                <div class="ripple-line"></div>
+            </div>
+        </div>
+        <div class="mb-4">
+            <label for="dtpDisabledDays">Disabled Days</label>
+            <div class="form-input">
+                <input class="input-filled" id="dtpDisabledDays" type="text" placeholder="Placeholder" autocomplete="off" />
+                <div class="ripple-line"></div>
+            </div>
+        </div>
+        <div class="mb-4">
+            <label for="dtpDisabledTimes">Disabled Times</label>
+            <div class="form-input">
+                <input class="input-filled" id="dtpDisabledTimes" type="text" placeholder="Placeholder" autocomplete="off" />
+                <div class="ripple-line"></div>
+            </div>
+        </div>
+        <div class="mb-4">
+            <label for="dtpMinMax">Min/Max Dates</label>
+            <div class="form-input">
+                <input class="input-filled" id="dtpMinMax" type="text" placeholder="Placeholder" autocomplete="off" />
+                <div class="ripple-line"></div>
+            </div>
+        </div>
+        <div class="mb-4">
+            <label for="dtpMinuteStepping">Time Stepping</label>
+            <div class="form-input">
+                <input class="input-filled" id="dtpMinuteStepping" data-ui-minute-stepping="5" type="text" placeholder="Placeholder" autocomplete="off" />
+                <div class="ripple-line"></div>
+            </div>
+        </div>
+        <div class="mb-4">
+            <label for="dtpMonths">Month Selector</label>
+            <div class="form-input">
+                <input class="input-filled" id="dtpMonths" data-ui-format="MM/yyyy" type="text" placeholder="Placeholder" autocomplete="off" />
+                <div class="ripple-line"></div>
+            </div>
+        </div>
+        <div class="mb-4">
+            <label for="dtpYears">Year Selector</label>
+            <div class="form-input">
+                <input class="input-filled" id="dtpYears" data-ui-format="yyyy" type="text" placeholder="Placeholder" autocomplete="off" />
+                <div class="ripple-line"></div>
+            </div>
+        </div>
+        <div class="mb-4">
+            <label for="dtpModal">Force Modal</label>
+            <div class="form-input">
+                <input class="input-filled" id="dtpModal" data-ui-modal="true" data-ui-show-toolbar="true" type="text" placeholder="Placeholder" autocomplete="off" />
+                <div class="ripple-line"></div>
+            </div>
+        </div>
+        <div class="mb-4">
+            <label for="dtpModalTime">Force Modal Time Only</label>
+            <div class="form-input">
+                <input class="input-filled" id="dtpModalTime" data-ui-format="hh:mm a" data-ui-modal="true" type="text" placeholder="Placeholder" autocomplete="off" />
+                <div class="ripple-line"></div>
+            </div>
+        </div>
+        <div class="mb-4">
+            <label for="dtpModalDate">Force Modal Date Only</label>
+            <div class="form-input">
+                <input class="input-filled" id="dtpModalDate" data-ui-format="dd/MM/yyyy" data-ui-modal="true" type="text" placeholder="Placeholder" autocomplete="off" />
+                <div class="ripple-line"></div>
+            </div>
+        </div>
+        <div class="mb-4">
+            <label for="dtpInline">Inline</label>
+            <div class="form-input">
+                <input class="input-filled" id="dtpInline" data-ui-inline="true" data-ui-side-by-side="true" type="text" />
+                <div class="ripple-line"></div>
+            </div>
+        </div>
+        <div class="mb-4">
+            <label for="dtpInlineDisabled">Inline Disabled</label>
+            <div class="form-input">
+                <input class="input-filled" id="dtpInlineDisabled" data-ui-inline="true" data-ui-side-by-side="true" type="text" disabled />
+                <div class="ripple-line"></div>
+            </div>
+        </div>
+
+        <h4>Modal</h4>
+        <div class="mb-4">
+            <button class="btn btn-primary ripple" data-ui-toggle="modal" data-ui-target="#modal" type="button">Open Modal</button>
+        </div>
+        <div class="modal" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content shadow">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalTitle">Modal title</h5>
+                        <button class="btn-close" data-ui-dismiss="modal" type="button" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-4">
+                            <label for="modalDtpDefault">Default</label>
+                            <div class="form-input">
+                                <input class="input-filled" id="modalDtpDefault" type="text" placeholder="Placeholder" autocomplete="off" />
+                                <div class="ripple-line"></div>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="modalDtpModal">Force Modal</label>
+                            <div class="form-input">
+                                <input class="input-filled" id="modalDtpModal" data-ui-modal="true" data-ui-show-toolbar="true" type="text" placeholder="Placeholder" autocomplete="off" />
+                                <div class="ripple-line"></div>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="modalDtpInline">Inline</label>
+                            <div class="form-input">
+                                <input class="input-filled" id="modalDtpInline" data-ui-inline="true" data-ui-side-by-side="true" data-ui-vertical="true" type="text" placeholder="Placeholder" autocomplete="off" />
+                                <div class="ripple-line"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-success ripple mb-0" data-ui-dismiss="modal" type="button">Save</button>
+                        <button class="btn btn-secondary ripple mb-0" data-ui-dismiss="modal" type="button">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        UI.DateTimePicker.defaults.locale = 'en-AU';
+
+        const dtpDefault = $.findOne('#dtpDefault');
+        const dtpUseCurrent = $.findOne('#dtpUseCurrent');
+        const dtpLocale = $.findOne('#dtpLocale');
+        const dtpToolbar = $.findOne('#dtpToolbar');
+        const dtpTime = $.findOne('#dtpTime');
+        const dtpDate = $.findOne('#dtpDate');
+        const dtpMulti = $.findOne('#dtpMulti');
+        const dtpDisabledDates = $.findOne('#dtpDisabledDates');
+        const dtpDisabledDays = $.findOne('#dtpDisabledDays');
+        const dtpDisabledTimes = $.findOne('#dtpDisabledTimes');
+        const dtpMinMax = $.findOne('#dtpMinMax');
+        const dtpMinuteStepping = $.findOne('#dtpMinuteStepping');
+        const dtpMonths = $.findOne('#dtpMonths');
+        const dtpYears = $.findOne('#dtpYears');
+        const dtpModal = $.findOne('#dtpModal');
+        const dtpModalTime = $.findOne('#dtpModalTime');
+        const dtpModalDate = $.findOne('#dtpModalDate');
+        const dtpInline = $.findOne('#dtpInline');
+        const dtpInlineDisabled = $.findOne('#dtpInlineDisabled');
+        const modalDtpDefault = $.findOne('#modalDtpDefault');
+        const modalDtpModal = $.findOne('#modalDtpModal');
+        const modalDtpInline = $.findOne('#modalDtpInline');
+
+        UI.DateTimePicker.init(dtpDefault);
+        UI.DateTimePicker.init(dtpUseCurrent);
+        UI.DateTimePicker.init(dtpLocale);
+        UI.DateTimePicker.init(dtpToolbar);
+
+        UI.DateTimePicker.init(dtpTime, {
+            altFormats: [
+                'hh:mma',
+                'hh a',
+                'hha',
+                'HH'
+            ]
+        });
+
+        UI.DateTimePicker.init(dtpDate);
+        UI.DateTimePicker.init(dtpMulti);
+
+        UI.DateTimePicker.init(dtpDisabledDates, {
+            isValidDay: date => {
+                for (const amount of [3, 5, 9]) {
+                    const invalid = DateTime.now().add(amount, 'days');
+
+                    if (date.isSame(invalid, { granularity: 'day' })) {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+        });
+
+        UI.DateTimePicker.init(dtpDisabledDays, {
+            isValidDay: date => {
+                if ([0, 6].includes(date.getDay())) {
+                    return false;
+                }
+
+                return true;
+            }
+        });
+
+        UI.DateTimePicker.init(dtpDisabledTimes, {
+            isValidTime: date => {
+                if (date.getHours() < 8 || date.getHours() > 17) {
+                    return false;
+                }
+
+                return true;
+            }
+        });
+
+        UI.DateTimePicker.init(dtpMinMax, {
+            minDate: DateTime.now().sub(5, 'days'),
+            maxDate: DateTime.now().add(1, 'month')
+        });
+
+        UI.DateTimePicker.init(dtpMinuteStepping);
+        UI.DateTimePicker.init(dtpMonths);
+        UI.DateTimePicker.init(dtpYears);
+        UI.DateTimePicker.init(dtpModal);
+        UI.DateTimePicker.init(dtpModalTime);
+        UI.DateTimePicker.init(dtpModalDate);
+        UI.DateTimePicker.init(dtpInline);
+        UI.DateTimePicker.init(dtpInlineDisabled);
+        UI.DateTimePicker.init(modalDtpDefault);
+        UI.DateTimePicker.init(modalDtpModal);
+        UI.DateTimePicker.init(modalDtpInline);
+    </script>
+</body>
+
+</html>

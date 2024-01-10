@@ -1,49 +1,24 @@
-$spacing: 1rem !default;
-
-$disabled-opacity: .5 !default;
-
-// border
-$border-size: 1px !default;
-$border-style: solid !default;
-
-// color
-$white: #fff !default;
-$black: #000 !default;
-
-$color-variants: (
-    primary: #2b55d4
-) !default;
-
-$text-color: #121212 !default;
-
-$border-color: fade($black, .15) !default;
-
-// text
-$font-size-lg: 1.25rem !default;
-
-// z index
-$dropdown-z-index: 1000 !default;
-
 // datetimepicker
+$datetimepicker-z-index: 1000 !default;
 $datetimepicker-width: 300px !default;
 $datetimepicker-wide-width: 600px !default;
-$datetimepicker-color: $text-color !default;
-$datetimepicker-background-color: $white !default;
-$datetimepicker-border-size: $border-size !default;
-$datetimepicker-border-color: $border-color !default;
+$datetimepicker-color: var(--ui-body-color) !default;
+$datetimepicker-bg: var(--ui-body-bg) !default;
+$datetimepicker-border-width: var(--ui-border-width) !default;
+$datetimepicker-border-color: var(--ui-border-color-translucent) !default;
 
 $datetimepicker-action-hover-color: $datetimepicker-color !default;
-$datetimepicker-action-hover-background-color: fade($black, .1) !default;
-$datetimepicker-action-active-background-color: map-get($color-variants, primary) !default;
-$datetimepicker-action-active-color: text-color($datetimepicker-action-active-background-color) !default;
-$datetimepicker-action-active-hover-background-color: shade($datetimepicker-action-active-background-color, 20%) !default;
+$datetimepicker-action-hover-bg: rgba(var(--ui-body-color-rgb), .1) !default;
+$datetimepicker-action-active-bg: var(--ui-primary) !default;
+$datetimepicker-action-active-color: var(--ui-primary-contrast) !default;
+$datetimepicker-action-active-hover-bg: var(--ui-primary-emphasis) !default;
 $datetimepicker-disabled-cursor: not-allowed !default;
-$datetimepicker-disabled-opacity: $disabled-opacity !default;
-$datetimepicker-time-font-size: $font-size-lg !default;
+$datetimepicker-disabled-opacity: .2 !default;
+$datetimepicker-time-font-size: var(--ui-font-size-lg) !default;
 
 $datetimepicker-today-size: 7px !default;
 $datetimepicker-today-right: 4px !default;
 $datetimepicker-today-bottom: 4px !default;
 $datetimepicker-today-border-top-color: $datetimepicker-border-color !default;
-$datetimepicker-today-border-bottom-color: $datetimepicker-action-active-background-color !default;
+$datetimepicker-today-border-bottom-color: $datetimepicker-action-active-bg !default;
 $datetimepicker-today-active-border-bottom-color: $datetimepicker-action-active-color !default;

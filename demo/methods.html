@@ -5,10 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FrostUI DateTimePicker Method</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/elusivecodes/frostui@1.4.6/dist/frost-ui.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/elusivecodes/frostui@latest/dist/frost-ui.css">
     <link rel="stylesheet" href="../dist/frost-ui-datetimepicker.css">
-    <script src="https://cdn.jsdelivr.net/gh/elusivecodes/frostui@1.4.6/dist/frost-ui-bundle.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/elusivecodes/frostdatetime@4.0.6/dist/frost-datetime.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/elusivecodes/frostui@latest/dist/frost-ui-bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/elusivecodes/frostdatetime@latest/dist/frost-datetime.js"></script>
     <script src="../dist/frost-ui-datetimepicker.js"></script>
 </head>
 
@@ -17,7 +17,7 @@
         <div class="mb-4">
             <label for="dtpDefault">Default</label>
             <div class="form-input">
-                <input class="input-filled" id="dtpDefault" type="text" placeholder="Placeholder" autocomplete="off" />
+                <input class="input-filled" id="dtpDefault" data-ui-inline="true" data-ui-side-by-side="true" type="text" placeholder="Placeholder" autocomplete="off" />
                 <div class="ripple-line"></div>
             </div>
             <div class="mt-1">
@@ -40,84 +40,80 @@
                 <button class="btn btn-secondary ripple mb-0" id="dtpSetDate" type="button">Set Date (Now)</button>
                 <button class="btn btn-secondary ripple mb-0" id="dtpSetMaxDate" type="button">Set Max Date (+3 months)</button>
                 <button class="btn btn-secondary ripple mb-0" id="dtpSetMinDate" type="button">Set Min Date (-3 months)</button>
-                <button class="btn btn-secondary ripple mb-0" id="dtpSetViewDate" type="button">Set View Date (Now)</button>
             </div>
             <samp id="output"></samp>
         </div>
     </div>
     <script>
-        const dtpDefault = dom.findOne('#dtpDefault');
-        const dtpInit = dom.findOne('#dtpInit');
-        const dtpDispose = dom.findOne('#dtpDispose');
-        const dtpEnable = dom.findOne('#dtpEnable');
-        const dtpDisable = dom.findOne('#dtpDisable');
-        const dtpGetDate = dom.findOne('#dtpGetDate');
-        const dtpGetMaxDate = dom.findOne('#dtpGetMaxDate');
-        const dtpGetMinDate = dom.findOne('#dtpGetMinDate');
-        const dtpGetViewDate = dom.findOne('#dtpGetViewDate');
-        const dtpSetDate = dom.findOne('#dtpSetDate');
-        const dtpSetMaxDate = dom.findOne('#dtpSetMaxDate');
-        const dtpSetMinDate = dom.findOne('#dtpSetMinDate');
-        const dtpSetViewDate = dom.findOne('#dtpSetViewDate');
-        const output = dom.findOne('#output');
+        UI.DateTimePicker.defaults.locale = 'en-AU';
 
-        dom.addEvent(dtpInit, 'click', e => {
+        const dtpDefault = $.findOne('#dtpDefault');
+        const dtpInit = $.findOne('#dtpInit');
+        const dtpDispose = $.findOne('#dtpDispose');
+        const dtpEnable = $.findOne('#dtpEnable');
+        const dtpDisable = $.findOne('#dtpDisable');
+        const dtpGetDate = $.findOne('#dtpGetDate');
+        const dtpGetMaxDate = $.findOne('#dtpGetMaxDate');
+        const dtpGetMinDate = $.findOne('#dtpGetMinDate');
+        const dtpGetViewDate = $.findOne('#dtpGetViewDate');
+        const dtpSetDate = $.findOne('#dtpSetDate');
+        const dtpSetMaxDate = $.findOne('#dtpSetMaxDate');
+        const dtpSetMinDate = $.findOne('#dtpSetMinDate');
+        const dtpSetViewDate = $.findOne('#dtpSetViewDate');
+        const output = $.findOne('#output');
+
+        $.addEvent(dtpInit, 'click', e => {
             UI.DateTimePicker.init(dtpDefault);
         });
 
-        dom.addEvent(dtpDispose, 'click', e => {
+        $.addEvent(dtpDispose, 'click', e => {
             UI.DateTimePicker.init(dtpDefault).dispose();
         });
 
-        dom.addEvent(dtpEnable, 'click', e => {
+        $.addEvent(dtpEnable, 'click', e => {
             UI.DateTimePicker.init(dtpDefault).enable();
         });
 
-        dom.addEvent(dtpDisable, 'click', e => {
+        $.addEvent(dtpDisable, 'click', e => {
             UI.DateTimePicker.init(dtpDefault).disable();
         });
 
-        dom.addEvent(dtpGetDate, 'click', e => {
+        $.addEvent(dtpGetDate, 'click', e => {
             const date = UI.DateTimePicker.init(dtpDefault).getDate();
-            dom.setText(output, `Date: ${date}`);
+            $.setText(output, `Date: ${date}`);
         });
 
-        dom.addEvent(dtpGetMaxDate, 'click', e => {
+        $.addEvent(dtpGetMaxDate, 'click', e => {
             const date = UI.DateTimePicker.init(dtpDefault).getMaxDate();
-            dom.setText(output, `Max Date: ${date}`);
+            $.setText(output, `Max Date: ${date}`);
         });
 
-        dom.addEvent(dtpGetMinDate, 'click', e => {
+        $.addEvent(dtpGetMinDate, 'click', e => {
             const date = UI.DateTimePicker.init(dtpDefault).getMinDate();
-            dom.setText(output, `Min Date: ${date}`);
+            $.setText(output, `Min Date: ${date}`);
         });
 
-        dom.addEvent(dtpGetViewDate, 'click', e => {
+        $.addEvent(dtpGetViewDate, 'click', e => {
             const date = UI.DateTimePicker.init(dtpDefault).getViewDate();
-            dom.setText(output, `View Date: ${date}`);
+            $.setText(output, `View Date: ${date}`);
         });
 
-        dom.addEvent(dtpSetDate, 'click', e => {
+        $.addEvent(dtpSetDate, 'click', e => {
             const date = DateTime.now();
             UI.DateTimePicker.init(dtpDefault).setDate(date);
         });
 
-        dom.addEvent(dtpSetMaxDate, 'click', e => {
+        $.addEvent(dtpSetMaxDate, 'click', e => {
             const date = DateTime.now().add(3, 'months');
             UI.DateTimePicker.init(dtpDefault).setMaxDate(date);
         });
 
-        dom.addEvent(dtpSetMinDate, 'click', e => {
+        $.addEvent(dtpSetMinDate, 'click', e => {
             const date = DateTime.now().sub(3, 'months');
             UI.DateTimePicker.init(dtpDefault).setMinDate(date);
         });
 
-        dom.addEvent(dtpSetViewDate, 'click', e => {
-            const date = DateTime.now();
-            UI.DateTimePicker.init(dtpDefault).setViewDate(date);
-        });
-
-        dom.triggerEvent(dtpInit, 'click');
+        $.triggerEvent(dtpInit, 'click');
     </script>
 </body>
 

@@ -5,10 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FrostUI DateTimePicker Events</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/elusivecodes/frostui@1.4.6/dist/frost-ui.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/elusivecodes/frostui@latest/dist/frost-ui.css">
     <link rel="stylesheet" href="../dist/frost-ui-datetimepicker.css">
-    <script src="https://cdn.jsdelivr.net/gh/elusivecodes/frostui@1.4.6/dist/frost-ui-bundle.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/elusivecodes/frostdatetime@4.0.6/dist/frost-datetime.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/elusivecodes/frostui@latest/dist/frost-ui-bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/elusivecodes/frostdatetime@latest/dist/frost-datetime.js"></script>
     <script src="../dist/frost-ui-datetimepicker.js"></script>
 </head>
 
@@ -26,21 +26,21 @@
         </div>
     </div>
     <script>
-        UI.DateTimePicker.defaults.locale = 'en';
+        UI.DateTimePicker.defaults.locale = 'en-AU';
 
-        const dtpEvents = dom.findOne('#dtpEvents');
-        const events = dom.findOne('#events');
+        const dtpEvents = $.findOne('#dtpEvents');
+        const events = $.findOne('#events');
 
         UI.DateTimePicker.init(dtpEvents);
 
-        dom.addEvent(dtpEvents, 'change.ui.datetimepicker show.ui.datetimepicker shown.ui.datetimepicker hide.ui.datetimepicker hidden.ui.datetimepicker', e => {
-            const div = dom.create('div', {
+        $.addEvent(dtpEvents, 'change.ui.datetimepicker refresh.ui.datetimepicker show.ui.datetimepicker shown.ui.datetimepicker hide.ui.datetimepicker hidden.ui.datetimepicker', e => {
+            const div = $.create('div', {
                 html: `<small>"${e.type}" event triggered</small>`
             });
-            dom.append(events, div);
+            $.append(events, div);
 
-            const scrollHeight = dom.height(events, DOM.SCROLL_BOX);
-            dom.setScrollY(events, scrollHeight);
+            const scrollHeight = $.height(events, { boxSize: $.SCROLL_BOX });
+            $.setScrollY(events, scrollHeight);
         });
     </script>
 </body>

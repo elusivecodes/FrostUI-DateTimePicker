@@ -1,21 +1,27 @@
 .datetimepicker {
-  z-index: 1000;
+  --datetimepicker-z-index: 1000;
+  --datetimepicker-bg: var(--ui-body-bg);
+  --datetimepicker-border-width: var(--ui-border-width);
+  --datetimepicker-border-color: var(--ui-border-color-translucent);
+  z-index: var(--datetimepicker-z-index);
   display: block;
   width: 300px;
   padding: 0;
   margin: 0;
-  color: #121212;
+  color: var(--ui-body-color);
   text-align: left;
   list-style: none;
   -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
-  background-color: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  -moz-user-select: none;
+  user-select: none;
+  background-color: var(--datetimepicker-bg);
+  border: var(--datetimepicker-border-width) var(--ui-border-style) var(--datetimepicker-border-color);
 }
 .datetimepicker th {
   border-bottom: 0;
+}
+.datetimepicker th[abbr] {
+  width: 14.2857142857%;
 }
 .datetimepicker tr:last-child > td {
   border-bottom: 0;
@@ -25,32 +31,40 @@
 }
 
 .datetimepicker-inline {
-  display: block;
-  border: 0;
+  --datetimepicker-bg: transparent;
+  --datetimepicker-border-width: 0;
 }
 
 .datetimepicker-action {
   cursor: pointer;
 }
 .datetimepicker-action:hover {
-  color: #121212;
-  background-color: rgba(0, 0, 0, 0.1);
+  color: var(--ui-body-color);
+  background-color: rgba(var(--ui-body-color-rgb), 0.1);
+}
+.datetimepicker-action:focus-visible {
+  background-color: rgba(var(--ui-primary-rgb), 0.2);
+  outline: 0;
 }
 .datetimepicker-action.datetimepicker-active {
-  color: #fff;
-  background-color: #2b55d4;
+  color: var(--ui-primary-contrast);
+  background-color: var(--ui-primary);
 }
-.datetimepicker-action.datetimepicker-active:hover {
-  background-color: #2244aa;
+.datetimepicker-action.datetimepicker-active:hover, .datetimepicker-action.datetimepicker-active:focus-visible {
+  background-color: var(--ui-primary-emphasis);
 }
 
 .datetimepicker-disabled {
   cursor: not-allowed;
-  opacity: 0.5;
+  opacity: 0.2;
+}
+.datetimepicker-disabled:focus-visible {
+  background-color: rgba(var(--ui-primary-rgb), 0.2);
+  outline: 0;
 }
 
 .datetimepicker-time {
-  font-size: 1.25rem;
+  font-size: var(--ui-font-size-lg);
 }
 
 .datetimepicker-today {
@@ -64,11 +78,11 @@
   content: "";
   border: solid transparent;
   border-width: 0 0 7px 7px;
-  border-top-color: rgba(0, 0, 0, 0.15);
-  border-bottom-color: #2b55d4;
+  border-top-color: var(--ui-border-color-translucent);
+  border-bottom-color: var(--ui-primary);
 }
 .datetimepicker-today.datetimepicker-active::before {
-  border-bottom-color: #fff;
+  border-bottom-color: var(--ui-primary-contrast);
 }
 
 @media (min-width: 768px) {
@@ -76,3 +90,9 @@
     width: 600px;
   }
 }
+.datetimepicker-modal {
+  --datetimepicker-border-width: 0;
+  width: 100%;
+}
+
+/*# sourceMappingURL=frost-ui-datetimepicker.css.map */

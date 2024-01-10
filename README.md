@@ -15,8 +15,7 @@ It is built on top of the [FrostUI](https://github.com/elusivecodes/FrostUI) and
 
 **Dependencies**
 
-- [FrostCore](https://github.com/elusivecodes/FrostCore)
-- [FrostDOM](https://github.com/elusivecodes/FrostDOM)
+- [fQuery](https://github.com/elusivecodes/fQuery)
 - [FrostUI](https://github.com/elusivecodes/FrostUI)
 - [FrostDateTime](https://github.com/elusivecodes/FrostDateTime)
 

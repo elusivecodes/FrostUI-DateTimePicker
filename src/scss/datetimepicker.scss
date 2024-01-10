@@ -1,8 +1,12 @@
-@import "functions";
 @import "vars";
 
 .datetimepicker {
-    z-index: $dropdown-z-index;
+    --datetimepicker-z-index: #{$datetimepicker-z-index};
+    --datetimepicker-bg: #{$datetimepicker-bg};
+    --datetimepicker-border-width: #{$datetimepicker-border-width};
+    --datetimepicker-border-color: #{$datetimepicker-border-color};
+
+    z-index: var(--datetimepicker-z-index);
     display: block;
     width: $datetimepicker-width;
     padding: 0;
@@ -11,11 +15,15 @@
     text-align: left;
     list-style: none;
     user-select: none;
-    background-color: $datetimepicker-background-color;
-    border: $datetimepicker-border-size $border-style $datetimepicker-border-color;
+    background-color: var(--datetimepicker-bg);
+    border: var(--datetimepicker-border-width) var(--ui-border-style) var(--datetimepicker-border-color);
 
     th {
         border-bottom: 0;
+
+        &[abbr] {
+            width: calc(100% / 7);
+        }
     }
 
     tr:last-child > td {
@@ -28,8 +36,8 @@
 }
 
 .datetimepicker-inline {
-    display: block;
-    border: 0;
+    --datetimepicker-bg: transparent;
+    --datetimepicker-border-width: 0;
 }
 
 .datetimepicker-action {
@@ -37,15 +45,21 @@
 
     &:hover {
         color: $datetimepicker-action-hover-color;
-        background-color: $datetimepicker-action-hover-background-color;
+        background-color: $datetimepicker-action-hover-bg;
+    }
+
+    &:focus-visible {
+        background-color: rgba(var(--ui-primary-rgb), .2);
+        outline: 0;
     }
 
     &.datetimepicker-active {
         color: $datetimepicker-action-active-color;
-        background-color: $datetimepicker-action-active-background-color;
+        background-color: $datetimepicker-action-active-bg;
 
-        &:hover {
-            background-color: $datetimepicker-action-active-hover-background-color;
+        &:hover,
+        &:focus-visible {
+            background-color: $datetimepicker-action-active-hover-bg;
         }
     }
 }
@@ -53,6 +67,11 @@
 .datetimepicker-disabled {
     cursor: $datetimepicker-disabled-cursor;
     opacity: $datetimepicker-disabled-opacity;
+
+    &:focus-visible {
+        background-color: rgba(var(--ui-primary-rgb), .2);
+        outline: 0;
+    }
 }
 
 .datetimepicker-time {
@@ -83,4 +102,10 @@
     .datetimepicker-wide {
         width: $datetimepicker-wide-width;
     }
+}
+
+.datetimepicker-modal {
+    --datetimepicker-border-width: 0;
+
+    width: 100%;
 }
