@@ -181,7 +181,7 @@ export function _renderDays() {
 
     const table = this.constructor._createTable({
         header: {
-            title: this._viewDate.format('MMMM yyyy'),
+            title: this._viewDate.format('LLLL yyyy'),
             dataset: {
                 uiAction: 'changeView',
                 uiView: 'months',
@@ -520,11 +520,11 @@ export function _renderModal() {
 
     $.append(modalBody, this._menuNode);
 
-    const btnContainer = $.create('div', {
-        class: this.constructor.classes.modalBtnContainer,
+    const modalFooter = $.create('div', {
+        class: this.constructor.classes.modalFooter,
     });
 
-    $.append(modalBody, btnContainer);
+    $.append(modalContent, modalFooter);
 
     const cancelBtn = $.create('button', {
         class: this.constructor.classes.modalBtnSecondary,
@@ -535,7 +535,7 @@ export function _renderModal() {
         },
     });
 
-    $.append(btnContainer, cancelBtn);
+    $.append(modalFooter, cancelBtn);
 
     this._setBtn = $.create('button', {
         class: this.constructor.classes.modalBtnPrimary,
@@ -547,7 +547,7 @@ export function _renderModal() {
         },
     });
 
-    $.append(btnContainer, this._setBtn);
+    $.append(modalFooter, this._setBtn);
 };
 
 /**
@@ -618,7 +618,7 @@ export function _renderMonths() {
 
             while (current.isSameOrBefore(end, { granularity: 'month' })) {
                 const col = $.create('div', {
-                    text: current.format('MMM'),
+                    text: current.format('LLL'),
                     class: this.constructor.classes.dateColumn,
                 });
                 $.append(row, col);

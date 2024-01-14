@@ -386,9 +386,9 @@ export function _refresh() {
             }
 
             if (this._hasDate) {
-                $.setText(this._toolbarDate, this._date.format('MMM d'));
+                $.setText(this._toolbarDate, this._date.format('LLL d'));
             } else if (this._hasMonth) {
-                $.setText(this._toolbarDate, this._date.format('MMM'));
+                $.setText(this._toolbarDate, this._date.format('LLL'));
             }
 
             if (this._hasHours) {

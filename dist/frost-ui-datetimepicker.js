@@ -1883,9 +1883,9 @@
                 }
 
                 if (this._hasDate) {
-                    $.setText(this._toolbarDate, this._date.format('MMM d'));
+                    $.setText(this._toolbarDate, this._date.format('LLL d'));
                 } else if (this._hasMonth) {
-                    $.setText(this._toolbarDate, this._date.format('MMM'));
+                    $.setText(this._toolbarDate, this._date.format('LLL'));
                 }
 
                 if (this._hasHours) {
@@ -2318,7 +2318,7 @@
 
         const table = this.constructor._createTable({
             header: {
-                title: this._viewDate.format('MMMM yyyy'),
+                title: this._viewDate.format('LLLL yyyy'),
                 dataset: {
                     uiAction: 'changeView',
                     uiView: 'months',
@@ -2654,11 +2654,11 @@
 
         $.append(modalBody, this._menuNode);
 
-        const btnContainer = $.create('div', {
-            class: this.constructor.classes.modalBtnContainer,
+        const modalFooter = $.create('div', {
+            class: this.constructor.classes.modalFooter,
         });
 
-        $.append(modalBody, btnContainer);
+        $.append(modalContent, modalFooter);
 
         const cancelBtn = $.create('button', {
             class: this.constructor.classes.modalBtnSecondary,
@@ -2669,7 +2669,7 @@
             },
         });
 
-        $.append(btnContainer, cancelBtn);
+        $.append(modalFooter, cancelBtn);
 
         this._setBtn = $.create('button', {
             class: this.constructor.classes.modalBtnPrimary,
@@ -2681,7 +2681,7 @@
             },
         });
 
-        $.append(btnContainer, this._setBtn);
+        $.append(modalFooter, this._setBtn);
     }
     /**
      * Render the months picker.
@@ -2751,7 +2751,7 @@
 
                 while (current.isSameOrBefore(end, { granularity: 'month' })) {
                     const col = $.create('div', {
-                        text: current.format('MMM'),
+                        text: current.format('LLL'),
                         class: this.constructor.classes.dateColumn,
                     });
                     $.append(row, col);
@@ -3350,7 +3350,7 @@
     DateTimePicker.defaults = {
         format: null,
         altFormats: [],
-        ariaFormat: 'MMMM d, yyyy',
+        ariaFormat: 'LLLL d, yyyy',
         timeZone: null,
         locale: null,
         defaultDate: null,
@@ -3403,11 +3403,11 @@
         menuWide: 'datetimepicker-wide',
         modal: 'modal',
         modalBody: 'modal-body',
-        modalBtnContainer: 'text-end mt-4',
-        modalBtnPrimary: 'btn btn-primary ripple ms-2',
-        modalBtnSecondary: 'btn btn-secondary ripple ms-2',
+        modalBtnPrimary: 'btn btn-primary ripple',
+        modalBtnSecondary: 'btn btn-secondary ripple',
         modalContent: 'modal-content',
-        modalDialog: 'modal-dialog modal-sm',
+        modalDialog: 'modal-dialog modal-dialog-centered modal-sm',
+        modalFooter: 'modal-footer',
         modalHeader: 'modal-header',
         modalTitle: 'modal-title',
         navigation: 'text-primary fs-5 lh-1',
