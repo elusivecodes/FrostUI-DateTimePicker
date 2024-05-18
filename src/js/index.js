@@ -14,6 +14,7 @@ DateTimePicker.defaults = {
     timeZone: null,
     locale: null,
     defaultDate: null,
+    defaultView: null,
     minDate: null,
     maxDate: null,
     isValidDay: null,

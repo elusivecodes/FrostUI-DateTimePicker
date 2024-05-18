@@ -64,12 +64,24 @@ export function _checkFormat() {
         throw new Error('Time selector cannot be used with multiDate option.');
     }
 
+    this._defaultView = this._options.defaultView;
+
     if (this._hasDate) {
         this._minView = 'days';
     } else if (this._hasMonth) {
         this._minView = 'months';
     } else if (this._hasYear) {
         this._minView = 'years';
+    }
+
+    if (
+        !this._defaultView ||
+        (this._defaultView === 'days' && !this._hasDate) ||
+        (this._defaultView === 'months' && !this._hasMonth) ||
+        (this._defaultView === 'years' && !this._hasYear) ||
+        !['days', 'months', 'years'].includes(this._defaultView)
+    ) {
+        this._defaultView = this._minView;
     }
 };
 
@@ -542,6 +554,7 @@ export function _resetView() {
         this._viewDate = this._date;
     } else {
         this._viewDate = this._defaultDate;
+        this._viewMode = this._defaultView;
     }
 
     if (this._hasDate && this._hasHours && !this._options.sideBySide) {
