@@ -1,6 +1,6 @@
 {
-    "name": "@fr0st/datetimepicker",
-    "version": "2.0.2",
+    "name": "@fr0st/ui-datetimepicker",
+    "version": "2.0.3",
     "description": "FrostUI-DateTimePicker is a free, open-source DateTimePicker component for Javascript.",
     "keywords": [
         "ui",
@@ -46,17 +46,17 @@
     "private": false,
     "devDependencies": {
         "@rollup/plugin-node-resolve": "^15.2.3",
-        "autoprefixer": "^10.4.16",
+        "autoprefixer": "^10.4.19",
         "clean-css-cli": "^5.6.3",
         "eslint": "^8.56.0",
         "eslint-config-google": "^0.14.0",
         "find-unused-sass-variables": "^5.0.0",
-        "postcss": "^8.4.33",
+        "postcss": "^8.4.38",
         "postcss-cli": "^11.0.0",
-        "rollup": "^4.9.5",
-        "sass": "^1.69.7",
+        "rollup": "^4.17.2",
+        "sass": "^1.77.2",
         "stylelint": "^15.11.0",
         "stylelint-config-twbs-bootstrap": "^12.0.0",
-        "terser": "^5.26.0"
+        "terser": "^5.31.0"
     }
 }
