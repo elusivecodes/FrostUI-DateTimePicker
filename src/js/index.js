@@ -5,6 +5,7 @@ import { _events, _eventsDate, _eventsModal, _eventsTime } from './prototype/eve
 import { _checkFormat, _clampDate, _clampStepping, _formatDate, _formatDates, _isAfterMin, _isBeforeMax, _isCurrent, _isEditable, _isValid, _makeDate, _now, _parseDate, _parseDates, _refresh, _refreshDate, _refreshDisabled, _refreshTime, _resetView, _setDate, _setDates, _updateValue } from './prototype/helpers.js';
 import { _render, _renderDays, _renderHours, _renderMinutes, _renderModal, _renderMonths, _renderTime, _renderToolbar, _renderYears } from './prototype/render.js';
 import { _createTable, _renderTimeColumn, _renderTimeSeparator } from './static/render.js';
+import { getDefaultDateFormat, getDefaultFormat, getDefaultTimeFormat } from './formats.js';
 
 // DateTimePicker default options
 DateTimePicker.defaults = {
@@ -130,6 +131,9 @@ DateTimePicker.icons = {
 };
 
 // DateTimePicker static
+DateTimePicker.getDefaultDateFormat = getDefaultDateFormat;
+DateTimePicker.getDefaultFormat = getDefaultFormat;
+DateTimePicker.getDefaultTimeFormat = getDefaultTimeFormat;
 DateTimePicker._createTable = _createTable;
 DateTimePicker._renderTimeColumn = _renderTimeColumn;
 DateTimePicker._renderTimeSeparator = _renderTimeSeparator;

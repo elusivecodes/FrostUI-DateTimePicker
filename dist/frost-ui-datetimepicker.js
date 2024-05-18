@@ -2,7 +2,7 @@
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@fr0st/query'), require('@fr0st/ui'), require('@fr0st/datetime')) :
     typeof define === 'function' && define.amd ? define(['exports', '@fr0st/query', '@fr0st/ui', '@fr0st/datetime'], factory) :
     (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.UI = global.UI || {}, global.fQuery, global.UI, global.DateTime));
-})(this, (function (exports, $, ui, DateTime$1) { 'use strict';
+})(this, (function (exports, $, ui, DateTime) { 'use strict';
 
     const dayPeriods = {};
     const defaultFormats = {};
@@ -1812,7 +1812,7 @@
 
         for (const format of formats) {
             try {
-                const newDate = DateTime$1.fromFormat(format, date, this._dateOptions);
+                const newDate = DateTime.fromFormat(format, date, this._dateOptions);
 
                 if (!newDate.isValid) {
                     continue;
@@ -1829,7 +1829,7 @@
      * @return {DateTime} The new DateTime.
      */
     function _now() {
-        return this._clampStepping(DateTime$1.now(this._dateOptions));
+        return this._clampStepping(DateTime.now(this._dateOptions));
     }
     /**
      * Parse a DateTime from any value.
@@ -1841,8 +1841,8 @@
             return null;
         }
 
-        if (date instanceof DateTime$1) {
-            return DateTime$1.fromTimestamp(
+        if (date instanceof DateTime) {
+            return DateTime.fromTimestamp(
                 date.getTimestamp(),
                 this._dateOptions,
             );
@@ -1852,20 +1852,20 @@
             try {
                 return this._makeDate(date);
             } catch (e) {
-                return new DateTime$1(date, this._dateOptions);
+                return new DateTime(date, this._dateOptions);
             }
         }
 
         if (date instanceof Date) {
-            return DateTime$1.fromDate(date, this._dateOptions);
+            return DateTime.fromDate(date, this._dateOptions);
         }
 
         if ($._isNumber(date)) {
-            return DateTime$1.fromTimestamp(date, this._dateOptions);
+            return DateTime.fromTimestamp(date, this._dateOptions);
         }
 
         if ($._isArray(date)) {
-            return DateTime$1.fromArray(date, this._dateOptions);
+            return DateTime.fromArray(date, this._dateOptions);
         }
 
         return null;
@@ -3483,6 +3483,9 @@
     };
 
     // DateTimePicker static
+    DateTimePicker.getDefaultDateFormat = getDefaultDateFormat;
+    DateTimePicker.getDefaultFormat = getDefaultFormat;
+    DateTimePicker.getDefaultTimeFormat = getDefaultTimeFormat;
     DateTimePicker._createTable = _createTable;
     DateTimePicker._renderTimeColumn = _renderTimeColumn;
     DateTimePicker._renderTimeSeparator = _renderTimeSeparator;
