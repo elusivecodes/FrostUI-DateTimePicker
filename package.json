@@ -20,9 +20,9 @@
     "type": "module",
     "files": [
         "dist",
-        "/src/scss",
         "/LICENSE",
-        "/README.md"
+        "/README.md",
+        "src"
     ],
     "scripts": {
         "build": "npm run css && npm run js",
