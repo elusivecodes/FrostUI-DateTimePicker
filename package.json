@@ -1,6 +1,6 @@
 {
     "name": "@fr0st/ui-datetimepicker",
-    "version": "3.0.0",
+    "version": "3.0.1",
     "description": "FrostUI-DateTimePicker is a free, open-source DateTimePicker component for Javascript.",
     "keywords": [
         "ui",
