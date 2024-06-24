@@ -104,12 +104,12 @@
         });
 
         $.addEvent(dtpSetMaxDate, 'click', e => {
-            const date = DateTime.now().add(3, 'months');
+            const date = DateTime.now().addMonths(3);
             UI.DateTimePicker.init(dtpDefault).setMaxDate(date);
         });
 
         $.addEvent(dtpSetMinDate, 'click', e => {
-            const date = DateTime.now().sub(3, 'months');
+            const date = DateTime.now().subMonths(3);
             UI.DateTimePicker.init(dtpDefault).setMinDate(date);
         });
 

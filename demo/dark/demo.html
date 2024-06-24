@@ -236,9 +236,9 @@
         UI.DateTimePicker.init(dtpDisabledDates, {
             isValidDay: date => {
                 for (const amount of [3, 5, 9]) {
-                    const invalid = DateTime.now().add(amount, 'days');
+                    const invalid = DateTime.now().addDays(amount);
 
-                    if (date.isSame(invalid, { granularity: 'day' })) {
+                    if (date.isSameDay(invalid)) {
                         return false;
                     }
                 }
@@ -268,8 +268,8 @@
         });
 
         UI.DateTimePicker.init(dtpMinMax, {
-            minDate: DateTime.now().sub(5, 'days'),
-            maxDate: DateTime.now().add(1, 'month')
+            minDate: DateTime.now().subDays(5),
+            maxDate: DateTime.now().addMonth()
         });
 
         UI.DateTimePicker.init(dtpMinuteStepping);

@@ -66,8 +66,8 @@ export default class DateTimePicker extends BaseComponent {
         }
 
         if (this._hasHours && !this._isValid(this._defaultDate)) {
-            let current = this._defaultDate.startOf('day');
-            const endOfDay = this._defaultDate.endOf('day');
+            let current = this._defaultDate.startOfDay();
+            const endOfDay = this._defaultDate.endOfDay();
 
             while (current.isBefore(endOfDay)) {
                 if (this._isValid(current)) {
@@ -75,7 +75,7 @@ export default class DateTimePicker extends BaseComponent {
                     break;
                 }
 
-                current = current.add(5, 'minutes');
+                current = current.addMinutes(5);
             }
         }
 

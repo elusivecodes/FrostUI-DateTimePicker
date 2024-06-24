@@ -183,8 +183,8 @@
             }
 
             if (this._hasHours && !this._isValid(this._defaultDate)) {
-                let current = this._defaultDate.startOf('day');
-                const endOfDay = this._defaultDate.endOf('day');
+                let current = this._defaultDate.startOfDay();
+                const endOfDay = this._defaultDate.endOfDay();
 
                 while (current.isBefore(endOfDay)) {
                     if (this._isValid(current)) {
@@ -192,7 +192,7 @@
                         break;
                     }
 
-                    current = current.add(5, 'minutes');
+                    current = current.addMinutes(5);
                 }
             }
 
@@ -882,11 +882,21 @@
                         this._options.minuteStepping :
                         1;
 
-                    if (action === 'prev') {
-                        tempDate = tempDate.sub(amount, unit);
-                    } else {
-                        tempDate = tempDate.add(amount, unit);
+                    let method;
+                    switch (unit) {
+                        case 'hour':
+                            method = action === 'prev' ?
+                                'subHours' :
+                                'addHours';
+                            break;
+                        case 'minute':
+                            method = action === 'prev' ?
+                                'subMinutes' :
+                                'addMinutes';
+                            break;
                     }
+
+                    tempDate = tempDate[method](amount);
 
                     this._setDate(tempDate, { updateValue });
 
@@ -995,10 +1005,10 @@
                         case 'ArrowUp':
                             switch (timeView) {
                                 case 'hours':
-                                    tempDate = tempDate.add(1, 'hour');
+                                    tempDate = tempDate.addHour();
                                     break;
                                 case 'minutes':
-                                    tempDate = tempDate.add(this._options.minuteStepping, 'minute');
+                                    tempDate = tempDate.addMinutes(this._options.minuteStepping);
                                     break;
                             }
 
@@ -1006,10 +1016,10 @@
                         case 'ArrowDown':
                             switch (timeView) {
                                 case 'hours':
-                                    tempDate = tempDate.sub(1, 'hour');
+                                    tempDate = tempDate.subHour();
                                     break;
                                 case 'minutes':
-                                    tempDate = tempDate.sub(this._options.minuteStepping, 'minute');
+                                    tempDate = tempDate.subMinutes(this._options.minuteStepping);
                                     break;
                             }
 
@@ -1187,8 +1197,8 @@
                         tempDate = this._clampDate(tempDate);
 
                         if (this._hasHours && !this._isValid(tempDate)) {
-                            let current = tempDate.startOf('day');
-                            const endOfDay = tempDate.endOf('day');
+                            let current = tempDate.startOfDay();
+                            const endOfDay = tempDate.endOfDay();
 
                             while (current.isBefore(endOfDay)) {
                                 if (this._isValid(current)) {
@@ -1196,7 +1206,7 @@
                                     break;
                                 }
 
-                                current = current.add(5, 'minutes');
+                                current = current.addMinutes(5);
                             }
                         }
 
@@ -1242,11 +1252,21 @@
                     const amount = $.getDataset(element, 'uiAmount') || 1;
                     const unit = $.getDataset(element, 'uiUnit');
 
-                    if (action === 'prev') {
-                        this._viewDate = this._viewDate.sub(amount, unit);
-                    } else {
-                        this._viewDate = this._viewDate.add(amount, unit);
+                    let method;
+                    switch (unit) {
+                        case 'month':
+                            method = action === 'prev' ?
+                                'subMonths' :
+                                'addMonths';
+                            break;
+                        case 'year':
+                            method = action === 'prev' ?
+                                'subYears' :
+                                'addYears';
+                            break;
                     }
+
+                    this._viewDate = this._viewDate[method](amount);
 
                     this._refreshDate();
 
@@ -1343,16 +1363,16 @@
                     switch (this._viewMode) {
                         case 'days':
                             if (e.ctrlKey) {
-                                tempView = tempView.sub(1, 'year');
+                                tempView = tempView.subYear();
                             } else {
-                                tempView = tempView.sub(1, 'week');
+                                tempView = tempView.subWeek();
                             }
                             break;
                         case 'months':
-                            tempView = tempView.sub(3, 'months');
+                            tempView = tempView.subMonths(3);
                             break;
                         case 'years':
-                            tempView = tempView.sub(3, 'years');
+                            tempView = tempView.subYears(3);
                             break;
                     }
                     break;
@@ -1360,16 +1380,16 @@
                     switch (this._viewMode) {
                         case 'days':
                             if (e.ctrlKey) {
-                                tempView = tempView.add(1, 'month');
+                                tempView = tempView.addMonth();
                             } else {
-                                tempView = tempView.add(1, 'day');
+                                tempView = tempView.addDay();
                             }
                             break;
                         case 'months':
-                            tempView = tempView.add(1, 'month');
+                            tempView = tempView.addMonth();
                             break;
                         case 'years':
-                            tempView = tempView.add(1, 'year');
+                            tempView = tempView.addYear();
                             break;
                     }
                     break;
@@ -1377,16 +1397,16 @@
                     switch (this._viewMode) {
                         case 'days':
                             if (e.ctrlKey) {
-                                tempView = tempView.add(1, 'year');
+                                tempView = tempView.addYear();
                             } else {
-                                tempView = tempView.add(1, 'week');
+                                tempView = tempView.addWeek();
                             }
                             break;
                         case 'months':
-                            tempView = tempView.add(3, 'months');
+                            tempView = tempView.addMonths(3);
                             break;
                         case 'years':
-                            tempView = tempView.add(3, 'years');
+                            tempView = tempView.addYears(3);
                             break;
                     }
                     break;
@@ -1394,44 +1414,44 @@
                     switch (this._viewMode) {
                         case 'days':
                             if (e.ctrlKey) {
-                                tempView = tempView.sub(1, 'month');
+                                tempView = tempView.subMonth();
                             } else {
-                                tempView = tempView.sub(1, 'day');
+                                tempView = tempView.subDay();
                             }
                             break;
                         case 'months':
-                            tempView = tempView.sub(1, 'month');
+                            tempView = tempView.subMonth();
                             break;
                         case 'years':
-                            tempView = tempView.sub(1, 'year');
+                            tempView = tempView.subYear();
                             break;
                     }
                     break;
                 case 'Home':
                     switch (this._viewMode) {
                         case 'days':
-                            tempView = tempView.startOf('week');
+                            tempView = tempView.startOfWeek();
                             break;
                     }
                     break;
                 case 'End':
                     switch (this._viewMode) {
                         case 'days':
-                            tempView = tempView.endOf('week');
+                            tempView = tempView.endOfWeek();
                             break;
                     }
                     break;
                 case 'PageUp':
                     switch (this._viewMode) {
                         case 'days':
-                            tempView = tempView.sub(1, 'month');
+                            tempView = tempView.subMonth();
                             break;
                     }
                     break;
                 case 'PageDown':
                     switch (this._viewMode) {
                         case 'days':
-                            tempView = tempView.add(1, 'month');
+                            tempView = tempView.addMonth();
                             break;
                     }
                     break;
@@ -2297,11 +2317,11 @@
      * Render the days picker.
      */
     function _renderDays() {
-        const start = this._viewDate.startOf('month');
-        const end = this._viewDate.endOf('month');
+        const start = this._viewDate.startOfMonth();
+        const end = this._viewDate.endOfMonth();
 
-        let current = start.startOf('week');
-        const last = end.endOf('week');
+        let current = start.startOfWeek();
+        const last = end.endOfWeek();
 
         let prev; let next;
 
@@ -2364,7 +2384,7 @@
                 let tr;
                 const now = this._now();
 
-                while (current.isSameOrBefore(last, 'day')) {
+                while (current.isSameOrBeforeDay(last)) {
                     if (current.getWeekDay() === 1) {
                         tr = $.create('tr');
                         $.append(tbody, tr);
@@ -2400,7 +2420,7 @@
                         });
                     }
 
-                    if (this._viewDate.isSame(current, { granularity: 'day' })) {
+                    if (this._viewDate.isSameDay(current)) {
                         $.setAttribute(td, {
                             tabindex: 0,
                         });
@@ -2419,11 +2439,11 @@
                     if (this._isCurrent(current, { granularity: 'day' })) {
                         $.addClass(td, this.constructor.classes.active);
                         $.setAttribute(td, { 'aria-selected': true });
-                    } else if (!this._viewDate.isSame(current, { granularity: 'month' })) {
+                    } else if (!this._viewDate.isSameMonth(current)) {
                         $.addClass(td, this.constructor.classes.tertiary);
                     }
 
-                    if (now.isSame(current, { granularity: 'day' })) {
+                    if (now.isSameDay(current)) {
                         $.addClass(td, this.constructor.classes.today);
                     }
 
@@ -2431,7 +2451,7 @@
                         this._options.renderDay(current, td);
                     }
 
-                    current = current.add(1, 'day');
+                    current = current.addDay();
                 }
             },
         });
@@ -2446,8 +2466,8 @@
             this._date :
             this._defaultDate;
 
-        let current = initialDate.startOf('day');
-        const last = initialDate.endOf('day');
+        let current = initialDate.startOfDay();
+        const last = initialDate.endOfDay();
 
         const table = this.constructor._createTable({
             borderless: true,
@@ -2468,7 +2488,7 @@
                 });
                 $.append(td, row);
 
-                while (current.isSameOrBefore(last, { granularity: 'hour' })) {
+                while (current.isSameOrBeforeHour(last)) {
                     const hourString = current.format('HH');
                     const col = $.create('div', {
                         text: hourString,
@@ -2490,7 +2510,7 @@
                         $.setAttribute(col, { role: 'button ' });
                     }
 
-                    if (initialDate.isSame(current, { granularity: 'hour' })) {
+                    if (initialDate.isSameHour(current)) {
                         $.setAttribute(col, {
                             tabindex: 0,
                         });
@@ -2506,12 +2526,12 @@
                         });
                     }
 
-                    if (this._date && this._date.isSame(current, { granularity: 'hour' })) {
+                    if (this._date && this._date.isSameHour(current)) {
                         $.addClass(col, this.constructor.classes.active);
                         $.setAttribute(col, { 'aria-selected': true });
                     }
 
-                    current = current.add(1, 'hour');
+                    current = current.addHour();
                 }
             },
         });
@@ -2526,8 +2546,8 @@
             this._date :
             this._defaultDate;
 
-        let current = initialDate.startOf('hour');
-        const last = initialDate.endOf('hour');
+        let current = initialDate.startOfHour();
+        const last = initialDate.endOfHour();
 
         const table = this.constructor._createTable({
             borderless: true,
@@ -2552,7 +2572,7 @@
                     5 :
                     this._options.minuteStepping;
 
-                while (current.isSameOrBefore(last, { granularity: 'minute' })) {
+                while (current.isSameOrBeforeMinute(last)) {
                     const minuteString = current.format('mm');
                     const col = $.create('span', {
                         text: minuteString,
@@ -2574,7 +2594,7 @@
                         });
                     }
 
-                    if (initialDate.isSame(current, { granularity: 'minute' })) {
+                    if (initialDate.isSameMinute(current)) {
                         $.setAttribute(col, {
                             tabindex: 0,
                         });
@@ -2590,12 +2610,12 @@
                         });
                     }
 
-                    if (this._date && this._date.isSame(current, { granularity: 'minute' })) {
+                    if (this._date && this._date.isSameMinute(current)) {
                         $.addClass(col, this.constructor.classes.active);
                         $.setAttribute(col, { 'aria-selected': true });
                     }
 
-                    current = current.add(stepping, 'minutes');
+                    current = current.addMinutes(stepping);
                 }
 
                 if (!$.findOne('[data-ui-focus="true"]', row)) {
@@ -2700,8 +2720,8 @@
      * Render the months picker.
      */
     function _renderMonths() {
-        const start = this._viewDate.startOf('year');
-        const end = this._viewDate.endOf('year');
+        const start = this._viewDate.startOfYear();
+        const end = this._viewDate.endOfYear();
 
         let current = start;
 
@@ -2762,14 +2782,14 @@
                 });
                 $.append(td, row);
 
-                while (current.isSameOrBefore(end, { granularity: 'month' })) {
+                while (current.isSameOrBeforeMonth(end)) {
                     const col = $.create('div', {
                         text: current.format('LLL'),
                         class: this.constructor.classes.dateColumn,
                     });
                     $.append(row, col);
 
-                    if (this._viewDate.isSame(current, { granularity: 'month' })) {
+                    if (this._viewDate.isSameMonth(current)) {
                         $.setAttribute(col, {
                             tabindex: 0,
                         });
@@ -2813,7 +2833,7 @@
                         this._options.renderMonth(current, col);
                     }
 
-                    current = current.add(1, 'month');
+                    current = current.addMonth();
                 }
             },
         });
@@ -2848,7 +2868,7 @@
                 if (this._hasHours) {
                     let increment; let decrement;
 
-                    const nextHour = initialDate.add(1, 'hour');
+                    const nextHour = initialDate.addHour();
                     if (this._isValid(nextHour, { granularity: 'hour' })) {
                         increment = {
                             dataset: {
@@ -2861,7 +2881,7 @@
                         };
                     }
 
-                    const prevHour = initialDate.sub(1, 'hour');
+                    const prevHour = initialDate.subHour();
                     if (this._isValid(prevHour, { granularity: 'hour' })) {
                         decrement = {
                             dataset: {
@@ -2916,7 +2936,7 @@
                         };
                     }
 
-                    const prevMinute = initialDate.sub(this._options.minuteStepping, 'minute');
+                    const prevMinute = initialDate.subMinutes(this._options.minuteStepping);
                     if (this._isValid(prevMinute, { granularity: 'minute' })) {
                         decrement = {
                             dataset: {
@@ -3049,11 +3069,11 @@
         const startYear = viewYear - (viewYear % 10);
         const endYear = startYear + 9;
 
-        const start = this._viewDate.setYear(startYear).startOf('year');
-        const end = this._viewDate.setYear(endYear).endOf('year');
+        const start = this._viewDate.setYear(startYear).startOfYear();
+        const end = this._viewDate.setYear(endYear).endOfYear();
 
-        let current = start.sub(1, 'year');
-        const last = end.add(1, 'year');
+        let current = start.subYear();
+        const last = end.addYear();
 
         let prev; let next;
 
@@ -3061,7 +3081,7 @@
             prev = {
                 dataset: {
                     uiAction: 'prev',
-                    uiUnit: 'years',
+                    uiUnit: 'year',
                     uiAmount: 10,
                 },
                 attributes: {
@@ -3074,7 +3094,7 @@
             next = {
                 dataset: {
                     uiAction: 'next',
-                    uiUnit: 'years',
+                    uiUnit: 'year',
                     uiAmount: 10,
                 },
                 attributes: {
@@ -3107,7 +3127,7 @@
                 });
                 $.append(td, row);
 
-                while (current.isSameOrBefore(last, 'year')) {
+                while (current.isSameOrBeforeYear(last)) {
                     const currentYear = current.getYear();
 
                     const yearString = current.format('yyyy');
@@ -3120,7 +3140,7 @@
                     });
                     $.append(row, col);
 
-                    if (this._viewDate.isSame(current, { granularity: 'year' })) {
+                    if (this._viewDate.isSameYear(current)) {
                         $.setAttribute(col, {
                             tabindex: 0,
                         });
@@ -3165,7 +3185,7 @@
                         this._options.renderYear(current, col);
                     }
 
-                    current = current.add(1, 'year');
+                    current = current.addYear();
                 }
             },
         });

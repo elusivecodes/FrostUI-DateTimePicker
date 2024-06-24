@@ -147,11 +147,11 @@ export function _render() {
  * Render the days picker.
  */
 export function _renderDays() {
-    const start = this._viewDate.startOf('month');
-    const end = this._viewDate.endOf('month');
+    const start = this._viewDate.startOfMonth();
+    const end = this._viewDate.endOfMonth();
 
-    let current = start.startOf('week');
-    const last = end.endOf('week');
+    let current = start.startOfWeek();
+    const last = end.endOfWeek();
 
     let prev; let next;
 
@@ -214,7 +214,7 @@ export function _renderDays() {
             let tr;
             const now = this._now();
 
-            while (current.isSameOrBefore(last, 'day')) {
+            while (current.isSameOrBeforeDay(last)) {
                 if (current.getWeekDay() === 1) {
                     tr = $.create('tr');
                     $.append(tbody, tr);
@@ -250,7 +250,7 @@ export function _renderDays() {
                     });
                 }
 
-                if (this._viewDate.isSame(current, { granularity: 'day' })) {
+                if (this._viewDate.isSameDay(current)) {
                     $.setAttribute(td, {
                         tabindex: 0,
                     });
@@ -269,11 +269,11 @@ export function _renderDays() {
                 if (this._isCurrent(current, { granularity: 'day' })) {
                     $.addClass(td, this.constructor.classes.active);
                     $.setAttribute(td, { 'aria-selected': true });
-                } else if (!this._viewDate.isSame(current, { granularity: 'month' })) {
+                } else if (!this._viewDate.isSameMonth(current)) {
                     $.addClass(td, this.constructor.classes.tertiary);
                 }
 
-                if (now.isSame(current, { granularity: 'day' })) {
+                if (now.isSameDay(current)) {
                     $.addClass(td, this.constructor.classes.today);
                 }
 
@@ -281,7 +281,7 @@ export function _renderDays() {
                     this._options.renderDay(current, td);
                 }
 
-                current = current.add(1, 'day');
+                current = current.addDay();
             }
         },
     });
@@ -297,8 +297,8 @@ export function _renderHours() {
         this._date :
         this._defaultDate;
 
-    let current = initialDate.startOf('day');
-    const last = initialDate.endOf('day');
+    let current = initialDate.startOfDay();
+    const last = initialDate.endOfDay();
 
     const table = this.constructor._createTable({
         borderless: true,
@@ -319,7 +319,7 @@ export function _renderHours() {
             });
             $.append(td, row);
 
-            while (current.isSameOrBefore(last, { granularity: 'hour' })) {
+            while (current.isSameOrBeforeHour(last)) {
                 const hourString = current.format('HH');
                 const col = $.create('div', {
                     text: hourString,
@@ -341,7 +341,7 @@ export function _renderHours() {
                     $.setAttribute(col, { role: 'button ' });
                 }
 
-                if (initialDate.isSame(current, { granularity: 'hour' })) {
+                if (initialDate.isSameHour(current)) {
                     $.setAttribute(col, {
                         tabindex: 0,
                     });
@@ -357,12 +357,12 @@ export function _renderHours() {
                     });
                 }
 
-                if (this._date && this._date.isSame(current, { granularity: 'hour' })) {
+                if (this._date && this._date.isSameHour(current)) {
                     $.addClass(col, this.constructor.classes.active);
                     $.setAttribute(col, { 'aria-selected': true });
                 }
 
-                current = current.add(1, 'hour');
+                current = current.addHour();
             }
         },
     });
@@ -378,8 +378,8 @@ export function _renderMinutes() {
         this._date :
         this._defaultDate;
 
-    let current = initialDate.startOf('hour');
-    const last = initialDate.endOf('hour');
+    let current = initialDate.startOfHour();
+    const last = initialDate.endOfHour();
 
     const table = this.constructor._createTable({
         borderless: true,
@@ -404,7 +404,7 @@ export function _renderMinutes() {
                 5 :
                 this._options.minuteStepping;
 
-            while (current.isSameOrBefore(last, { granularity: 'minute' })) {
+            while (current.isSameOrBeforeMinute(last)) {
                 const minuteString = current.format('mm');
                 const col = $.create('span', {
                     text: minuteString,
@@ -426,7 +426,7 @@ export function _renderMinutes() {
                     });
                 }
 
-                if (initialDate.isSame(current, { granularity: 'minute' })) {
+                if (initialDate.isSameMinute(current)) {
                     $.setAttribute(col, {
                         tabindex: 0,
                     });
@@ -442,12 +442,12 @@ export function _renderMinutes() {
                     });
                 }
 
-                if (this._date && this._date.isSame(current, { granularity: 'minute' })) {
+                if (this._date && this._date.isSameMinute(current)) {
                     $.addClass(col, this.constructor.classes.active);
                     $.setAttribute(col, { 'aria-selected': true });
                 }
 
-                current = current.add(stepping, 'minutes');
+                current = current.addMinutes(stepping);
             }
 
             if (!$.findOne('[data-ui-focus="true"]', row)) {
@@ -554,8 +554,8 @@ export function _renderModal() {
  * Render the months picker.
  */
 export function _renderMonths() {
-    const start = this._viewDate.startOf('year');
-    const end = this._viewDate.endOf('year');
+    const start = this._viewDate.startOfYear();
+    const end = this._viewDate.endOfYear();
 
     let current = start;
 
@@ -616,14 +616,14 @@ export function _renderMonths() {
             });
             $.append(td, row);
 
-            while (current.isSameOrBefore(end, { granularity: 'month' })) {
+            while (current.isSameOrBeforeMonth(end)) {
                 const col = $.create('div', {
                     text: current.format('LLL'),
                     class: this.constructor.classes.dateColumn,
                 });
                 $.append(row, col);
 
-                if (this._viewDate.isSame(current, { granularity: 'month' })) {
+                if (this._viewDate.isSameMonth(current)) {
                     $.setAttribute(col, {
                         tabindex: 0,
                     });
@@ -667,7 +667,7 @@ export function _renderMonths() {
                     this._options.renderMonth(current, col);
                 }
 
-                current = current.add(1, 'month');
+                current = current.addMonth();
             }
         },
     });
@@ -703,7 +703,7 @@ export function _renderTime() {
             if (this._hasHours) {
                 let increment; let decrement;
 
-                const nextHour = initialDate.add(1, 'hour');
+                const nextHour = initialDate.addHour();
                 if (this._isValid(nextHour, { granularity: 'hour' })) {
                     increment = {
                         dataset: {
@@ -716,7 +716,7 @@ export function _renderTime() {
                     };
                 }
 
-                const prevHour = initialDate.sub(1, 'hour');
+                const prevHour = initialDate.subHour();
                 if (this._isValid(prevHour, { granularity: 'hour' })) {
                     decrement = {
                         dataset: {
@@ -771,7 +771,7 @@ export function _renderTime() {
                     };
                 }
 
-                const prevMinute = initialDate.sub(this._options.minuteStepping, 'minute');
+                const prevMinute = initialDate.subMinutes(this._options.minuteStepping);
                 if (this._isValid(prevMinute, { granularity: 'minute' })) {
                     decrement = {
                         dataset: {
@@ -906,11 +906,11 @@ export function _renderYears() {
     const startYear = viewYear - (viewYear % 10);
     const endYear = startYear + 9;
 
-    const start = this._viewDate.setYear(startYear).startOf('year');
-    const end = this._viewDate.setYear(endYear).endOf('year');
+    const start = this._viewDate.setYear(startYear).startOfYear();
+    const end = this._viewDate.setYear(endYear).endOfYear();
 
-    let current = start.sub(1, 'year');
-    const last = end.add(1, 'year');
+    let current = start.subYear();
+    const last = end.addYear();
 
     let prev; let next;
 
@@ -918,7 +918,7 @@ export function _renderYears() {
         prev = {
             dataset: {
                 uiAction: 'prev',
-                uiUnit: 'years',
+                uiUnit: 'year',
                 uiAmount: 10,
             },
             attributes: {
@@ -931,7 +931,7 @@ export function _renderYears() {
         next = {
             dataset: {
                 uiAction: 'next',
-                uiUnit: 'years',
+                uiUnit: 'year',
                 uiAmount: 10,
             },
             attributes: {
@@ -964,7 +964,7 @@ export function _renderYears() {
             });
             $.append(td, row);
 
-            while (current.isSameOrBefore(last, 'year')) {
+            while (current.isSameOrBeforeYear(last)) {
                 const currentYear = current.getYear();
 
                 const yearString = current.format('yyyy');
@@ -977,7 +977,7 @@ export function _renderYears() {
                 });
                 $.append(row, col);
 
-                if (this._viewDate.isSame(current, { granularity: 'year' })) {
+                if (this._viewDate.isSameYear(current)) {
                     $.setAttribute(col, {
                         tabindex: 0,
                     });
@@ -1022,7 +1022,7 @@ export function _renderYears() {
                     this._options.renderYear(current, col);
                 }
 
-                current = current.add(1, 'year');
+                current = current.addYear();
             }
         },
     });

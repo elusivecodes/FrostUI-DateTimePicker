@@ -247,11 +247,21 @@ export function _eventsTime() {
                     this._options.minuteStepping :
                     1;
 
-                if (action === 'prev') {
-                    tempDate = tempDate.sub(amount, unit);
-                } else {
-                    tempDate = tempDate.add(amount, unit);
+                let method;
+                switch (unit) {
+                    case 'hour':
+                        method = action === 'prev' ?
+                            'subHours' :
+                            'addHours';
+                        break;
+                    case 'minute':
+                        method = action === 'prev' ?
+                            'subMinutes' :
+                            'addMinutes';
+                        break;
                 }
+
+                tempDate = tempDate[method](amount);
 
                 this._setDate(tempDate, { updateValue });
 
@@ -360,10 +370,10 @@ export function _eventsTime() {
                     case 'ArrowUp':
                         switch (timeView) {
                             case 'hours':
-                                tempDate = tempDate.add(1, 'hour');
+                                tempDate = tempDate.addHour();
                                 break;
                             case 'minutes':
-                                tempDate = tempDate.add(this._options.minuteStepping, 'minute');
+                                tempDate = tempDate.addMinutes(this._options.minuteStepping);
                                 break;
                         }
 
@@ -371,10 +381,10 @@ export function _eventsTime() {
                     case 'ArrowDown':
                         switch (timeView) {
                             case 'hours':
-                                tempDate = tempDate.sub(1, 'hour');
+                                tempDate = tempDate.subHour();
                                 break;
                             case 'minutes':
-                                tempDate = tempDate.sub(this._options.minuteStepping, 'minute');
+                                tempDate = tempDate.subMinutes(this._options.minuteStepping);
                                 break;
                         }
 
@@ -553,8 +563,8 @@ export function _eventsDate() {
                     tempDate = this._clampDate(tempDate);
 
                     if (this._hasHours && !this._isValid(tempDate)) {
-                        let current = tempDate.startOf('day');
-                        const endOfDay = tempDate.endOf('day');
+                        let current = tempDate.startOfDay();
+                        const endOfDay = tempDate.endOfDay();
 
                         while (current.isBefore(endOfDay)) {
                             if (this._isValid(current)) {
@@ -562,7 +572,7 @@ export function _eventsDate() {
                                 break;
                             }
 
-                            current = current.add(5, 'minutes');
+                            current = current.addMinutes(5);
                         }
                     }
 
@@ -608,11 +618,21 @@ export function _eventsDate() {
                 const amount = $.getDataset(element, 'uiAmount') || 1;
                 const unit = $.getDataset(element, 'uiUnit');
 
-                if (action === 'prev') {
-                    this._viewDate = this._viewDate.sub(amount, unit);
-                } else {
-                    this._viewDate = this._viewDate.add(amount, unit);
+                let method;
+                switch (unit) {
+                    case 'month':
+                        method = action === 'prev' ?
+                            'subMonths' :
+                            'addMonths';
+                        break;
+                    case 'year':
+                        method = action === 'prev' ?
+                            'subYears' :
+                            'addYears';
+                        break;
                 }
+
+                this._viewDate = this._viewDate[method](amount);
 
                 this._refreshDate();
 
@@ -709,16 +729,16 @@ export function _eventsDate() {
                 switch (this._viewMode) {
                     case 'days':
                         if (e.ctrlKey) {
-                            tempView = tempView.sub(1, 'year');
+                            tempView = tempView.subYear();
                         } else {
-                            tempView = tempView.sub(1, 'week');
+                            tempView = tempView.subWeek();
                         }
                         break;
                     case 'months':
-                        tempView = tempView.sub(3, 'months');
+                        tempView = tempView.subMonths(3);
                         break;
                     case 'years':
-                        tempView = tempView.sub(3, 'years');
+                        tempView = tempView.subYears(3);
                         break;
                 }
                 break;
@@ -726,16 +746,16 @@ export function _eventsDate() {
                 switch (this._viewMode) {
                     case 'days':
                         if (e.ctrlKey) {
-                            tempView = tempView.add(1, 'month');
+                            tempView = tempView.addMonth();
                         } else {
-                            tempView = tempView.add(1, 'day');
+                            tempView = tempView.addDay();
                         }
                         break;
                     case 'months':
-                        tempView = tempView.add(1, 'month');
+                        tempView = tempView.addMonth();
                         break;
                     case 'years':
-                        tempView = tempView.add(1, 'year');
+                        tempView = tempView.addYear();
                         break;
                 }
                 break;
@@ -743,16 +763,16 @@ export function _eventsDate() {
                 switch (this._viewMode) {
                     case 'days':
                         if (e.ctrlKey) {
-                            tempView = tempView.add(1, 'year');
+                            tempView = tempView.addYear();
                         } else {
-                            tempView = tempView.add(1, 'week');
+                            tempView = tempView.addWeek();
                         }
                         break;
                     case 'months':
-                        tempView = tempView.add(3, 'months');
+                        tempView = tempView.addMonths(3);
                         break;
                     case 'years':
-                        tempView = tempView.add(3, 'years');
+                        tempView = tempView.addYears(3);
                         break;
                 }
                 break;
@@ -760,44 +780,44 @@ export function _eventsDate() {
                 switch (this._viewMode) {
                     case 'days':
                         if (e.ctrlKey) {
-                            tempView = tempView.sub(1, 'month');
+                            tempView = tempView.subMonth();
                         } else {
-                            tempView = tempView.sub(1, 'day');
+                            tempView = tempView.subDay();
                         }
                         break;
                     case 'months':
-                        tempView = tempView.sub(1, 'month');
+                        tempView = tempView.subMonth();
                         break;
                     case 'years':
-                        tempView = tempView.sub(1, 'year');
+                        tempView = tempView.subYear();
                         break;
                 }
                 break;
             case 'Home':
                 switch (this._viewMode) {
                     case 'days':
-                        tempView = tempView.startOf('week');
+                        tempView = tempView.startOfWeek();
                         break;
                 }
                 break;
             case 'End':
                 switch (this._viewMode) {
                     case 'days':
-                        tempView = tempView.endOf('week');
+                        tempView = tempView.endOfWeek();
                         break;
                 }
                 break;
             case 'PageUp':
                 switch (this._viewMode) {
                     case 'days':
-                        tempView = tempView.sub(1, 'month');
+                        tempView = tempView.subMonth();
                         break;
                 }
                 break;
             case 'PageDown':
                 switch (this._viewMode) {
                     case 'days':
-                        tempView = tempView.add(1, 'month');
+                        tempView = tempView.addMonth();
                         break;
                 }
                 break;
