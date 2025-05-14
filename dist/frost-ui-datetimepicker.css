@@ -10,10 +10,10 @@
   margin: 0;
   color: var(--ui-body-color);
   text-align: left;
-  list-style: none;
   -webkit-user-select: none;
   -moz-user-select: none;
   user-select: none;
+  list-style: none;
   background-color: var(--datetimepicker-bg);
   border: var(--datetimepicker-border-width) var(--ui-border-style) var(--datetimepicker-border-color);
 }
@@ -43,8 +43,8 @@
   background-color: rgba(var(--ui-body-color-rgb), 0.1);
 }
 .datetimepicker-action:focus-visible {
-  background-color: rgba(var(--ui-primary-rgb), 0.2);
   outline: 0;
+  background-color: rgba(var(--ui-primary-rgb), 0.2);
 }
 .datetimepicker-action.datetimepicker-active {
   color: var(--ui-primary-contrast);
@@ -59,8 +59,8 @@
   opacity: 0.2;
 }
 .datetimepicker-disabled:focus-visible {
-  background-color: rgba(var(--ui-primary-rgb), 0.2);
   outline: 0;
+  background-color: rgba(var(--ui-primary-rgb), 0.2);
 }
 
 .datetimepicker-time {

@@ -13,8 +13,8 @@
     margin: 0;
     color: $datetimepicker-color;
     text-align: left;
-    list-style: none;
     user-select: none;
+    list-style: none;
     background-color: var(--datetimepicker-bg);
     border: var(--datetimepicker-border-width) var(--ui-border-style) var(--datetimepicker-border-color);
 
@@ -49,8 +49,8 @@
     }
 
     &:focus-visible {
-        background-color: rgba(var(--ui-primary-rgb), .2);
         outline: 0;
+        background-color: rgba(var(--ui-primary-rgb), .2);
     }
 
     &.datetimepicker-active {
@@ -69,8 +69,8 @@
     opacity: $datetimepicker-disabled-opacity;
 
     &:focus-visible {
-        background-color: rgba(var(--ui-primary-rgb), .2);
         outline: 0;
+        background-color: rgba(var(--ui-primary-rgb), .2);
     }
 }
 
